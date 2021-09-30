@@ -1,0 +1,12 @@
+version: "3.6"
+
+services:
+  database:
+    image: postgres:11
+    container_name: popper_database
+    environment:
+      - POSTGRES_DB=popper
+      - POSTGRES_USER=sas
+      - POSTGRES_PASSWORD=sas
+    ports:
+      - "5432:5432"

@@ -1,0 +1,177 @@
+openapi: 3.0.3
+info:
+  title: Popper
+  description: Backend spec for popper app
+  version: 1.0.0
+servers:
+  - url: 'http://localhost:8080'
+paths:
+  /operator/sign_in:
+    post:
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Operator'
+      responses:
+        '200':
+          description: A JSON array of user names
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Token'
+  /operator/sign_up:
+    post:
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Operator'
+      responses:
+        '200':
+          description: A JSON array of user names
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Token'
+components:
+  schemas:
+    Token:
+      properties:
+        token:
+          type: string
+    Operator:
+      properties:
+        id:
+          type: integer
+        firstname:
+          type: string
+        second_name:
+          type: string
+        surname:
+          type: string
+        phone:
+          type: integer
+        password:
+          type: string
+#definitions:
+#  Token:
+#    type: object
+#    properties:
+#      token:
+#        type: string
+#  Task:
+#    type: object
+#    properties:
+#      taskId:
+#        type: integer
+#        format: int64
+#      taskName:
+#        type: string
+#      taskNumber:
+#        type: string
+#    xml:
+#      name: Task
+#  TaskStatus:
+#    type: object
+#    properties:
+#      taskId:
+#        type: integer
+#        format: int64
+#      quantity:
+#        type: integer
+#        format: int32
+#      winding:
+#        type: integer
+#        format: int32
+#      output:
+#        type: integer
+#        format: int32
+#      isolation:
+#        type: integer
+#        format: int32
+#      molding:
+#        type: integer
+#        format: int32
+#      crimping:
+#        type: integer
+#        format: int32
+#      qcd:
+#        type: integer
+#        format: int32
+#      testing:
+#        type: integer
+#        format: int32
+#    xml:
+#      name: TaskStatus
+#  Bobbin:
+#    type: object
+#    properties:
+#      bobbinId:
+#        type: integer
+#        format: int64
+#      taskId:
+#        type: integer
+#        format: int64
+#      bobbinNumber:
+#        type: string
+#    xml:
+#      name: Bobbin
+#  Action:
+#    type: object
+#    properties:
+#      actionId:
+#        type: integer
+#        format: int64
+#      operatorId:
+#        type: string
+#      actionType:
+#        type: string
+#      dateTime:
+#        type: string
+#        format: date-time
+#      isDone:
+#        type: boolean
+#    xml:
+#      name: Action
+#  BobbinStatus:
+#    type: object
+#    properties:
+#      bobbinId:
+#        type: integer
+#        format: int64
+#      winding:
+#        $ref: '#/definitions/Action'
+#      output:
+#        $ref: '#/definitions/Action'
+#      isolation:
+#        $ref: '#/definitions/Action'
+#      molding:
+#        $ref: '#/definitions/Action'
+#      crimping:
+#        $ref: '#/definitions/Action'
+#      qcd:
+#        $ref: '#/definitions/Action'
+#      testing:
+#        $ref: '#/definitions/Action'
+#    xml:
+#      name: BobbinStatus
+#  Operator:
+#    type: object
+#    properties:
+#      operatorId:
+#        type: integer
+#        format: int64
+#      firstname:
+#        type: string
+#      lastname:
+#        type: string
+#      surname:
+#        type: string
+#      phone:
+#        type: integer
+#        format: int64
+#      password:
+#        type: string
