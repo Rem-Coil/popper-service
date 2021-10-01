@@ -10,13 +10,4 @@ data class Operator(
     val surname: String,
     val phone: String,
     val password: String
-) {
-    constructor(credentials: OperatorCredentials) : this(
-        credentials.id!!,
-        credentials.firstname,
-        credentials.second_name,
-        credentials.surname,
-        credentials.phone,
-        credentials.password,
-    )
-}
+)

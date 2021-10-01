@@ -23,5 +23,5 @@ fun DI.Builder.coreComponents(config: AppConfig) {
 
 fun DI.Builder.operatorComponents() {
     bind<OperatorDao>() with singleton { OperatorDao(instance()) }
-    bind<OperatorService>() with singleton { OperatorService(instance()) }
+    bind<OperatorService>() with singleton { OperatorService(instance(), instance<AppConfig>().jwt) }
 }
