@@ -2,7 +2,9 @@ package com.remcoil.di
 
 import com.remcoil.config.AppConfig
 import com.remcoil.dao.operator.OperatorDao
+import com.remcoil.dao.task.TaskDao
 import com.remcoil.service.operator.OperatorService
+import com.remcoil.service.task.TaskService
 import org.jetbrains.exposed.sql.Database
 import org.kodein.di.DI
 import org.kodein.di.bind
@@ -23,4 +25,9 @@ fun DI.Builder.coreComponents(config: AppConfig) {
 fun DI.Builder.operatorComponents() {
     bind<OperatorDao>() with singleton { OperatorDao(instance()) }
     bind<OperatorService>() with singleton { OperatorService(instance(), instance<AppConfig>().jwt) }
+}
+
+fun DI.Builder.taskComponents() {
+    bind<TaskDao>() with singleton { TaskDao(instance()) }
+    bind<TaskService>() with singleton { TaskService(instance()) }
 }

@@ -5,8 +5,47 @@ info:
   version: 0.0.1
 servers:
 #  - url: 'https://popper-service.herokuapp.com/'
-  - url: 'http://localhost:81'
+  - url: 'http://localhost:80'
 paths:
+
+  /task:
+    get:
+      responses:
+        '200':
+          description: List of tasks
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListOfTasks'
+
+  /task/delete/{task_name}:
+    get:
+      parameters:
+        - in: path
+          name: task_name
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Task deleted successfully
+
+  /task/create:
+    post:
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskIdentity'
+      responses:
+        '200':
+          description: Task created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+
   /operator/getAll:
     get:
       responses:
@@ -16,6 +55,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ListOfOperators'
+
   /operator/sign_in:
     post:
       requestBody:
@@ -31,6 +71,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Token'
+
   /operator/sign_up:
     post:
       requestBody:
@@ -46,12 +87,40 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Token'
+
 components:
   schemas:
+
     Token:
       properties:
         token:
           type: string
+
+    Task:
+      properties:
+        id:
+          type: integer
+        task_name:
+          type: string
+        task_number:
+          type: string
+        quantity:
+          type: integer
+        winding:
+          type: integer
+        output:
+          type: integer
+        isolation:
+          type: integer
+        molding:
+          type: integer
+        crimpimng:
+          type: integer
+        quality:
+          type: integer
+        testing:
+          type: integer
+
     Operator:
       properties:
         id:
@@ -66,10 +135,26 @@ components:
           type: string
         password:
           type: string
+
     ListOfOperators:
       type: array
       items:
         $ref: '#/components/schemas/Operator'
+
+    ListOfTasks:
+      type: array
+      items:
+        $ref: '#/components/schemas/Task'
+
+    TaskIdentity:
+      properties:
+        task_name:
+          type: string
+        task_number:
+          type: string
+        quantity:
+          type: integer
+
     Credentials:
       properties:
         phone:

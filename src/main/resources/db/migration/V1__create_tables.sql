@@ -1,13 +1,8 @@
 create table task
 (
     id serial primary key,
-    taskName varchar (32) not null,
-    taskNumber varchar(32) not null
-);
-
-create table task_status
-(
-    id integer primary key,
+    task_name varchar (32) not null,
+    task_number varchar(32) not null,
     quantity integer not null,
     winding integer,
     output integer,
@@ -15,8 +10,7 @@ create table task_status
     molding integer,
     crimping integer,
     quality integer,
-    testing integer,
-    constraint fk_task_id foreign key (id) references task
+    testing integer
 );
 
 create table operator
