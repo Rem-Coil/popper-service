@@ -4,8 +4,8 @@ info:
   description: Backend spec for popper app
   version: 0.0.1
 servers:
-#  - url: 'https://popper-service.herokuapp.com/'
-  - url: 'http://localhost:81'
+  - url: 'https://popper-service.herokuapp.com/'
+#  - url: 'http://localhost:81'
 paths:
   /operator/getAll:
     get:
