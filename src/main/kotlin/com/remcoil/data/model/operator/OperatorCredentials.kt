@@ -1,4 +1,4 @@
-package com.remcoil.data.model
+package com.remcoil.data.model.operator
 
 import kotlinx.serialization.Serializable
 

@@ -15,6 +15,11 @@ fun Application.operatorModule() {
     routing {
         route("/operator") {
 
+            get("/getAll") {
+                val operators = service.getAllOperators()
+                call.respond(operators)
+            }
+
             post("/sign_in") {
                 val token = service.getOperator(call.receive())
                 if (token == null) {

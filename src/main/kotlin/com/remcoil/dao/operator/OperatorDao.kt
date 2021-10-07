@@ -1,6 +1,6 @@
 package com.remcoil.dao.operator
 
-import com.remcoil.data.model.Operator
+import com.remcoil.data.model.operator.Operator
 import com.remcoil.data.database.Operators
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -13,10 +13,10 @@ class OperatorDao(private val database: Database) {
             .first()
     }
 
-    fun getAllOperators() = transaction(database) {
+    fun getAllOperators(): List<Operator> =  transaction(database) {
         Operators
             .selectAll()
-            .map { ::extractOperator }
+            .map(::extractOperator)
     }
 
     fun createOperator(operator: Operator): Operator = transaction(database) {

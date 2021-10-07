@@ -5,8 +5,17 @@ info:
   version: 0.0.1
 servers:
 #  - url: 'https://popper-service.herokuapp.com/'
-  - url: 'http://localhost:80'
+  - url: 'http://localhost:81'
 paths:
+  /operator/getAll:
+    get:
+      responses:
+        '200':
+          description: List of operators
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListOfOperators'
   /operator/sign_in:
     post:
       requestBody:
@@ -57,6 +66,10 @@ components:
           type: string
         password:
           type: string
+    ListOfOperators:
+      type: array
+      items:
+        $ref: '#/components/schemas/Operator'
     Credentials:
       properties:
         phone:

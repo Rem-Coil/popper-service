@@ -2,11 +2,10 @@ package com.remcoil.service.operator
 
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
-import com.remcoil.config.AppConfig
 import com.remcoil.config.JwtConfig
-import com.remcoil.data.model.OperatorCredentials
+import com.remcoil.data.model.operator.OperatorCredentials
 import com.remcoil.dao.operator.OperatorDao
-import com.remcoil.data.model.Operator
+import com.remcoil.data.model.operator.Operator
 import java.util.*
 
 
@@ -19,6 +18,10 @@ class OperatorService(private val operatorDao: OperatorDao, private val config: 
             return generateToken(operator)
         }
         return null
+    }
+
+    fun getAllOperators(): List<Operator> {
+        return operatorDao.getAllOperators()
     }
 
     fun createOperator(operator: Operator): String {
