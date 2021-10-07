@@ -31,7 +31,7 @@ class OperatorService(private val operatorDao: OperatorDao, private val config: 
 
     private fun generateToken(operator: Operator) = JWT.create()
         .withClaim("firstname", operator.firstname)
-        .withClaim("second_name", operator.second_name)
+        .withClaim("second_name", operator.secondName)
         .withClaim("surname", operator.surname)
         .withClaim("phone", operator.phone)
         .withExpiresAt(Date(System.currentTimeMillis() + config.time))

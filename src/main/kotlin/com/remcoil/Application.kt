@@ -4,7 +4,9 @@ import com.remcoil.config.AppConfig
 import com.remcoil.data.migrate
 import com.remcoil.di.coreComponents
 import com.remcoil.di.operatorComponents
+import com.remcoil.di.taskComponents
 import com.remcoil.module.site.siteModule
+import com.remcoil.module.task.taskModule
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import com.remcoil.plugins.*
@@ -23,8 +25,10 @@ fun main() {
         di {
             coreComponents(config)
             operatorComponents()
+            taskComponents()
         }
         operatorModule()
+        taskModule()
         configureSerialization()
         siteModule(config)
     }.start(wait = true)

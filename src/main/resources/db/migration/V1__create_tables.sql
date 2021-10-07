@@ -1,13 +1,8 @@
 create table task
 (
     id serial primary key,
-    taskName varchar (32) not null,
-    taskNumber varchar(32) not null
-);
-
-create table task_status
-(
-    id integer primary key,
+    task_name varchar (32) not null,
+    task_number varchar(32) not null,
     quantity integer not null,
     winding integer,
     output integer,
@@ -15,8 +10,7 @@ create table task_status
     molding integer,
     crimping integer,
     quality integer,
-    testing integer,
-    constraint fk_task_id foreign key (id) references task
+    testing integer
 );
 
 create table operator
@@ -32,21 +26,20 @@ create table operator
 create table bobbin
 (
     id serial primary key,
-    taskId integer,
-    bobbinNumber varchar (32),
-    constraint fk_task_id foreign key (taskId) references task
+    task_id integer,
+    bobbin_number varchar (32),
+    constraint fk_task_id foreign key (task_id) references task
 );
 
 create table action
 (
     id serial primary key,
-    operatorId integer not null,
-    bobbinId integer not null,
-    actionType varchar (50),
-    doneTime timestamp,
-    isDone boolean,
-    constraint fk_operator_id foreign key (operatorId) references operator,
-    constraint fk_bobbin_id foreign key (bobbinId) references bobbin
+    operator_id integer not null,
+    bobbin_id integer not null,
+    action_type varchar (50),
+    done_time timestamp,
+    constraint fk_operator_id foreign key (operator_id) references operator,
+    constraint fk_bobbin_id foreign key (bobbin_id) references bobbin
 );
 
 
