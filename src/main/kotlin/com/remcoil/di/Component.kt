@@ -14,7 +14,6 @@ fun DI.Builder.coreComponents(config: AppConfig) {
     bind<Database>() with singleton {
         Database.connect(
             config.database.url,
-            driver = config.database.driver,
             user = config.database.user,
             password = config.database.password
         )

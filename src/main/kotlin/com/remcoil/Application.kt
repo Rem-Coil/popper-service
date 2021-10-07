@@ -14,12 +14,6 @@ import org.kodein.di.ktor.di
 
 
 fun main() {
-    // TODO: -1. Телефон не влезеает в int
-    // TODO: 0.  Вынести на GitHub код
-    // TODO: 1.  Вынести конфигурацию в HOCON файл (порт, данные бд)
-    // TODO: 2.  Настроить DI
-    // TODO: 3.  Настроить миграции
-    // TODO: 4.  Раскидать по папкам
 
     val config = ConfigFactory.load().extract<AppConfig>()
 
