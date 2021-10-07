@@ -15,8 +15,8 @@ class TaskDao(private val database: Database) {
 
     fun createTask(task: Task): Task = transaction(database) {
         val id = Tasks.insertAndGetId {
-            it[task_name] = task.task_name
-            it[task_number] = task.task_number
+            it[taskName] = task.taskName
+            it[taskNumber] = task.taskNumber
             it[quantity] = task.quantity
             it[winding] = task.winding
             it[output] = task.output
@@ -30,13 +30,13 @@ class TaskDao(private val database: Database) {
     }
 
     fun deleteTask(task_name: String) = transaction(database){
-        Tasks.deleteWhere { Tasks.task_name eq task_name }
+        Tasks.deleteWhere { Tasks.taskName eq task_name }
     }
 
     fun extractTask(row: ResultRow): Task = Task(
         row[Tasks.id].value,
-        row[Tasks.task_name],
-        row[Tasks.task_number],
+        row[Tasks.taskName],
+        row[Tasks.taskNumber],
         row[Tasks.quantity],
         row[Tasks.winding],
         row[Tasks.output],

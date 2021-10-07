@@ -1,13 +1,13 @@
 package com.remcoil.data.model.task
 
-import com.remcoil.data.database.Tasks
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
 data class Task(
     val id: Int,
-    val task_name: String,
-    val task_number: String,
+    val taskName: String,
+    val taskNumber: String,
     val quantity: Int,
     val winding: Int,
     val output: Int,
@@ -19,8 +19,8 @@ data class Task(
 ) {
     constructor(identity: TaskIdentity) : this(
         0,
-        identity.task_name,
-        identity.task_number,
+        identity.taskName,
+        identity.taskNumber,
         identity.quantity,
         0,
         0,

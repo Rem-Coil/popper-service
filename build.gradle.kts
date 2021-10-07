@@ -33,9 +33,12 @@ dependencies {
     testImplementation("io.ktor:ktor-server-tests:$ktor_version")
     testImplementation("org.jetbrains.kotlin:kotlin-test:$kotlin_version")
 
+    implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.2.0")
+
     implementation("org.jetbrains.exposed:exposed-core:$exposed_version")
     implementation("org.jetbrains.exposed:exposed-dao:$exposed_version")
     implementation("org.jetbrains.exposed:exposed-jdbc:$exposed_version")
+    implementation("org.jetbrains.exposed:exposed-java-time:$exposed_version")
 
     implementation("org.flywaydb:flyway-core:8.0.0-beta3")
     implementation("org.postgresql:postgresql:42.2.2")

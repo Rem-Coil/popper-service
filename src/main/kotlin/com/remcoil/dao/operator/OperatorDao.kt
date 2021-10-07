@@ -22,7 +22,7 @@ class OperatorDao(private val database: Database) {
     fun createOperator(operator: Operator): Operator = transaction(database) {
         val id = Operators.insertAndGetId {
             it[firstname] = operator.firstname
-            it[second_name] = operator.second_name
+            it[secondName] = operator.secondName
             it[surname] = operator.surname
             it[phone] = operator.phone
             it[password] = operator.password
@@ -37,7 +37,7 @@ class OperatorDao(private val database: Database) {
     private fun extractOperator(row: ResultRow): Operator = Operator(
         row[Operators.id].value,
         row[Operators.firstname],
-        row[Operators.second_name],
+        row[Operators.secondName],
         row[Operators.surname],
         row[Operators.phone],
         row[Operators.password]
