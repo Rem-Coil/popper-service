@@ -1,4 +1,4 @@
-package com.remcoil
+package com.remcoil.module.operator
 
 import com.remcoil.service.operator.OperatorService
 import io.ktor.application.*
@@ -15,7 +15,7 @@ fun Application.operatorModule() {
     routing {
         route("/operator") {
 
-            get("/getAll") {
+            get {
                 val operators = service.getAllOperators()
                 call.respond(operators)
             }

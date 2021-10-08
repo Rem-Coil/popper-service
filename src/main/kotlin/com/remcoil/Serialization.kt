@@ -1,4 +1,4 @@
-package com.remcoil.plugins
+package com.remcoil
 
 import io.ktor.serialization.*
 import io.ktor.features.*

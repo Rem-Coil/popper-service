@@ -2,16 +2,18 @@ package com.remcoil
 
 import com.remcoil.config.AppConfig
 import com.remcoil.data.migrate
-import com.remcoil.di.coreComponents
-import com.remcoil.di.operatorComponents
-import com.remcoil.di.taskComponents
+import com.remcoil.di.*
+import com.remcoil.module.action.actionModule
+import com.remcoil.module.bobbin.bobbinModule
+import com.remcoil.module.operator.operatorModule
 import com.remcoil.module.site.siteModule
 import com.remcoil.module.task.taskModule
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
-import com.remcoil.plugins.*
 import com.typesafe.config.ConfigFactory
 import io.github.config4k.extract
+import io.ktor.application.*
+import io.ktor.features.*
 import org.kodein.di.ktor.di
 
 
@@ -26,11 +28,19 @@ fun main() {
             coreComponents(config)
             operatorComponents()
             taskComponents()
+            actionComponents()
+            bobbinComponents()
         }
         operatorModule()
         taskModule()
+        actionModule()
+        bobbinModule()
         configureSerialization()
         siteModule(config)
+        install(CORS) {
+            anyHost()
+        }
+
     }.start(wait = true)
 }
 

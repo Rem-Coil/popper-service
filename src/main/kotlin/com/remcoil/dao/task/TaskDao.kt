@@ -1,5 +1,6 @@
 package com.remcoil.dao.task
 
+import com.remcoil.data.database.Bobbins
 import com.remcoil.data.database.Tasks
 import com.remcoil.data.model.task.Task
 import org.jetbrains.exposed.sql.*
@@ -26,11 +27,22 @@ class TaskDao(private val database: Database) {
             it[quality] = task.quality
             it[testing] = task.testing
         }
+        createBobbins(task.taskNumber, id.value, task.quantity)
         task.copy(id = id.value)
     }
 
-    fun deleteTask(task_name: String) = transaction(database){
-        Tasks.deleteWhere { Tasks.taskName eq task_name }
+    private fun createBobbins(number: String, id: Int, quantity: Int) {
+        for (i in 1..quantity) {
+            Bobbins.insert {
+                it[taskId] = id
+                it[bobbinNumber] = "$number-$i"
+            }
+        }
+    }
+
+    fun deleteTask(id: Int) = transaction(database){
+        Bobbins.deleteWhere { Bobbins.taskId eq id }
+        Tasks.deleteWhere { Tasks.id eq id }
     }
 
     fun extractTask(row: ResultRow): Task = Task(
