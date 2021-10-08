@@ -20,13 +20,13 @@ fun Application.taskModule() {
                 call.respond(tasks)
             }
 
-            post("/create") {
+            post {
                 val task = service.createTask(call.receive())
                 call.respond(task)
             }
 
-            get("/delete/{task_name}") {
-                service.deleteTask(call.parameters["task_name"]!!)
+            delete("/{id}") {
+                service.deleteTask(call.parameters["id"]!!.toInt())
                 call.respond(HttpStatusCode.OK)
             }
         }

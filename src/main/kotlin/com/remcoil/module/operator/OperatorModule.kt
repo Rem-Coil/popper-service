@@ -15,7 +15,7 @@ fun Application.operatorModule() {
     routing {
         route("/operator") {
 
-            get("/getAll") {
+            get {
                 val operators = service.getAllOperators()
                 call.respond(operators)
             }

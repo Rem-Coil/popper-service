@@ -8,6 +8,32 @@ servers:
   - url: 'http://localhost:80'
 paths:
 
+  /bobbin:
+   get:
+     responses:
+       '200':
+         description: List of all bobbins
+         content:
+           application/json:
+             schema:
+               $ref: '#/components/schemas/ListOfBobbins'
+
+  /bobbin/{task_id}:
+    get:
+      parameters:
+        - in: path
+          name: task_id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: List of bobbins of one task
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListOfTasks'
+
   /task:
     get:
       responses:
@@ -18,19 +44,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ListOfTasks'
 
-  /task/delete/{task_name}:
-    get:
-      parameters:
-        - in: path
-          name: task_name
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Task deleted successfully
-
-  /task/create:
     post:
       requestBody:
         required: true
@@ -46,7 +59,56 @@ paths:
               schema:
                 $ref: '#/components/schemas/Task'
 
-  /operator/getAll:
+  /task/{id}:
+    delete:
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Task deleted successfully
+
+  /action:
+    get:
+      responses:
+        '200':
+          description: List of actions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListOfActions'
+
+    post:
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ActionIdentity'
+      responses:
+        '200':
+          description: Action created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Action'
+
+  /action/{id}:
+    delete:
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Action deleted successfully
+
+  /operator:
     get:
       responses:
         '200':
@@ -90,6 +152,28 @@ paths:
 
 components:
   schemas:
+
+    ActionIdentity:
+      properties:
+        operator_id:
+          type: integer
+        bobbin_id:
+          type: integer
+        action_type:
+          type: string
+
+    Action:
+      properties:
+        id:
+          type: integer
+        operator_id:
+          type: integer
+        bobbin_id:
+          type: integer
+        action_type:
+          type: string
+        done_time:
+          type: string
 
     Token:
       properties:
@@ -135,6 +219,25 @@ components:
           type: string
         password:
           type: string
+
+    Bobbin:
+      properties:
+        id:
+          type: integer
+        task_id:
+          type: integer
+        bobbin_number:
+          type: integer
+
+    ListOfActions:
+      type: array
+      items:
+        $ref: '#/components/schemas/Action'
+
+    ListOfBobbins:
+      type: array
+      items:
+        $ref: '#/components/schemas/Bobbin'
 
     ListOfOperators:
       type: array
