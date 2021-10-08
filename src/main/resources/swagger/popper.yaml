@@ -10,6 +10,8 @@ paths:
 
   /bobbin:
    get:
+     tags:
+       - bobbin
      responses:
        '200':
          description: List of all bobbins
@@ -20,6 +22,8 @@ paths:
 
   /bobbin/{task_id}:
     get:
+      tags:
+        - bobbin
       parameters:
         - in: path
           name: task_id
@@ -36,6 +40,8 @@ paths:
 
   /task:
     get:
+      tags:
+        - task
       responses:
         '200':
           description: List of tasks
@@ -45,6 +51,8 @@ paths:
                 $ref: '#/components/schemas/ListOfTasks'
 
     post:
+      tags:
+        - task
       requestBody:
         required: true
         content:
@@ -61,6 +69,8 @@ paths:
 
   /task/{id}:
     delete:
+      tags:
+        - task
       parameters:
         - in: path
           name: id
@@ -73,6 +83,8 @@ paths:
 
   /action:
     get:
+      tags:
+        - action
       responses:
         '200':
           description: List of actions
@@ -82,6 +94,8 @@ paths:
                 $ref: '#/components/schemas/ListOfActions'
 
     post:
+      tags:
+        - action
       requestBody:
         required: true
         content:
@@ -98,6 +112,8 @@ paths:
 
   /action/{id}:
     delete:
+      tags:
+        - action
       parameters:
         - in: path
           name: id
@@ -110,6 +126,8 @@ paths:
 
   /operator:
     get:
+      tags:
+        - operator
       responses:
         '200':
           description: List of operators
@@ -120,6 +138,8 @@ paths:
 
   /operator/sign_in:
     post:
+      tags:
+        - operator
       requestBody:
         required: true
         content:
@@ -136,6 +156,8 @@ paths:
 
   /operator/sign_up:
     post:
+      tags:
+        - operator
       requestBody:
         required: true
         content:

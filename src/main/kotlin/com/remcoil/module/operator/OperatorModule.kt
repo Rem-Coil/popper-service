@@ -1,4 +1,4 @@
-package com.remcoil
+package com.remcoil.module.operator
 
 import com.remcoil.service.operator.OperatorService
 import io.ktor.application.*
