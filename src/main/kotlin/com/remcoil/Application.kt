@@ -14,6 +14,7 @@ import com.typesafe.config.ConfigFactory
 import io.github.config4k.extract
 import io.ktor.application.*
 import io.ktor.features.*
+import io.ktor.http.*
 import org.kodein.di.ktor.di
 
 
@@ -38,6 +39,10 @@ fun main() {
         configureSerialization()
         siteModule(config)
         install(CORS) {
+            exposeHeader(HttpHeaders.AccessControlAllowOrigin)
+            anyHost()
+            allowNonSimpleContentTypes = true
+            allowCredentials = true
         }
 
     }.start(wait = true)
