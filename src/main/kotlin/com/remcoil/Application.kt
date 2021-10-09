@@ -38,7 +38,6 @@ fun main() {
         configureSerialization()
         siteModule(config)
         install(CORS) {
-            anyHost()
         }
 
     }.start(wait = true)
