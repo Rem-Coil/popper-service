@@ -27,7 +27,10 @@ fun Application.actionModule() {
 
             post {
                 val action = service.createAction(call.receive())
-                call.respond(action)
+                if (action == null) {
+                    call.respond(HttpStatusCode.Forbidden)
+                }
+                call.respond(action!!)
             }
         }
     }

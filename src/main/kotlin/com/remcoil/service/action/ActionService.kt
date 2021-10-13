@@ -10,8 +10,11 @@ class ActionService(private val dao: ActionDao) {
         return dao.getAll()
     }
 
-    fun createAction(actionIdentity: ActionIdentity): Action {
+    fun createAction(actionIdentity: ActionIdentity): Action? {
         val action = Action(actionIdentity)
+        if (dao.checkAction(action) != null) {
+            return null
+        }
         return dao.createAction(action)
     }
 

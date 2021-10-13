@@ -14,7 +14,7 @@ class OperatorService(private val operatorDao: OperatorDao, private val config: 
     fun getOperator(credentials: OperatorCredentials): String? {
         val operator = operatorDao.getOperator(credentials.phone)
 
-        if (credentials.password == operator.password) {
+        if (operator != null && credentials.password == operator.password) {
             return generateToken(operator)
         }
         return null
@@ -30,6 +30,7 @@ class OperatorService(private val operatorDao: OperatorDao, private val config: 
     }
 
     private fun generateToken(operator: Operator) = JWT.create()
+        .withClaim("id", operator.id)
         .withClaim("firstname", operator.firstname)
         .withClaim("second_name", operator.secondName)
         .withClaim("surname", operator.surname)

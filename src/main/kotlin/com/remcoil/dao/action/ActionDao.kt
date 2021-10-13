@@ -4,6 +4,7 @@ import com.remcoil.data.database.Actions
 import com.remcoil.data.database.Bobbins
 import com.remcoil.data.database.Tasks
 import com.remcoil.data.model.action.Action
+import com.remcoil.data.model.action.ActionType
 import kotlinx.datetime.toJavaLocalDateTime
 import kotlinx.datetime.toKotlinLocalDateTime
 import org.jetbrains.exposed.sql.*
@@ -15,6 +16,15 @@ class ActionDao(private val database: Database) {
         Actions
             .selectAll()
             .map(::extractAction)
+    }
+
+    fun checkAction(action: Action): Action? = transaction(database) {
+        Actions
+            .select {(Actions.operatorId eq action.operatorId) and
+                    (Actions.bobbinId eq action.bobbinId) and
+                    (Actions.actionType eq action.actionType)}
+            .map(::extractAction)
+            .firstOrNull()
     }
 
     fun createAction(action: Action): Action = transaction(database) {
@@ -46,13 +56,13 @@ class ActionDao(private val database: Database) {
         Tasks.update({ Tasks.id eq id }) {
             with(SqlExpressionBuilder) {
                 when (action.actionType) {
-                    "winding" -> it.update(winding, winding + add)
-                    "output" -> it.update(output, output + add)
-                    "isolation" -> it.update(isolation, isolation + add)
-                    "molding" -> it.update(molding, molding + add)
-                    "crimping" -> it.update(crimping, crimping + add)
-                    "quality" -> it.update(quality, quality + add)
-                    "testing" -> it.update(testing, testing + add)
+                    ActionType.WINDING.type -> it.update(winding, winding + add)
+                    ActionType.OUTPUT.type -> it.update(output, output + add)
+                    ActionType.ISOLATION.type -> it.update(isolation, isolation + add)
+                    ActionType.MOLDING.type -> it.update(molding, molding + add)
+                    ActionType.CRIMPING.type -> it.update(crimping, crimping + add)
+                    ActionType.QUALITY.type -> it.update(quality, quality + add)
+                    ActionType.TESTING.type -> it.update(testing, testing + add)
                 }
             }
         }

@@ -6,11 +6,11 @@ import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 
 class OperatorDao(private val database: Database) {
-    fun getOperator(phone: String): Operator = transaction(database) {
+    fun getOperator(phone: String): Operator? = transaction(database) {
         Operators
             .select { Operators.phone eq phone}
             .map (::extractOperator)
-            .first()
+            .firstOrNull()
     }
 
     fun getAllOperators(): List<Operator> =  transaction(database) {
