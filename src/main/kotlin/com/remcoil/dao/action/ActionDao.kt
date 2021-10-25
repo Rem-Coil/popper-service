@@ -2,9 +2,11 @@ package com.remcoil.dao.action
 
 import com.remcoil.data.database.Actions
 import com.remcoil.data.database.Bobbins
+import com.remcoil.data.database.Operators
 import com.remcoil.data.database.Tasks
 import com.remcoil.data.model.action.Action
 import com.remcoil.data.model.action.ActionType
+import com.remcoil.data.model.action.FullAction
 import kotlinx.datetime.toJavaLocalDateTime
 import kotlinx.datetime.toKotlinLocalDateTime
 import org.jetbrains.exposed.sql.*
@@ -18,11 +20,25 @@ class ActionDao(private val database: Database) {
             .map(::extractAction)
     }
 
+    fun getById(id: Int): List<FullAction> = transaction(database) {
+        (Actions innerJoin Operators innerJoin Bobbins innerJoin Tasks)
+            .slice(
+                Tasks.id, Tasks.taskName, Tasks.taskNumber,
+                Bobbins.id, Bobbins.bobbinNumber,
+                Operators.firstname, Operators.secondName, Operators.surname,
+                Actions.actionType, Actions.doneTime
+            )
+            .select { Tasks.id eq id }
+            .map(::extractFullAction)
+    }
+
     fun checkAction(action: Action): Action? = transaction(database) {
         Actions
-            .select {(Actions.operatorId eq action.operatorId) and
-                    (Actions.bobbinId eq action.bobbinId) and
-                    (Actions.actionType eq action.actionType)}
+            .select {
+                (Actions.operatorId eq action.operatorId) and
+                        (Actions.bobbinId eq action.bobbinId) and
+                        (Actions.actionType eq action.actionType)
+            }
             .map(::extractAction)
             .firstOrNull()
     }
@@ -40,7 +56,7 @@ class ActionDao(private val database: Database) {
 
     fun deleteAction(id: Int) = transaction(database) {
         val action = Actions
-            .select{Actions.id eq id}
+            .select { Actions.id eq id }
             .map(::extractAction)
             .first()
         updateTask(action, -1)
@@ -67,6 +83,16 @@ class ActionDao(private val database: Database) {
             }
         }
     }
+
+    private fun extractFullAction(row: ResultRow): FullAction = FullAction(
+        row[Bobbins.id].value,
+        row[Bobbins.bobbinNumber],
+        row[Operators.firstname],
+        row[Operators.secondName],
+        row[Operators.surname],
+        row[Actions.actionType],
+        row[Actions.doneTime].toKotlinLocalDateTime()
+    )
 
     private fun extractTaskId(row: ResultRow): Int = row[Bobbins.taskId].value
     private fun extractAction(row: ResultRow): Action = Action(

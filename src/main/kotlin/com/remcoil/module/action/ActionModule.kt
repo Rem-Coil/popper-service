@@ -20,6 +20,11 @@ fun Application.actionModule() {
                 call.respond(actions)
             }
 
+            get("/{taskId}") {
+                val actions = service.getById(call.parameters["taskId"]!!.toInt())
+                call.respond(actions)
+            }
+
             delete("/{id}") {
                 service.deleteAction(call.parameters["id"]!!.toInt())
                 call.respond(HttpStatusCode.OK)
