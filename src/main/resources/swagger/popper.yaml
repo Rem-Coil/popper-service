@@ -112,6 +112,24 @@ paths:
               schema:
                 $ref: '#/components/schemas/Action'
 
+  /action/{task_id}:
+    get:
+      tags:
+        - action
+      parameters:
+        - in: path
+          name: task_id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Full list of one task actions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListOfFullActions'
+
   /action/{id}:
     delete:
       tags:
@@ -188,6 +206,23 @@ components:
         action_type:
           type: string
 
+    FullAction:
+      properties:
+        bobbin_id:
+          type: integer
+        bobbin_number:
+          type: integer
+        firstname:
+          type: string
+        second_name:
+          type: string
+        surname:
+          type: string
+        action_type:
+          type: string
+        done_time:
+          type: string
+
     Action:
       properties:
         id:
@@ -259,6 +294,11 @@ components:
       type: array
       items:
         $ref: '#/components/schemas/Action'
+
+    ListOfFullActions:
+      type: array
+      items:
+        $ref: '#/components/schemas/FullAction'
 
     ListOfBobbins:
       type: array
