@@ -2,7 +2,7 @@ package com.remcoil.service.action
 
 import com.remcoil.dao.action.ActionDao
 import com.remcoil.data.model.action.Action
-import com.remcoil.data.model.action.ActionIdentity
+//import com.remcoil.data.model.action.ActionIdentity
 import com.remcoil.data.model.action.FullAction
 
 class ActionService(private val dao: ActionDao) {
@@ -15,8 +15,7 @@ class ActionService(private val dao: ActionDao) {
         return dao.getByTaskId(taskId)
     }
 
-    fun createAction(actionIdentity: ActionIdentity): Action? {
-        val action = Action(actionIdentity)
+    fun createAction(action: Action): Action? {
         if (dao.checkAction(action) != null) {
             return null
         }
