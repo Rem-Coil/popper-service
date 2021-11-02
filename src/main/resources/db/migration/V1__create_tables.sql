@@ -16,7 +16,7 @@ create table task
 create table operator
 (
     id serial primary key,
-    firstname varchar(32) not null,
+    first_name varchar(32) not null,
     second_name varchar (32),
     surname varchar (32) not null,
     phone varchar(16) not null,

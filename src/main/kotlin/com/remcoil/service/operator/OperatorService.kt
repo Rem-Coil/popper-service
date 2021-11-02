@@ -31,7 +31,7 @@ class OperatorService(private val operatorDao: OperatorDao, private val config: 
 
     private fun generateToken(operator: Operator) = JWT.create()
         .withClaim("id", operator.id)
-        .withClaim("firstname", operator.firstname)
+        .withClaim("first_name", operator.firstName)
         .withClaim("second_name", operator.secondName)
         .withClaim("surname", operator.surname)
         .withClaim("phone", operator.phone)

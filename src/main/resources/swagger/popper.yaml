@@ -231,7 +231,7 @@ components:
           type: integer
         bobbin_number:
           type: integer
-        firstname:
+        first_name:
           type: string
         second_name:
           type: string
@@ -289,7 +289,7 @@ components:
       properties:
         id:
           type: integer
-        firstname:
+        first_name:
           type: string
         second_name:
           type: string
