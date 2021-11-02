@@ -20,13 +20,31 @@ paths:
              schema:
                $ref: '#/components/schemas/ListOfBobbins'
 
-  /bobbin/{task_id}:
+  /bobbin/{id}:
     get:
       tags:
         - bobbin
       parameters:
         - in: path
-          name: task_id
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Bobbin information
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Bobbin'
+
+  /bobbin/task/{id}:
+    get:
+      tags:
+        - bobbin
+      parameters:
+        - in: path
+          name: id
           required: true
           schema:
             type: integer
@@ -36,7 +54,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ListOfTasks'
+                $ref: '#/components/schemas/ListOfBobbins'
 
   /task:
     get:
