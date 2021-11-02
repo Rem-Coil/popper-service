@@ -28,7 +28,7 @@ create table bobbin
     id serial primary key,
     task_id integer,
     bobbin_number varchar (32),
-    constraint fk_task_id foreign key (task_id) references task
+    constraint fk_task_id foreign key (task_id) references task on delete CASCADE
 );
 
 create table action
@@ -38,8 +38,8 @@ create table action
     bobbin_id integer not null,
     action_type varchar (50),
     done_time timestamp,
-    constraint fk_operator_id foreign key (operator_id) references operator,
-    constraint fk_bobbin_id foreign key (bobbin_id) references bobbin
+    constraint fk_operator_id foreign key (operator_id) references operator on delete SET NULL,
+    constraint fk_bobbin_id foreign key (bobbin_id) references bobbin on delete CASCADE
 );
 
 

@@ -1,6 +1,7 @@
 package com.remcoil.data.database
 
 import org.jetbrains.exposed.dao.id.IntIdTable
+import org.jetbrains.exposed.sql.ReferenceOption
 import org.jetbrains.exposed.sql.`java-time`.datetime
 
 object Actions: IntIdTable("action") {

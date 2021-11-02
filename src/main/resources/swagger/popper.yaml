@@ -148,6 +148,18 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Action'
+    put:
+      tags:
+        - action
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Action'
+      responses:
+        '200':
+          description: Action update
 
   /action/{task_id}:
     get:

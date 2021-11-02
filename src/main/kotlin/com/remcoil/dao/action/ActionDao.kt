@@ -43,6 +43,20 @@ class ActionDao(private val database: Database) {
             .firstOrNull()
     }
 
+    fun updateAction(action: Action) = transaction(database) {
+        val oldAction = Actions.select {Actions.id eq action.id}
+            .map(::extractAction)
+            .first()
+        updateTask(oldAction, -1)
+        Actions.update ({Actions.id eq action.id}) {
+            it[operatorId] = action.operatorId
+            it[bobbinId] = action.bobbinId
+            it[actionType] = action.actionType
+            it[doneTime] = action.doneTime.toJavaLocalDateTime()
+        }
+        updateTask(action, 1)
+    }
+
     fun createAction(action: Action): Action = transaction(database) {
         val id = Actions.insertAndGetId {
             it[operatorId] = action.operatorId

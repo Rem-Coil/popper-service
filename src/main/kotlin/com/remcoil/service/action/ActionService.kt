@@ -15,6 +15,10 @@ class ActionService(private val dao: ActionDao) {
         return dao.getByTaskId(taskId)
     }
 
+    fun updateAction(action: Action) {
+        return dao.updateAction(action)
+    }
+
     fun createAction(action: Action): Action? {
         if (dao.checkAction(action) != null) {
             return null

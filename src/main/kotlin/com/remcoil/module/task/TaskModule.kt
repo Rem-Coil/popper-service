@@ -22,11 +22,7 @@ fun Application.taskModule() {
 
             get("/{id}") {
                 val task = service.getById(call.parameters["id"]!!.toInt())
-                if (task == null) {
-                    call.respond(HttpStatusCode.NotFound)
-                } else {
-                    call.respond(task)
-                }
+                call.respond(task ?: HttpStatusCode.NotFound)
             }
 
             post {
