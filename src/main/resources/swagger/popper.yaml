@@ -68,6 +68,25 @@ paths:
                 $ref: '#/components/schemas/Task'
 
   /task/{id}:
+    get:
+      tags:
+        - task
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Task infromation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+        '404':
+          description: Task not found
+
     delete:
       tags:
         - task

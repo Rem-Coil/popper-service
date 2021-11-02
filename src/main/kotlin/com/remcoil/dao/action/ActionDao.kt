@@ -20,7 +20,7 @@ class ActionDao(private val database: Database) {
             .map(::extractAction)
     }
 
-    fun getById(id: Int): List<FullAction> = transaction(database) {
+    fun getByTaskId(id: Int): List<FullAction> = transaction(database) {
         (Actions innerJoin Operators innerJoin Bobbins innerJoin Tasks)
             .slice(
                 Tasks.id, Tasks.taskName, Tasks.taskNumber,

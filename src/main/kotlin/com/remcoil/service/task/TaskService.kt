@@ -10,6 +10,10 @@ class TaskService(private val taskDao: TaskDao) {
         return taskDao.getAllTasks()
     }
 
+    fun getById(taskId: Int): Task? {
+        return taskDao.getById(taskId)
+    }
+
     fun deleteTask(taskId: Int) {
         taskDao.deleteTask(taskId)
     }

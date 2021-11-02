@@ -14,6 +14,12 @@ class TaskDao(private val database: Database) {
             .map(::extractTask)
     }
 
+    fun getById(id: Int): Task? = transaction(database) {
+        Tasks.select { Tasks.id eq id }
+            .map(::extractTask)
+            .firstOrNull()
+    }
+
     fun createTask(task: Task): Task = transaction(database) {
         val id = Tasks.insertAndGetId {
             it[taskName] = task.taskName

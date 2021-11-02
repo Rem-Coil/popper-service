@@ -11,8 +11,8 @@ class ActionService(private val dao: ActionDao) {
         return dao.getAll()
     }
 
-    fun getById(taskId: Int): List<FullAction> {
-        return dao.getById(taskId)
+    fun getByTaskId(taskId: Int): List<FullAction> {
+        return dao.getByTaskId(taskId)
     }
 
     fun createAction(actionIdentity: ActionIdentity): Action? {

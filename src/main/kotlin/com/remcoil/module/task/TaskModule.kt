@@ -20,6 +20,15 @@ fun Application.taskModule() {
                 call.respond(tasks)
             }
 
+            get("/{id}") {
+                val task = service.getById(call.parameters["id"]!!.toInt())
+                if (task == null) {
+                    call.respond(HttpStatusCode.NotFound)
+                } else {
+                    call.respond(task)
+                }
+            }
+
             post {
                 val task = service.createTask(call.receive())
                 call.respond(task)
