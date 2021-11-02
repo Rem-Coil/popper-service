@@ -120,7 +120,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ActionIdentity'
+              $ref: '#/components/schemas/Action'
       responses:
         '403':
           description: Action already exists
@@ -215,15 +215,6 @@ paths:
 
 components:
   schemas:
-
-    ActionIdentity:
-      properties:
-        operator_id:
-          type: integer
-        bobbin_id:
-          type: integer
-        action_type:
-          type: string
 
     FullAction:
       properties:
