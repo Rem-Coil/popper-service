@@ -25,7 +25,7 @@ class ActionDao(private val database: Database) {
             .slice(
                 Tasks.id, Tasks.taskName, Tasks.taskNumber,
                 Bobbins.id, Bobbins.bobbinNumber,
-                Operators.firstname, Operators.secondName, Operators.surname,
+                Operators.firstName, Operators.secondName, Operators.surname,
                 Actions.actionType, Actions.doneTime
             )
             .select { Tasks.id eq id }
@@ -87,7 +87,7 @@ class ActionDao(private val database: Database) {
     private fun extractFullAction(row: ResultRow): FullAction = FullAction(
         row[Bobbins.id].value,
         row[Bobbins.bobbinNumber],
-        row[Operators.firstname],
+        row[Operators.firstName],
         row[Operators.secondName],
         row[Operators.surname],
         row[Actions.actionType],
