@@ -21,7 +21,7 @@ fun Application.bobbinModule() {
 
             get("/{id}") {
                 val bobbin = service.getById(call.parameters["id"]!!.toInt())
-                call.respond(bobbin ?: HttpStatusCode.NotFound)
+                call.respond(bobbin ?: HttpStatusCode.BadRequest)
             }
 
             get("/task/{id}") {
