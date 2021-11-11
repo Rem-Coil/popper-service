@@ -32,7 +32,7 @@ class ActionDao(private val database: Database) {
             .map(::extractFullAction)
     }
 
-    fun checkAction(action: Action): Boolean = null != transaction(database) {
+    fun isNotExist(action: Action): Boolean = transaction(database) {
         Actions
             .select {
                 (Actions.operatorId eq action.operatorId) and
@@ -40,7 +40,7 @@ class ActionDao(private val database: Database) {
                         (Actions.actionType eq action.actionType)
             }
             .map(::extractAction)
-            .firstOrNull()
+            .isNullOrEmpty()
     }
 
     fun updateAction(action: Action) = transaction(database) {

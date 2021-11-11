@@ -13,7 +13,7 @@ class OperatorDao(private val database: Database) {
             .firstOrNull()
     }
 
-    fun getAllOperators(): List<Operator> =  transaction(database) {
+    fun getAllOperators(): List<Operator> = transaction(database) {
         Operators
             .select { Operators.active eq true }
             .map(::extractOperator)
@@ -26,11 +26,11 @@ class OperatorDao(private val database: Database) {
             .firstOrNull()
     }
 
-    fun checkOperator(operator: Operator): Boolean = null != transaction(database) {
+    fun isNotExist(operator: Operator): Boolean = transaction(database) {
         Operators
             .select { (Operators.active eq true) and (Operators.phone eq operator.phone) }
             .map(::extractOperator)
-            .firstOrNull()
+            .isNullOrEmpty()
     }
 
     fun createOperator(operator: Operator): Operator = transaction(database) {
