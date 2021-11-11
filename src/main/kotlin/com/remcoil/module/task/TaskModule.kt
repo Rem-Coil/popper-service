@@ -20,6 +20,11 @@ fun Application.taskModule() {
                 call.respond(tasks)
             }
 
+            get("/{id}") {
+                val task = service.getById(call.parameters["id"]!!.toInt())
+                call.respond(task ?: HttpStatusCode.BadRequest)
+            }
+
             post {
                 val task = service.createTask(call.receive())
                 call.respond(task)

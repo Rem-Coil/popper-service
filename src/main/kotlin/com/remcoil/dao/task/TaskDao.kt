@@ -1,5 +1,6 @@
 package com.remcoil.dao.task
 
+import com.remcoil.data.database.Actions
 import com.remcoil.data.database.Bobbins
 import com.remcoil.data.database.Tasks
 import com.remcoil.data.model.task.Task
@@ -12,6 +13,12 @@ class TaskDao(private val database: Database) {
         Tasks
             .selectAll()
             .map(::extractTask)
+    }
+
+    fun getById(id: Int): Task? = transaction(database) {
+        Tasks.select { Tasks.id eq id }
+            .map(::extractTask)
+            .firstOrNull()
     }
 
     fun createTask(task: Task): Task = transaction(database) {
@@ -41,7 +48,6 @@ class TaskDao(private val database: Database) {
     }
 
     fun deleteTask(id: Int) = transaction(database){
-        Bobbins.deleteWhere { Bobbins.taskId eq id }
         Tasks.deleteWhere { Tasks.id eq id }
     }
 

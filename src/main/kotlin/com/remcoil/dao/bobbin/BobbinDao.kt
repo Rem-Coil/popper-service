@@ -22,6 +22,13 @@ class BobbinDao(private val database: Database) {
             .map(::extractBobbin)
     }
 
+    fun getById(id: Int): Bobbin? = transaction(database) {
+        Bobbins
+            .select { Bobbins.id eq id }
+            .map(::extractBobbin)
+            .firstOrNull()
+    }
+
     private fun extractBobbin(row: ResultRow): Bobbin = Bobbin(
         row[Bobbins.id].value,
         row[Bobbins.taskId].value,

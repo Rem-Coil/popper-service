@@ -20,12 +20,12 @@ class ActionDao(private val database: Database) {
             .map(::extractAction)
     }
 
-    fun getById(id: Int): List<FullAction> = transaction(database) {
+    fun getByTaskId(id: Int): List<FullAction> = transaction(database) {
         (Actions innerJoin Operators innerJoin Bobbins innerJoin Tasks)
             .slice(
                 Tasks.id, Tasks.taskName, Tasks.taskNumber,
                 Bobbins.id, Bobbins.bobbinNumber,
-                Operators.firstname, Operators.secondName, Operators.surname,
+                Operators.firstName, Operators.secondName, Operators.surname,
                 Actions.actionType, Actions.doneTime
             )
             .select { Tasks.id eq id }
@@ -41,6 +41,20 @@ class ActionDao(private val database: Database) {
             }
             .map(::extractAction)
             .firstOrNull()
+    }
+
+    fun updateAction(action: Action) = transaction(database) {
+        val oldAction = Actions.select {Actions.id eq action.id}
+            .map(::extractAction)
+            .first()
+        updateTask(oldAction, -1)
+        Actions.update ({Actions.id eq action.id}) {
+            it[operatorId] = action.operatorId
+            it[bobbinId] = action.bobbinId
+            it[actionType] = action.actionType
+            it[doneTime] = action.doneTime.toJavaLocalDateTime()
+        }
+        updateTask(action, 1)
     }
 
     fun createAction(action: Action): Action = transaction(database) {
@@ -87,7 +101,7 @@ class ActionDao(private val database: Database) {
     private fun extractFullAction(row: ResultRow): FullAction = FullAction(
         row[Bobbins.id].value,
         row[Bobbins.bobbinNumber],
-        row[Operators.firstname],
+        row[Operators.firstName],
         row[Operators.secondName],
         row[Operators.surname],
         row[Actions.actionType],

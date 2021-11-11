@@ -21,7 +21,7 @@ fun Application.actionModule() {
             }
 
             get("/{taskId}") {
-                val actions = service.getById(call.parameters["taskId"]!!.toInt())
+                val actions = service.getByTaskId(call.parameters["taskId"]!!.toInt())
                 call.respond(actions)
             }
 
@@ -33,6 +33,11 @@ fun Application.actionModule() {
             post {
                 val action = service.createAction(call.receive())
                 call.respond(action?: HttpStatusCode.Forbidden)
+            }
+
+            put {
+                service.updateAction(call.receive())
+                call.respond(HttpStatusCode.OK)
             }
         }
     }

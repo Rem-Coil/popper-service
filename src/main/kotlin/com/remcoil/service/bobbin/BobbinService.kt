@@ -9,6 +9,10 @@ class BobbinService(private val dao: BobbinDao) {
         return dao.getAll()
     }
 
+    fun getById(id: Int): Bobbin? {
+        return dao.getById(id)
+    }
+
     fun getByTask(taskId: Int): List<Bobbin> {
         return dao.getByTaskId(taskId)
     }

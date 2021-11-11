@@ -1,10 +1,8 @@
 package com.remcoil.module.bobbin
 
-import com.remcoil.service.action.ActionService
 import com.remcoil.service.bobbin.BobbinService
 import io.ktor.application.*
 import io.ktor.http.*
-import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
 import org.kodein.di.*
@@ -21,8 +19,13 @@ fun Application.bobbinModule() {
                 call.respond(bobbins)
             }
 
-            get("/{taskId}") {
-                val bobbins = service.getByTask(call.parameters["taskId"]!!.toInt())
+            get("/{id}") {
+                val bobbin = service.getById(call.parameters["id"]!!.toInt())
+                call.respond(bobbin ?: HttpStatusCode.BadRequest)
+            }
+
+            get("/task/{id}") {
+                val bobbins = service.getByTask(call.parameters["id"]!!.toInt())
                 call.respond(bobbins)
             }
         }
