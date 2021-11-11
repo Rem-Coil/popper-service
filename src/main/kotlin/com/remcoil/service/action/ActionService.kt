@@ -19,12 +19,7 @@ class ActionService(private val dao: ActionDao) {
         return dao.updateAction(action)
     }
 
-    fun createAction(action: Action): Action? {
-        if (dao.checkAction(action) != null) {
-            return null
-        }
-        return dao.createAction(action)
-    }
+    fun createAction(action: Action) = if (dao.isNotExist(action)) dao.createAction(action) else null
 
     fun deleteAction(actionId: Int) {
         dao.deleteAction(actionId)

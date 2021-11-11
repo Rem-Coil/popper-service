@@ -12,5 +12,6 @@ data class Operator(
     val secondName: String,
     val surname: String,
     val phone: String,
-    val password: String
+    val password: String,
+    val active: Boolean
 )

@@ -8,15 +8,29 @@ import org.jetbrains.exposed.sql.transactions.transaction
 class OperatorDao(private val database: Database) {
     fun getOperator(phone: String): Operator? = transaction(database) {
         Operators
-            .select { Operators.phone eq phone}
+            .select { (Operators.phone eq phone) and (Operators.active eq true)}
             .map (::extractOperator)
             .firstOrNull()
     }
 
-    fun getAllOperators(): List<Operator> =  transaction(database) {
+    fun getAllOperators(): List<Operator> = transaction(database) {
         Operators
-            .selectAll()
+            .select { Operators.active eq true }
             .map(::extractOperator)
+    }
+
+    fun getById(id: Int): Operator? = transaction(database) {
+        Operators
+            .select { Operators.id eq id }
+            .map(::extractOperator)
+            .firstOrNull()
+    }
+
+    fun isNotExist(operator: Operator): Boolean = transaction(database) {
+        Operators
+            .select { (Operators.active eq true) and (Operators.phone eq operator.phone) }
+            .map(::extractOperator)
+            .isNullOrEmpty()
     }
 
     fun createOperator(operator: Operator): Operator = transaction(database) {
@@ -26,12 +40,15 @@ class OperatorDao(private val database: Database) {
             it[surname] = operator.surname
             it[phone] = operator.phone
             it[password] = operator.password
+            it[active] = true
         }
         operator.copy(id = id.value)
     }
 
-    fun deleteOperator(phone: String) = transaction(database) {
-        Operators.deleteWhere { Operators.phone eq phone }
+    fun deleteOperator(id: Int) = transaction(database) {
+        Operators.update({ Operators.id eq id }) {
+            it[active] = false
+        }
     }
 
     private fun extractOperator(row: ResultRow): Operator = Operator(
@@ -40,6 +57,7 @@ class OperatorDao(private val database: Database) {
         row[Operators.secondName],
         row[Operators.surname],
         row[Operators.phone],
-        row[Operators.password]
+        row[Operators.password],
+        row[Operators.active]
     )
 }
