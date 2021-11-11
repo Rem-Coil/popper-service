@@ -9,10 +9,10 @@ import com.remcoil.data.model.operator.Operator
 import java.util.*
 
 
-class OperatorService(private val operatorDao: OperatorDao, private val config: JwtConfig) {
+class OperatorService(private val dao: OperatorDao, private val config: JwtConfig) {
 
     fun getOperator(credentials: OperatorCredentials): String? {
-        val operator = operatorDao.getOperator(credentials.phone)
+        val operator = dao.getOperator(credentials.phone)
 
         if (operator != null && credentials.password == operator.password) {
             return generateToken(operator)
@@ -21,12 +21,19 @@ class OperatorService(private val operatorDao: OperatorDao, private val config: 
     }
 
     fun getAllOperators(): List<Operator> {
-        return operatorDao.getAllOperators()
+        return dao.getAllOperators()
     }
 
-    fun createOperator(operator: Operator): String {
-        val operator = operatorDao.createOperator(operator)
+    fun createOperator(operator: Operator): String? {
+        if (dao.checkOperator(operator) != null) {
+            return null
+        }
+        val operator = dao.createOperator(operator)
         return generateToken(operator)
+    }
+
+    fun deleteOperator(id: Int) {
+        dao.deleteOperator(id)
     }
 
     private fun generateToken(operator: Operator) = JWT.create()

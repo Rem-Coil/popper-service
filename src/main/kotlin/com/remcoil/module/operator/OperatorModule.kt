@@ -31,7 +31,16 @@ fun Application.operatorModule() {
 
             post("/sign_up") {
                 val token = service.createOperator(call.receive())
-                call.respond(hashMapOf("token" to token))
+                if (token != null) {
+                    call.respond(hashMapOf("token" to token))
+                } else {
+                    call.respond(HttpStatusCode.BadRequest)
+                }
+            }
+
+            delete("/{id}") {
+                service.deleteOperator(call.parameters["id"]!!.toInt())
+                call.respond(HttpStatusCode.OK)
             }
         }
     }
