@@ -25,11 +25,7 @@ class OperatorService(private val dao: OperatorDao, private val config: JwtConfi
     }
 
     fun createOperator(operator: Operator): String? {
-        if (dao.checkOperator(operator) != null) {
-            return null
-        }
-        val operator = dao.createOperator(operator)
-        return generateToken(operator)
+        return if (dao.checkOperator(operator)) null else generateToken(dao.createOperator(operator))
     }
 
     fun deleteOperator(id: Int) {

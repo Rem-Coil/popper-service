@@ -32,7 +32,7 @@ class ActionDao(private val database: Database) {
             .map(::extractFullAction)
     }
 
-    fun checkAction(action: Action): Action? = transaction(database) {
+    fun checkAction(action: Action): Boolean = null != transaction(database) {
         Actions
             .select {
                 (Actions.operatorId eq action.operatorId) and

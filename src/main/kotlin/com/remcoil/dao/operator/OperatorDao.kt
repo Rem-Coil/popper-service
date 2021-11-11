@@ -26,7 +26,7 @@ class OperatorDao(private val database: Database) {
             .firstOrNull()
     }
 
-    fun checkOperator(operator: Operator): Operator? = transaction(database) {
+    fun checkOperator(operator: Operator): Boolean = null != transaction(database) {
         Operators
             .select { (Operators.active eq true) and (Operators.phone eq operator.phone) }
             .map(::extractOperator)
