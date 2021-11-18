@@ -163,7 +163,25 @@ paths:
         '200':
           description: Action update
 
-  /action/{task_id}:
+  /action/bobbin/{bobbin_id}:
+    get:
+      tags:
+        - action
+      parameters:
+        - in: path
+          name: bobbin_id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Full list of one bobbin actions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListOfFullActions'
+
+  /action/task/{task_id}:
     get:
       tags:
         - action
