@@ -15,6 +15,10 @@ class ActionService(private val dao: ActionDao) {
         return dao.getByTaskId(taskId)
     }
 
+    fun getByBobbinId(bobbinId: Int): List<FullAction> {
+        return dao.getByBobbinId(bobbinId)
+    }
+
     fun updateAction(action: Action) {
         return dao.updateAction(action)
     }
