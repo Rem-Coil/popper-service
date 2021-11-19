@@ -32,6 +32,18 @@ class ActionDao(private val database: Database) {
             .map(::extractFullAction)
     }
 
+    fun getByBobbinId(id: Int): List<FullAction> = transaction(database) {
+        (Actions innerJoin Operators innerJoin Bobbins innerJoin Tasks)
+            .slice(
+                Tasks.id, Tasks.taskName, Tasks.taskNumber,
+                Bobbins.id, Bobbins.bobbinNumber,
+                Operators.firstName, Operators.secondName, Operators.surname,
+                Actions.actionType, Actions.doneTime
+            )
+            .select { Actions.bobbinId eq id }
+            .map(::extractFullAction)
+    }
+
     fun isNotExist(action: Action): Boolean = transaction(database) {
         Actions
             .select {

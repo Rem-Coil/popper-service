@@ -20,8 +20,13 @@ fun Application.actionModule() {
                 call.respond(actions)
             }
 
-            get("/{taskId}") {
+            get("/task/{taskId}") {
                 val actions = service.getByTaskId(call.parameters["taskId"]!!.toInt())
+                call.respond(actions)
+            }
+
+            get("/bobbin/{bobbinId}") {
+                val actions = service.getByBobbinId(call.parameters["bobbinId"]!!.toInt())
                 call.respond(actions)
             }
 
