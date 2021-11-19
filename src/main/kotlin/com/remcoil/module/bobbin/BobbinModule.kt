@@ -13,7 +13,6 @@ fun Application.bobbinModule() {
 
     routing {
         route("/bobbin") {
-
             get {
                 val bobbins = service.getAll()
                 call.respond(bobbins)
