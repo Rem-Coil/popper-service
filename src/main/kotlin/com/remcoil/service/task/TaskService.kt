@@ -18,7 +18,7 @@ class TaskService(private val taskDao: TaskDao) {
         taskDao.deleteTask(taskId)
     }
 
-    fun createTask(taskIdentity: TaskIdentity): Task {
+    suspend fun createTask(taskIdentity: TaskIdentity): Task {
         val task = Task(taskIdentity)
         return taskDao.createTask(task)
     }

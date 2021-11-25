@@ -1,9 +1,9 @@
 package com.remcoil.dao.task
 
-import com.remcoil.data.database.Actions
 import com.remcoil.data.database.Bobbins
 import com.remcoil.data.database.Tasks
 import com.remcoil.data.model.task.Task
+import com.remcoil.utils.safetySuspendTransaction
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 
@@ -21,7 +21,7 @@ class TaskDao(private val database: Database) {
             .firstOrNull()
     }
 
-    fun createTask(task: Task): Task = transaction(database) {
+    suspend fun createTask(task: Task): Task = safetySuspendTransaction(database) {
         val id = Tasks.insertAndGetId {
             it[taskName] = task.taskName
             it[taskNumber] = task.taskNumber
@@ -47,7 +47,7 @@ class TaskDao(private val database: Database) {
         }
     }
 
-    fun deleteTask(id: Int) = transaction(database){
+    fun deleteTask(id: Int) = transaction(database) {
         Tasks.deleteWhere { Tasks.id eq id }
     }
 

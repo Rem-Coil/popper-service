@@ -1,9 +1,10 @@
 package com.remcoil.module.action
 
+import com.remcoil.data.model.action.Action
 import com.remcoil.service.action.ActionService
+import com.remcoil.utils.safetyReceive
 import io.ktor.application.*
 import io.ktor.http.*
-import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
 import org.kodein.di.instance
@@ -36,13 +37,16 @@ fun Application.actionModule() {
             }
 
             post {
-                val action = service.createAction(call.receive())
-                call.respond(action?: HttpStatusCode.Forbidden)
+                call.safetyReceive<Action> { action ->
+                    call.respond(service.createAction(action)?: HttpStatusCode.Forbidden)
+                }
             }
 
             put {
-                service.updateAction(call.receive())
-                call.respond(HttpStatusCode.OK)
+                call.safetyReceive<Action> { action ->
+                    service.updateAction(action)
+                    call.respond(HttpStatusCode.OK)
+                }
             }
         }
     }
