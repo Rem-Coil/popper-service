@@ -21,6 +21,8 @@ job("Build and run tests") {
             		cp -r $mountDir/share build
                     echo show dirs:
                     ls
+                    ls build 
+                    ls build/install
                 """
         }
         build {
