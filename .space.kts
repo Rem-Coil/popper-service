@@ -17,7 +17,11 @@ job("Build and run tests") {
     
     docker {
         beforeBuildScript {
-            content = "cp -r  $mountDir/share build"
+            content = """
+            		cp -r $mountDir/share build
+                    echo show dirs:
+                    ls
+                """
         }
         build {
             context = "docker"
