@@ -11,4 +11,14 @@ job("Build and run tests") {
             api.gradlew("test")
         }
     }
+    docker {
+        build {
+            context = "docker"
+            file = "./docker/Dockerfile"
+        }
+
+        push("rem-coil.registry.jetbrains.space/docker/popper") {
+            tags("version0.0.1")
+        }
+    }
 }
