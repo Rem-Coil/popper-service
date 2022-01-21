@@ -1,6 +1,19 @@
 version: "3.6"
 
 services:
+  popper:
+    image: popper:latest
+    environment:
+      - PORT=80
+      - JDBC_DATABASE_PASSWORD=sas
+      - JDBC_DATABASE_USERNAME=sas
+      - JDBC_DATABASE_URL=jdbc:postgresql://database:5432/popper
+      - SECRET=EOdYp6L!i2TXO4lVhBYL$tX^L&)hqy4%
+    depends_on:
+      - database
+    ports:
+      - "8080:80"
+
   database:
     image: postgres:11
     container_name: popper_database
