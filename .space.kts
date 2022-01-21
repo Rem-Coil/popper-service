@@ -19,8 +19,6 @@ job("Build and run tests") {
         beforeBuildScript {
             content = """
             		cp -r $mountDir/share build
-                    echo show dirs:
-                    ls -R
                 """
         }
         build {
