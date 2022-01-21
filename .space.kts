@@ -10,15 +10,25 @@ job("Build and run tests") {
             // here goes complex logic
             api.gradlew("test")
         }
+        shellScript {
+            content = """
+                    ./gradlew build
+                    cp -r build $mountDir/share
+                """
+        }
     }
+    
     docker {
+        beforeBuildScript {
+            content = "cp -r  $mountDir/share build"
+        }
         build {
             context = "docker"
             file = "./docker/Dockerfile"
         }
 
         push("rem-coil.registry.jetbrains.space/docker/popper") {
-            tags("version0.0.1")
+            tags("0.\$JB_SPACE_EXECUTION_NUMBER", "lts")
         }
     }
 }
