@@ -6,6 +6,6 @@ import kotlin.test.assertEquals
 class ApplicationTest {
     @Test
     fun `test for ci cd`() {
-        assertEquals(3, 2 + 1)
+        assertEquals(3, 2 + 4)
     }
 }
