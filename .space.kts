@@ -20,7 +20,7 @@ job("Build and run tests") {
             content = """
             		cp -r $mountDir/share build
                     echo show dirs:
-                    tree -d
+                    ls -R
                 """
         }
         build {
