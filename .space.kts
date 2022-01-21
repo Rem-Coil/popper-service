@@ -6,13 +6,10 @@
 
 job("Build and run tests") {
     container(displayName = "Gradle build", image = "openjdk:11") {
-        kotlinScript { api ->
-            // here goes complex logic
-            api.gradlew("test")
-        }
         shellScript {
             content = """
-                    ./gradlew build
+            		./gradlew test
+                    ./gradlew installDist
                     cp -r build $mountDir/share
                 """
         }
@@ -28,7 +25,7 @@ job("Build and run tests") {
         }
 
         push("rem-coil.registry.jetbrains.space/docker/popper") {
-            tags("0.\$JB_SPACE_EXECUTION_NUMBER", "lts")
+            tags("0.0.\$JB_SPACE_EXECUTION_NUMBER", "latest")
         }
     }
 }
