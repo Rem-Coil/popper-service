@@ -3,7 +3,7 @@ package com.remcoil.dao.task
 import com.remcoil.data.database.Bobbins
 import com.remcoil.data.database.Tasks
 import com.remcoil.data.model.task.Task
-import com.remcoil.utils.safetySuspendTransaction
+import com.remcoil.utils.safetySuspendTransactionAsync
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 
@@ -21,7 +21,7 @@ class TaskDao(private val database: Database) {
             .firstOrNull()
     }
 
-    suspend fun createTask(task: Task): Task = safetySuspendTransaction(database) {
+    suspend fun createTask(task: Task): Task = safetySuspendTransactionAsync(database) {
         val id = Tasks.insertAndGetId {
             it[taskName] = task.taskName
             it[taskNumber] = task.taskNumber

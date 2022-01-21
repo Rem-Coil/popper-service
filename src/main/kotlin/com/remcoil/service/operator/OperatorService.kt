@@ -6,7 +6,9 @@ import com.remcoil.config.JwtConfig
 import com.remcoil.data.model.operator.OperatorCredentials
 import com.remcoil.dao.operator.OperatorDao
 import com.remcoil.data.model.operator.Operator
+import com.remcoil.utils.logger
 import java.util.*
+import kotlin.math.log
 
 
 class OperatorService(private val dao: OperatorDao, private val config: JwtConfig) {
@@ -15,21 +17,32 @@ class OperatorService(private val dao: OperatorDao, private val config: JwtConfi
         val operator = dao.getOperator(credentials.phone)
 
         if (operator != null && credentials.password == operator.password) {
+            logger.info("Вернули оператора - ${operator.firstName} ${operator.surname}")
             return generateToken(operator)
         }
+        logger.info("Оператор не найден")
         return null
     }
 
     fun getAllOperators(): List<Operator> {
-        return dao.getAllOperators()
+        val operators = dao.getAllOperators()
+        logger.info("Отдали всех операторов")
+        return operators
     }
 
-    fun createOperator(operator: Operator) =
-        if (dao.isNotExist(operator)) generateToken(dao.createOperator(operator)) else null
-
+    fun createOperator(operator: Operator): String? {
+        val op = if (dao.isNotExist(operator)) generateToken(dao.createOperator(operator)) else null
+        if (op == null) {
+            logger.info("Оператор с такими данными уже существует")
+        } else {
+            logger.info("Сохранили данные об операторе")
+        }
+        return op
+    }
 
     fun deleteOperator(id: Int) {
         dao.deleteOperator(id)
+        logger.info("Данные об операторе удалены")
     }
 
     private fun generateToken(operator: Operator) = JWT.create()
