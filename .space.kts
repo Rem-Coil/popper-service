@@ -22,7 +22,7 @@ job("Build and run tests") {
                     echo show dirs:
                     ls
                     ls build 
-                    ls build/install
+                    ls build/build/install
                 """
         }
         build {
