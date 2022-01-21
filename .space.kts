@@ -24,7 +24,7 @@ job("Build and run tests") {
             file = "./docker/Dockerfile"
         }
 
-        push("rem-coil.registry.jetbrains.space/p/popper/popper/myimage") {
+        push("rem-coil.registry.jetbrains.space/p/popper/popper/main-service") {
             tags("0.0.\$JB_SPACE_EXECUTION_NUMBER", "latest")
         }
     }
