@@ -46,6 +46,8 @@ dependencies {
 
     implementation("org.flywaydb:flyway-core:8.0.0-beta3")
     implementation("org.postgresql:postgresql:42.2.2")
+    implementation("com.zaxxer:HikariCP:4.0.3")
+
 
     implementation("io.github.config4k:config4k:$config4kVersion")
 
