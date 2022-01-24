@@ -9,7 +9,7 @@ job("Build and run tests") {
     startOn {
         gitPush {
             branchFilter {
-                +"Rem-Coil-Workshop-System/popper-services/release"
+                +"release"
             }
         }
     }
