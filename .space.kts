@@ -5,6 +5,15 @@
 */
 
 job("Build and run tests") {
+    
+    startOn {
+        gitPush {
+            branchFilter {
+                +"release"
+            }
+        }
+    }
+    
     container(displayName = "Gradle build", image = "openjdk:11") {
         shellScript {
             content = """
