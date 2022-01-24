@@ -17,9 +17,14 @@ services:
   database:
     image: postgres:11
     container_name: popper_database
+    volumes:
+      - popper_db:/var/lib/postgresql/data
     environment:
       - POSTGRES_DB=popper
       - POSTGRES_USER=sas
       - POSTGRES_PASSWORD=sas
     ports:
       - "5432:5432"
+
+volumes:
+  popper_db:
