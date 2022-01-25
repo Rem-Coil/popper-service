@@ -19,9 +19,6 @@ suspend fun <T> safetySuspendTransactionAsync(
             TransactionManager.manager.defaultIsolationLevel,
             statement
         ).await()
-
-//    } catch (e: ExposedSQLException) {
-//        throw DatabaseException(e.message.toString())
     } catch (e: ExposedSQLException) {
         throw DatabaseException(e.message.toString())
     }
