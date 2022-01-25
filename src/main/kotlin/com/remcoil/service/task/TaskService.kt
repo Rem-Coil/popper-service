@@ -19,7 +19,7 @@ class TaskService(private val taskDao: TaskDao) {
         return task
     }
 
-    fun deleteTask(taskId: Int) {
+    suspend fun deleteTask(taskId: Int) {
         taskDao.deleteTask(taskId)
         logger.info("Данные о ТЗ удалены")
     }
