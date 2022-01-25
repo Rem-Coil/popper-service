@@ -18,10 +18,6 @@ suspend inline fun <reified T : Any> ApplicationCall.safetyReceive(onCorrectResu
     } catch (e: DatabaseException) {
         respond(HttpStatusCode.BadRequest, e.message.toString())
     }
-//    catch (e: RuntimeException) {
-//        respond(HttpStatusCode.BadRequest, e.message.toString())
-//
-//    }
 }
 
 val Any.logger: Logger get() = LoggerFactory.getLogger(this::class.java)

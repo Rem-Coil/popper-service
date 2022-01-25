@@ -47,7 +47,7 @@ class TaskDao(private val database: Database) {
         }
     }
 
-    fun deleteTask(id: Int) = transaction(database) {
+    suspend fun deleteTask(id: Int) = safetySuspendTransactionAsync(database) {
         Tasks.deleteWhere { Tasks.id eq id }
     }
 
