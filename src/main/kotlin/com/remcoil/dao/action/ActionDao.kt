@@ -7,6 +7,7 @@ import com.remcoil.data.database.Tasks
 import com.remcoil.data.model.action.Action
 import com.remcoil.data.model.action.ActionType
 import com.remcoil.data.model.action.FullAction
+import com.remcoil.utils.safetySuspendTransactionAsync
 import kotlinx.datetime.toJavaLocalDateTime
 import kotlinx.datetime.toKotlinLocalDateTime
 import org.jetbrains.exposed.sql.*
@@ -55,7 +56,7 @@ class ActionDao(private val database: Database) {
             .isNullOrEmpty()
     }
 
-    fun updateAction(action: Action) = transaction(database) {
+    suspend fun updateAction(action: Action) = safetySuspendTransactionAsync(database) {
         val oldAction = Actions.select {Actions.id eq action.id}
             .map(::extractAction)
             .first()
@@ -69,7 +70,7 @@ class ActionDao(private val database: Database) {
         updateTask(action, 1)
     }
 
-    fun createAction(action: Action): Action = transaction(database) {
+    suspend fun createAction(action: Action): Action = safetySuspendTransactionAsync(database) {
         val id = Actions.insertAndGetId {
             it[operatorId] = action.operatorId
             it[bobbinId] = action.bobbinId
@@ -84,9 +85,11 @@ class ActionDao(private val database: Database) {
         val action = Actions
             .select { Actions.id eq id }
             .map(::extractAction)
-            .first()
-        updateTask(action, -1)
-        Actions.deleteWhere { Actions.id eq id }
+            .firstOrNull()
+        if (action != null) {
+            updateTask(action, -1)
+            Actions.deleteWhere { Actions.id eq id }
+        }
     }
 
     private fun updateTask(action: Action, add: Int) {

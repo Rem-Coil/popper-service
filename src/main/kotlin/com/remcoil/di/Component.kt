@@ -9,6 +9,8 @@ import com.remcoil.service.action.ActionService
 import com.remcoil.service.bobbin.BobbinService
 import com.remcoil.service.operator.OperatorService
 import com.remcoil.service.task.TaskService
+import com.zaxxer.hikari.HikariConfig
+import com.zaxxer.hikari.HikariDataSource
 import org.jetbrains.exposed.sql.Database
 import org.kodein.di.DI
 import org.kodein.di.bind
@@ -18,12 +20,21 @@ import org.kodein.di.singleton
 fun DI.Builder.coreComponents(config: AppConfig) {
     bind<AppConfig>() with singleton { config }
     bind<Database>() with singleton {
-        Database.connect(
-            config.database.url,
-            user = config.database.user,
-            password = config.database.password
-        )
+        Database.connect(hikari(config))
     }
+}
+
+private fun hikari(config: AppConfig): HikariDataSource {
+    val hikariConfig = HikariConfig()
+    hikariConfig.driverClassName = "org.postgresql.Driver"
+    hikariConfig.jdbcUrl = config.database.url
+    hikariConfig.username = config.database.user
+    hikariConfig.password = config.database.password
+    hikariConfig.maximumPoolSize = 3
+    hikariConfig.isAutoCommit = false
+    hikariConfig.transactionIsolation = "TRANSACTION_REPEATABLE_READ"
+    hikariConfig.validate()
+    return HikariDataSource(hikariConfig)
 }
 
 fun DI.Builder.operatorComponents() {

@@ -1,9 +1,10 @@
 package com.remcoil.module.task
 
+import com.remcoil.data.model.task.TaskIdentity
 import com.remcoil.service.task.TaskService
+import com.remcoil.utils.safetyReceive
 import io.ktor.application.*
 import io.ktor.http.*
-import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
 import org.kodein.di.instance
@@ -26,8 +27,9 @@ fun Application.taskModule() {
             }
 
             post {
-                val task = service.createTask(call.receive())
-                call.respond(task)
+                call.safetyReceive<TaskIdentity> { task ->
+                    call.respond(service.createTask(task))
+                }
             }
 
             delete("/{id}") {
