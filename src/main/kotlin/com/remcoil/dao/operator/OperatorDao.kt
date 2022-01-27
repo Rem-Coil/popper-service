@@ -51,6 +51,10 @@ class OperatorDao(private val database: Database) {
         }
     }
 
+    fun trueDeleteOperator(phone: String) = transaction(database) {
+        Operators.deleteWhere { Operators.phone eq phone }
+    }
+
     private fun extractOperator(row: ResultRow): Operator = Operator(
         row[Operators.id].value,
         row[Operators.firstName],

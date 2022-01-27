@@ -26,7 +26,7 @@ tasks.create("stage") {
 }
 
 tasks.test {
-    useJUnit()
+    useJUnitPlatform()
 }
 
 dependencies {
@@ -34,8 +34,9 @@ dependencies {
     implementation("io.ktor:ktor-serialization:$ktor_version")
     implementation("io.ktor:ktor-server-netty:$ktor_version")
     implementation("ch.qos.logback:logback-classic:$logback_version")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.7.0")
     testImplementation("io.ktor:ktor-server-tests:$ktor_version")
-    testImplementation("org.jetbrains.kotlin:kotlin-test:$kotlin_version")
+    testImplementation ("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.0")
 
     implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.2.0")
 
@@ -44,10 +45,11 @@ dependencies {
     implementation("org.jetbrains.exposed:exposed-jdbc:$exposed_version")
     implementation("org.jetbrains.exposed:exposed-java-time:$exposed_version")
 
-    implementation("org.flywaydb:flyway-core:8.0.0-beta3")
+    implementation("org.flywaydb:flyway-core:8.4.2")
     implementation("org.postgresql:postgresql:42.2.2")
     implementation("com.zaxxer:HikariCP:4.0.3")
 
+    testImplementation("com.h2database:h2:1.4.199")
 
     implementation("io.github.config4k:config4k:$config4kVersion")
 
