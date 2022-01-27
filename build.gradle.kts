@@ -34,9 +34,12 @@ dependencies {
     implementation("io.ktor:ktor-serialization:$ktor_version")
     implementation("io.ktor:ktor-server-netty:$ktor_version")
     implementation("ch.qos.logback:logback-classic:$logback_version")
+
     testImplementation("org.junit.jupiter:junit-jupiter:5.7.0")
     testImplementation("io.ktor:ktor-server-tests:$ktor_version")
     testImplementation ("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.0")
+    testImplementation("com.h2database:h2:1.4.199")
+    testImplementation("io.mockk:mockk:1.12.2")
 
     implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.2.0")
 
@@ -49,7 +52,6 @@ dependencies {
     implementation("org.postgresql:postgresql:42.2.2")
     implementation("com.zaxxer:HikariCP:4.0.3")
 
-    testImplementation("com.h2database:h2:1.4.199")
 
     implementation("io.github.config4k:config4k:$config4kVersion")
 
