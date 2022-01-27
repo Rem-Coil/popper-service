@@ -14,7 +14,7 @@ job("Build and run tests") {
         }
     }
     
-    container(displayName = "Gradle build", image = "openjdk:11") {
+    container(displayName = "Gradle build", image = "gradle:6.9.2-jdk17-alpine") {
         shellScript {
             content = """
             		./gradlew test
