@@ -20,8 +20,8 @@ job("Build and run tests") {
         shellScript {
         		content = """
                 	cd /mnt/space/work/web
-                    ls
             		flutter build web
+                    ls
                 """
         	}
         }
