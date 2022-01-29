@@ -33,6 +33,9 @@ job("Build and run tests") {
             content = """
             		
                     cp -r -f $mountDir/share/web src/main/resources
+                    ls src/main/resources/web
+                    pwd
+                    ls src/main/resources
             		./gradlew test
                     ./gradlew installDist
                     cp -r build $mountDir/share
