@@ -22,6 +22,7 @@ job("Build and run tests") {
                 	cd /mnt/space/work/web
             		flutter build web
                     cp -r build/web $mountDir/share
+                    ls $mountDir/share
                 """
         	}
         }
@@ -30,8 +31,8 @@ job("Build and run tests") {
     container(displayName = "Gradle build", image = "gradle:6.9.2-jdk17-alpine") {
         shellScript {
             content = """
-            		pwd
-                    ls
+            		
+                    cp -r -f $mountDir/share/web src/main/resources
             		./gradlew test
                     ./gradlew installDist
                     cp -r build $mountDir/share
