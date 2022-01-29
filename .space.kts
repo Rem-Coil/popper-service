@@ -21,7 +21,7 @@ job("Build and run tests") {
         		content = """
                 	cd /mnt/space/work/web
             		flutter build web
-                    ls
+                    cp -r build/web $mountDir/share
                 """
         	}
         }
