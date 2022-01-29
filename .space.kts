@@ -19,7 +19,8 @@ job("Build and run tests") {
     	container(displayName = "Web build", image = "cirrusci/flutter:2.8.1") {
         shellScript {
         		content = """
-                	pwd
+                	cd /mnt/space/work/web
+                    ls
             		flutter build web
                 """
         	}
