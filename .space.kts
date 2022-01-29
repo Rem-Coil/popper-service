@@ -30,6 +30,8 @@ job("Build and run tests") {
     container(displayName = "Gradle build", image = "gradle:6.9.2-jdk17-alpine") {
         shellScript {
             content = """
+            		pwd
+                    ls
             		./gradlew test
                     ./gradlew installDist
                     cp -r build $mountDir/share
