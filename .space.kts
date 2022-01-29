@@ -14,6 +14,14 @@ job("Build and run tests") {
         }
     }
     
+    git("web") {
+    	container(displayName = "Web build", image = "cirrusci/flutter:stable") {
+        shellScript {
+        		content = "flutter build web"
+        	}
+        }
+    }
+    
     container(displayName = "Gradle build", image = "gradle:6.9.2-jdk17-alpine") {
         shellScript {
             content = """
