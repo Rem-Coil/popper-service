@@ -14,10 +14,11 @@ job("Build and run tests") {
         }
     }
     
-    git("web/release") {
+    git("web") {
     	container(displayName = "Web build", image = "cirrusci/flutter:2.8.1") {
         shellScript {
         		content = """
+                	pwd
             		flutter build web
                 """
         	}
