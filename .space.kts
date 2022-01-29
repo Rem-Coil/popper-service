@@ -15,7 +15,7 @@ job("Build and run tests") {
     }
     
     git("web") {
-    	container(displayName = "Web build", image = "cirrusci/flutter:stable") {
+    	container(displayName = "Web build", image = "cirrusci/flutter:2.8.1") {
         shellScript {
         		content = """
             		flutter build web
