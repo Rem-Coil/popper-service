@@ -22,7 +22,7 @@ job("Build and run tests") {
                 	cd /mnt/space/work/web
             		flutter build web
                     cp -r build/web $mountDir/share
-                    ls $mountDir/share
+                    ls -R $mountDir/share
                 """
         	}
         }
@@ -35,6 +35,7 @@ job("Build and run tests") {
             		./gradlew test
                     ./gradlew installDist
                     cp -r build $mountDir/share
+                    ls -R $mountDir/share
                 """
         }
     }
