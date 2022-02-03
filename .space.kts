@@ -15,9 +15,9 @@ job("Build and publish docker") {
         }
     }
 
-    git("Flutter build web") {
+    git("web") {
         refSpec = "release"
-        container(displayName = "Web build", image = "cirrusci/flutter:2.8.1") {
+        container(displayName = "Flutter Web Build", image = "cirrusci/flutter:2.8.1") {
             shellScript {
                 content = """
                 	cd /mnt/space/work/web
