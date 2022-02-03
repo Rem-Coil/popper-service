@@ -8,6 +8,13 @@ job("Build and run tests") {
     
     startOn {
         gitPush {
+            repository = "web"
+            branchFilter {
+                +"release"
+            }
+        }
+        gitPush {
+            repository = "services"
             branchFilter {
                 +"release"
             }
