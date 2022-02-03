@@ -22,8 +22,7 @@ job("Build and publish docker") {
                 content = """
                 	cd /mnt/space/work/web
             		flutter build web
-                    cp -r build/web $mountDir/share
-                    ls -R $mountDir/share
+                    cp -r ./build/web $mountDir/share
                 """
             }
         }
@@ -35,7 +34,7 @@ job("Build and publish docker") {
                     cp -r -f $mountDir/share/web src/main/resources
             		./gradlew test
                     ./gradlew installDist
-                    cp -r build $mountDir/share
+                    cp -r ./build/install/popper $mountDir/share
                     ls -R $mountDir/share
                 """
         }
@@ -43,7 +42,7 @@ job("Build and publish docker") {
 
     docker {
         beforeBuildScript {
-            content = "cp -r $mountDir/share build"
+            content = "cp -r $mountDir/share/popper ./"
         }
         build {
             context = "docker"
