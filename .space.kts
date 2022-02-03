@@ -1,11 +1,5 @@
-/**
-* JetBrains Space Automation
-* This Kotlin-script file lets you automate build activities
-* For more info, see https://www.jetbrains.com/help/space/automation.html
-*/
+job("Build and publish docker") {
 
-job("Build and run tests") {
-    
     startOn {
         gitPush {
             repository = "web"
@@ -20,22 +14,22 @@ job("Build and run tests") {
             }
         }
     }
-    
-    git("web") {
+
+    git("Flutter build web") {
         refSpec = "release"
-    	container(displayName = "Web build", image = "cirrusci/flutter:2.8.1") {
-        shellScript {
-        		content = """
+        container(displayName = "Web build", image = "cirrusci/flutter:2.8.1") {
+            shellScript {
+                content = """
                 	cd /mnt/space/work/web
             		flutter build web
                     cp -r build/web $mountDir/share
                     ls -R $mountDir/share
                 """
-        	}
+            }
         }
     }
-    
-    container(displayName = "Gradle build", image = "gradle:6.9.2-jdk17-alpine") {
+
+    container(displayName = "Gradle test and build", image = "gradle:6.8-jdk11") {
         shellScript {
             content = """       		
                     cp -r -f $mountDir/share/web src/main/resources
@@ -46,7 +40,7 @@ job("Build and run tests") {
                 """
         }
     }
-    
+
     docker {
         beforeBuildScript {
             content = "cp -r $mountDir/share build"
