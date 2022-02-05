@@ -24,8 +24,8 @@ class OperatorService(private val dao: OperatorDao, private val config: JwtConfi
         return null
     }
 
-    fun getAllOperators(): List<Operator> {
-        val operators = dao.getAllOperators()
+    fun getAllOperators(onlyActive: Boolean): List<Operator> {
+        val operators = dao.getAllOperators(onlyActive)
         logger.info("Отдали всех операторов")
         return operators
     }

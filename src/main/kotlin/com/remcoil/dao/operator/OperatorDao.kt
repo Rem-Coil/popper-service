@@ -13,9 +13,9 @@ class OperatorDao(private val database: Database) {
             .firstOrNull()
     }
 
-    fun getAllOperators(): List<Operator> = transaction(database) {
+    fun getAllOperators(onlyActive: Boolean): List<Operator> = transaction(database) {
         Operators
-            .select { Operators.active eq true }
+            .select { (Operators.active eq true) or (Operators.active eq onlyActive)}
             .map(::extractOperator)
     }
 

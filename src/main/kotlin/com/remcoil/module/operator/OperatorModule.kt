@@ -15,8 +15,8 @@ fun Application.operatorModule() {
     routing {
         route("/operator") {
 
-            get {
-                val operators = service.getAllOperators()
+            get("/{activeOnly}") {
+                val operators = service.getAllOperators(call.parameters["activeOnly"]!!.toBoolean())
                 call.respond(operators)
             }
 
