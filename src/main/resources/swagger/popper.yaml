@@ -217,14 +217,13 @@ paths:
         '200':
           description: Action deleted successfully
 
-  /operator/{activeOnly}:
+  /operator?active_only=false:
     get:
       tags:
         - operator
       parameters:
-        - in: path
-          name: activeOnly
-          required: true
+        - in: query
+          name: active_only
           schema:
             type: boolean
       responses:
