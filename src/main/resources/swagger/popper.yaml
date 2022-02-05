@@ -217,7 +217,7 @@ paths:
         '200':
           description: Action deleted successfully
 
-  /operator?active_only=false:
+  /operator?active_only=true:
     get:
       tags:
         - operator
