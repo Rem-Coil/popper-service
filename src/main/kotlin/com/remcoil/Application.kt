@@ -39,6 +39,11 @@ fun main() {
         configureSerialization()
         siteModule(config)
         install(CORS) {
+            method(HttpMethod.Get)
+            method(HttpMethod.Post)
+            method(HttpMethod.Put)
+            method(HttpMethod.Delete)
+            method(HttpMethod.Patch)
             exposeHeader(HttpHeaders.AccessControlAllowOrigin)
             anyHost()
             allowNonSimpleContentTypes = true

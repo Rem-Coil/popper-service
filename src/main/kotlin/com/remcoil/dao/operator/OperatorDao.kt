@@ -13,9 +13,9 @@ class OperatorDao(private val database: Database) {
             .firstOrNull()
     }
 
-    fun getAllOperators(): List<Operator> = transaction(database) {
+    fun getAllOperators(onlyActive: Boolean): List<Operator> = transaction(database) {
         Operators
-            .select { Operators.active eq true }
+            .select { (Operators.active eq true) or (Operators.active eq onlyActive)}
             .map(::extractOperator)
     }
 
@@ -49,6 +49,10 @@ class OperatorDao(private val database: Database) {
         Operators.update({ Operators.id eq id }) {
             it[active] = false
         }
+    }
+
+    fun trueDeleteOperator(phone: String) = transaction(database) {
+        Operators.deleteWhere { Operators.phone eq phone }
     }
 
     private fun extractOperator(row: ResultRow): Operator = Operator(

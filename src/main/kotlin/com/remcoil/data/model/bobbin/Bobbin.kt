@@ -4,7 +4,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-class Bobbin(
+data class Bobbin(
     val id: Int,
     @SerialName("task_id")
     val taskId: Int,

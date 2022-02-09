@@ -217,10 +217,15 @@ paths:
         '200':
           description: Action deleted successfully
 
-  /operator:
+  /operator?active_only=true:
     get:
       tags:
         - operator
+      parameters:
+        - in: query
+          name: active_only
+          schema:
+            type: boolean
       responses:
         '200':
           description: List of operators

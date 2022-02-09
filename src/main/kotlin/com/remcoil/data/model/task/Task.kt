@@ -20,7 +20,7 @@ data class Task(
     val testing: Int
 ) {
     constructor(identity: TaskIdentity) : this(
-        0,
+        1,
         identity.taskName,
         identity.taskNumber,
         identity.quantity,
