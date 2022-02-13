@@ -2,7 +2,7 @@ version: "3.6"
 
 services:
   popper:
-    image: rem-coil.registry.jetbrains.space/p/popper/popper/myimage:latest
+    image: rem-coil.registry.jetbrains.space/p/popper/popper/main-service:latest
     environment:
       PORT: ${PORT}
       JDBC_DATABASE_PASSWORD: ${JDBC_PASSWORD}
