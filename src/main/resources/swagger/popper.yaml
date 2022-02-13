@@ -6,7 +6,7 @@ info:
 servers:
   - url: 'https://popper-service.herokuapp.com/'
   - url: 'http://localhost:80'
-  - url: 'https://remcoil.space/'
+  - url: 'https://webpanel.remcoil.space/'
 paths:
 
   /bobbin:
