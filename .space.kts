@@ -1,12 +1,14 @@
 job("Build and publish docker") {
 
     startOn {
+        /*
         gitPush {
             repository = "web"
             branchFilter {
                 +"release"
             }
         }
+        */
         gitPush {
             repository = "services"
             branchFilter {
@@ -15,6 +17,7 @@ job("Build and publish docker") {
         }
     }
 
+    /*
     git("web") {
         refSpec = "release"
         container(displayName = "Flutter Web Build", image = "cirrusci/flutter:2.8.1") {
@@ -27,11 +30,12 @@ job("Build and publish docker") {
             }
         }
     }
+    cp -r -f $mountDir/share/web src/main/resources
+	*/
 
     container(displayName = "Gradle test and build", image = "gradle:6.8-jdk11") {
         shellScript {
             content = """       		
-                    cp -r -f $mountDir/share/web src/main/resources
             		./gradlew test
                     ./gradlew installDist
                     cp -r ./build/install/popper $mountDir/share
