@@ -53,14 +53,14 @@ class OperatorDaoTest {
     fun `create and get operator test`() {
         val operatorId = dao.getOperator("1624-07-1969")!!.id
         assertEquals(dao.getById(operatorId), dao.getOperator("1624-07-1969"))
-        assertTrue(dao.getAllOperators().isNotEmpty())
+        assertTrue(dao.getAllOperators(true).isNotEmpty())
     }
 
     @Test
     fun `delete operator test`() {
         val operatorId = dao.getOperator("1624-07-1969")!!.id
         dao.deleteOperator(operatorId)
-        assertTrue(dao.getAllOperators().isEmpty())
+        assertTrue(dao.getAllOperators(true).isEmpty())
         assertEquals(dao.getOperator("1624-07-1969"), null)
         assertFalse(dao.getById(operatorId)!!.active)
     }

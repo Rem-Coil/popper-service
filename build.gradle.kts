@@ -35,6 +35,10 @@ dependencies {
     implementation("io.ktor:ktor-server-core:$ktor_version")
     implementation("io.ktor:ktor-serialization:$ktor_version")
     implementation("io.ktor:ktor-server-netty:$ktor_version")
+    implementation("io.ktor:ktor-html-builder:$ktor_version")
+    implementation("org.jetbrains.kotlin-wrappers:kotlin-css:1.0.0-pre.301-kotlin-1.6.10")
+
+
     implementation("ch.qos.logback:logback-classic:$logback_version")
 
     testImplementation("org.junit.jupiter:junit-jupiter:5.7.0")
