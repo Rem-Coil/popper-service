@@ -16,7 +16,8 @@ data class Action(
     val actionType: String,
     @SerialName("done_time")
     @Serializable(with = LocalDateTimeSerializer::class)
-    val doneTime: LocalDateTime
+    val doneTime: LocalDateTime,
+    val successful: Boolean
 )
 
 

@@ -16,5 +16,6 @@ data class FullAction(
     @SerialName("action_type")
     val actionType: String,
     @SerialName("done_time")
-    val doneTime: LocalDateTime
+    val doneTime: LocalDateTime,
+    val successful: Boolean
 )
