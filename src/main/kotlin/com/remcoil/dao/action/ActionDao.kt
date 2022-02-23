@@ -50,8 +50,7 @@ class ActionDao(private val database: Database) {
             .select {
                 (Actions.operatorId eq action.operatorId) and
                         (Actions.bobbinId eq action.bobbinId) and
-                        (Actions.actionType eq action.actionType) and
-                        (Actions.successful eq true)
+                        (Actions.actionType eq action.actionType)
             }
             .map(::extractAction)
             .isNullOrEmpty()
