@@ -54,6 +54,10 @@ fun Application.bobbinModule() {
                     tr {
                         height = 150.px
                     }
+                    img {
+                        height = 100.px
+                        padding()
+                    }
                 }
             }
 
@@ -88,9 +92,7 @@ fun Application.bobbinModule() {
                                         }
                                     }
                                     td {
-                                        a(href = "http://qrcoder.ru") {
-                                            img(src = "http://qrcoder.ru/code/?bobbin%3A${bobbin.id}&5&0")
-                                        }
+                                        img(src="https://api.qrserver.com/v1/create-qr-code/?data=bobbin${bobbin.id}")
                                     }
                                 }
                             }
