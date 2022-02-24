@@ -7,6 +7,7 @@ import com.remcoil.data.database.Tasks
 import com.remcoil.data.model.action.Action
 import com.remcoil.data.model.action.ActionType
 import com.remcoil.data.model.action.FullAction
+import com.remcoil.utils.logger
 import com.remcoil.utils.safetySuspendTransactionAsync
 import kotlinx.datetime.toJavaLocalDateTime
 import kotlinx.datetime.toKotlinLocalDateTime
@@ -57,6 +58,17 @@ class ActionDao(private val database: Database) {
             .isNullOrEmpty()
     }
 
+    fun isNotFix(action: Action): Boolean = transaction(database) {
+        Actions
+            .select{
+                (Actions.bobbinId eq action.bobbinId) and
+                        (Actions.actionType eq action.actionType) and
+                        (Actions.successful neq action.successful)
+            }
+            .map(::extractAction)
+            .isNullOrEmpty()
+    }
+
     suspend fun updateAction(action: Action) = safetySuspendTransactionAsync(database) {
         val oldAction = Actions.select {Actions.id eq action.id}
             .map(::extractAction)
@@ -96,6 +108,10 @@ class ActionDao(private val database: Database) {
     }
 
     private fun updateTask(action: Action, add: Int) {
+        if (!isNotFix(action)) {
+            logger.info("Исправление брака для катушки ${action.bobbinId}")
+            return
+        }
         val id = Bobbins
             .slice(Bobbins.taskId)
             .select { Bobbins.id eq action.bobbinId }
