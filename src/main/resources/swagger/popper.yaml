@@ -308,6 +308,8 @@ components:
           type: string
         done_time:
           type: string
+        successful:
+          type: boolean
 
     Action:
       properties:
@@ -321,6 +323,8 @@ components:
           type: string
         done_time:
           type: string
+        successful:
+          type: boolean
 
     Token:
       properties:

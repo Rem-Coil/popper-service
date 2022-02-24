@@ -9,4 +9,5 @@ object Actions: IntIdTable("action") {
     val bobbinId = reference("bobbin_id", Bobbins)
     val actionType = varchar("action_type",50)
     val doneTime = datetime("done_time")
+    val successful = bool("successful")
 }
