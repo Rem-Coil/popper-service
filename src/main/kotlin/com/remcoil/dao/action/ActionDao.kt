@@ -7,6 +7,7 @@ import com.remcoil.data.database.Tasks
 import com.remcoil.data.model.action.Action
 import com.remcoil.data.model.action.ActionType
 import com.remcoil.data.model.action.FullAction
+import com.remcoil.utils.logger
 import com.remcoil.utils.safetySuspendTransactionAsync
 import kotlinx.datetime.toJavaLocalDateTime
 import kotlinx.datetime.toKotlinLocalDateTime
@@ -27,7 +28,7 @@ class ActionDao(private val database: Database) {
                 Tasks.id, Tasks.taskName, Tasks.taskNumber,
                 Bobbins.id, Bobbins.bobbinNumber,
                 Operators.firstName, Operators.secondName, Operators.surname,
-                Actions.actionType, Actions.doneTime
+                Actions.actionType, Actions.doneTime, Actions.successful
             )
             .select { Tasks.id eq id }
             .map(::extractFullAction)
@@ -39,7 +40,7 @@ class ActionDao(private val database: Database) {
                 Tasks.id, Tasks.taskName, Tasks.taskNumber,
                 Bobbins.id, Bobbins.bobbinNumber,
                 Operators.firstName, Operators.secondName, Operators.surname,
-                Actions.actionType, Actions.doneTime
+                Actions.actionType, Actions.doneTime, Actions.successful
             )
             .select { Actions.bobbinId eq id }
             .map(::extractFullAction)
@@ -50,7 +51,19 @@ class ActionDao(private val database: Database) {
             .select {
                 (Actions.operatorId eq action.operatorId) and
                         (Actions.bobbinId eq action.bobbinId) and
-                        (Actions.actionType eq action.actionType)
+                        (Actions.actionType eq action.actionType) and
+                        (Actions.successful eq action.successful)
+            }
+            .map(::extractAction)
+            .isNullOrEmpty()
+    }
+
+    fun isNotFix(action: Action): Boolean = transaction(database) {
+        Actions
+            .select{
+                (Actions.bobbinId eq action.bobbinId) and
+                        (Actions.actionType eq action.actionType) and
+                        (Actions.successful neq action.successful)
             }
             .map(::extractAction)
             .isNullOrEmpty()
@@ -66,6 +79,7 @@ class ActionDao(private val database: Database) {
             it[bobbinId] = action.bobbinId
             it[actionType] = action.actionType
             it[doneTime] = action.doneTime.toJavaLocalDateTime()
+            it[successful] = action.successful
         }
         updateTask(action, 1)
     }
@@ -76,6 +90,7 @@ class ActionDao(private val database: Database) {
             it[bobbinId] = action.bobbinId
             it[actionType] = action.actionType
             it[doneTime] = action.doneTime.toJavaLocalDateTime()
+            it[successful] = action.successful
         }
         updateTask(action, 1)
         action.copy(id = id.value)
@@ -93,6 +108,10 @@ class ActionDao(private val database: Database) {
     }
 
     private fun updateTask(action: Action, add: Int) {
+        if (!isNotFix(action)) {
+            logger.info("Исправление брака для катушки ${action.bobbinId}")
+            return
+        }
         val id = Bobbins
             .slice(Bobbins.taskId)
             .select { Bobbins.id eq action.bobbinId }
@@ -120,7 +139,8 @@ class ActionDao(private val database: Database) {
         row[Operators.secondName],
         row[Operators.surname],
         row[Actions.actionType],
-        row[Actions.doneTime].toKotlinLocalDateTime()
+        row[Actions.doneTime].toKotlinLocalDateTime(),
+        row[Actions.successful]
     )
 
     private fun extractTaskId(row: ResultRow): Int = row[Bobbins.taskId].value
@@ -129,6 +149,7 @@ class ActionDao(private val database: Database) {
         row[Actions.operatorId].value,
         row[Actions.bobbinId].value,
         row[Actions.actionType],
-        row[Actions.doneTime].toKotlinLocalDateTime()
+        row[Actions.doneTime].toKotlinLocalDateTime(),
+        row[Actions.successful]
     )
 }
