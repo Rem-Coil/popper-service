@@ -2,6 +2,7 @@ package com.test.remcoil.dao
 
 import com.remcoil.dao.bobbin.BobbinDao
 import com.remcoil.dao.task.TaskDao
+import com.remcoil.data.model.task.FullTask
 import com.remcoil.data.model.task.Task
 import com.remcoil.data.model.task.TaskIdentity
 import com.test.remcoil.utils.database.DatabaseFactory

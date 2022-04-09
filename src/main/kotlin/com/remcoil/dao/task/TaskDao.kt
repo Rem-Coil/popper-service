@@ -1,8 +1,10 @@
 package com.remcoil.dao.task
 
+import com.remcoil.data.database.Actions
 import com.remcoil.data.database.Bobbins
 import com.remcoil.data.database.Tasks
 import com.remcoil.data.model.task.Task
+import com.remcoil.data.model.task.TaskIdentity
 import com.remcoil.utils.safetySuspendTransactionAsync
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -26,13 +28,6 @@ class TaskDao(private val database: Database) {
             it[taskName] = task.taskName
             it[taskNumber] = task.taskNumber
             it[quantity] = task.quantity
-            it[winding] = task.winding
-            it[output] = task.output
-            it[isolation] = task.isolation
-            it[molding] = task.molding
-            it[crimping] = task.crimping
-            it[quality] = task.quality
-            it[testing] = task.testing
         }
         createBobbins(task.taskNumber, id.value, task.quantity)
         task.copy(id = id.value)
@@ -55,13 +50,21 @@ class TaskDao(private val database: Database) {
         row[Tasks.id].value,
         row[Tasks.taskName],
         row[Tasks.taskNumber],
-        row[Tasks.quantity],
-        row[Tasks.winding],
-        row[Tasks.output],
-        row[Tasks.isolation],
-        row[Tasks.molding],
-        row[Tasks.crimping],
-        row[Tasks.quality],
-        row[Tasks.testing]
+        row[Tasks.quantity]
     )
+
+    fun countBobbin(taskId: Int, actionType: String): Int = transaction(database) {
+        val latestAction = (Actions innerJoin Bobbins innerJoin Tasks)
+            .slice(Actions.bobbinId, Actions.doneTime.max().alias("done_time"))
+            .select {
+                (Tasks.id eq taskId) and
+                        (Actions.actionType.upperCase() eq actionType)
+            }
+            .groupBy(Actions.bobbinId)
+            .alias("latest_action")
+
+        Actions.innerJoin(latestAction, { Actions.bobbinId }, { latestAction[Actions.bobbinId] })
+            .select { (Actions.doneTime eq latestAction[Actions.doneTime]) and (Actions.successful eq true) }
+            .count().toInt()
+    }
 }

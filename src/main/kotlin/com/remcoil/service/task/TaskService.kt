@@ -1,6 +1,7 @@
 package com.remcoil.service.task
 
 import com.remcoil.dao.task.TaskDao
+import com.remcoil.data.model.task.FullTask
 import com.remcoil.data.model.task.Task
 import com.remcoil.data.model.task.TaskIdentity
 import com.remcoil.utils.logger
