@@ -2,7 +2,6 @@ package com.remcoil.service.action
 
 import com.remcoil.dao.action.ActionDao
 import com.remcoil.data.model.action.Action
-//import com.remcoil.data.model.action.ActionIdentity
 import com.remcoil.data.model.action.FullAction
 import com.remcoil.utils.logger
 
@@ -28,16 +27,12 @@ class ActionService(private val dao: ActionDao) {
 
     suspend fun updateAction(action: Action) {
         dao.updateAction(action)
-        logger.info("Обновили данные об операции")
+        logger.info("Данные об операции с id=${action.id}")
     }
 
-    suspend fun createAction(action: Action): Action? {
-        val act = if (dao.isNotExist(action)) dao.createAction(action) else null
-        if (act == null) {
-            logger.info("Операция уже существует")
-        } else {
-            logger.info("Записали данные об операции")
-        }
+    suspend fun createAction(action: Action): Action {
+        val act = dao.createAction(action)
+        logger.info("Запись с id=${act.id} сохранена")
         return act
     }
 

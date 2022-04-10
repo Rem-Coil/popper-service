@@ -1,7 +1,7 @@
 package com.remcoil.dao.task
 
 import com.remcoil.data.database.Bobbins
-import com.remcoil.data.database.Tasks
+import com.remcoil.data.database.TaskTable
 import com.remcoil.data.model.task.Task
 import com.remcoil.utils.safetySuspendTransactionAsync
 import org.jetbrains.exposed.sql.*
@@ -10,29 +10,22 @@ import org.jetbrains.exposed.sql.transactions.transaction
 class TaskDao(private val database: Database) {
 
     fun getAllTasks(): List<Task> = transaction(database) {
-        Tasks
+        TaskTable
             .selectAll()
             .map(::extractTask)
     }
 
     fun getById(id: Int): Task? = transaction(database) {
-        Tasks.select { Tasks.id eq id }
+        TaskTable.select { TaskTable.id eq id }
             .map(::extractTask)
             .firstOrNull()
     }
 
     suspend fun createTask(task: Task): Task = safetySuspendTransactionAsync(database) {
-        val id = Tasks.insertAndGetId {
+        val id = TaskTable.insertAndGetId {
             it[taskName] = task.taskName
             it[taskNumber] = task.taskNumber
             it[quantity] = task.quantity
-            it[winding] = task.winding
-            it[output] = task.output
-            it[isolation] = task.isolation
-            it[molding] = task.molding
-            it[crimping] = task.crimping
-            it[quality] = task.quality
-            it[testing] = task.testing
         }
         createBobbins(task.taskNumber, id.value, task.quantity)
         task.copy(id = id.value)
@@ -48,20 +41,13 @@ class TaskDao(private val database: Database) {
     }
 
     suspend fun deleteTask(id: Int) = safetySuspendTransactionAsync(database) {
-        Tasks.deleteWhere { Tasks.id eq id }
+        TaskTable.deleteWhere { TaskTable.id eq id }
     }
 
     fun extractTask(row: ResultRow): Task = Task(
-        row[Tasks.id].value,
-        row[Tasks.taskName],
-        row[Tasks.taskNumber],
-        row[Tasks.quantity],
-        row[Tasks.winding],
-        row[Tasks.output],
-        row[Tasks.isolation],
-        row[Tasks.molding],
-        row[Tasks.crimping],
-        row[Tasks.quality],
-        row[Tasks.testing]
+        row[TaskTable.id].value,
+        row[TaskTable.taskName],
+        row[TaskTable.taskNumber],
+        row[TaskTable.quantity]
     )
 }

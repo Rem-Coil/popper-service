@@ -331,7 +331,7 @@ components:
         token:
           type: string
 
-    Task:
+    FullTask:
       properties:
         id:
           type: integer
@@ -354,6 +354,17 @@ components:
         quality:
           type: integer
         testing:
+          type: integer
+
+    Task:
+      properties:
+        id:
+          type: integer
+        task_name:
+          type: string
+        task_number:
+          type: string
+        quantity:
           type: integer
 
     Operator:
