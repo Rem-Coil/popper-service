@@ -7,7 +7,6 @@ import com.remcoil.dao.task.TaskDao
 import com.remcoil.data.model.action.ActionType
 import com.remcoil.data.model.action.Action
 import com.remcoil.data.model.operator.Operator
-import com.remcoil.data.model.task.FullTask
 import com.remcoil.data.model.task.Task
 import com.remcoil.data.model.task.TaskIdentity
 import com.test.remcoil.utils.database.DatabaseFactory
@@ -76,23 +75,4 @@ class ActionDaoTest {
         assertEquals(actionDao.getByBobbinId(1)[0].firstname, "Michael")
         assertEquals(actionDao.getByTaskId(1)[0].surname, "Collins")
     }
-
-//    @Test
-//    fun `create and update action test`() = runTest {
-//        assertEquals(1, taskDao.getById(1)!!.winding)
-//        actionDao.updateAction(Action(
-//            action.id, 1, 1,
-//            ActionType.CRIMPING.type,
-//            Clock.System.now().toLocalDateTime(TimeZone.UTC)))
-//        assertEquals(0, taskDao.getById(1)!!.winding)
-//        assertEquals(1, taskDao.getById(1)!!.crimping)
-//    }
-//
-//    @Test
-//    fun `delete action test`() {
-//        assertEquals(1, taskDao.getById(1)!!.winding)
-//        actionDao.deleteAction(action.id)
-//        assertTrue(actionDao.isNotExist(action))
-//        assertEquals(0, taskDao.getById(1)!!.winding)
-//    }
 }

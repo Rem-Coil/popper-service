@@ -3,7 +3,7 @@ package com.remcoil.dao.action
 import com.remcoil.data.database.Actions
 import com.remcoil.data.database.Bobbins
 import com.remcoil.data.database.Operators
-import com.remcoil.data.database.Tasks
+import com.remcoil.data.database.TaskTable
 import com.remcoil.data.model.action.Action
 import com.remcoil.data.model.action.FullAction
 import com.remcoil.utils.safetySuspendTransactionAsync
@@ -21,50 +21,27 @@ class ActionDao(private val database: Database) {
     }
 
     fun getByTaskId(id: Int): List<FullAction> = transaction(database) {
-        (Actions innerJoin Operators innerJoin Bobbins innerJoin Tasks)
+        (Actions innerJoin Operators innerJoin Bobbins innerJoin TaskTable)
             .slice(
-                Tasks.id, Tasks.taskName, Tasks.taskNumber,
+                TaskTable.id, TaskTable.taskName, TaskTable.taskNumber,
                 Bobbins.id, Bobbins.bobbinNumber,
                 Operators.firstName, Operators.secondName, Operators.surname,
                 Actions.actionType, Actions.doneTime, Actions.successful
             )
-            .select { Tasks.id eq id }
+            .select { TaskTable.id eq id }
             .map(::extractFullAction)
     }
 
     fun getByBobbinId(id: Int): List<FullAction> = transaction(database) {
-        (Actions innerJoin Operators innerJoin Bobbins innerJoin Tasks)
+        (Actions innerJoin Operators innerJoin Bobbins innerJoin TaskTable)
             .slice(
-                Tasks.id, Tasks.taskName, Tasks.taskNumber,
+                TaskTable.id, TaskTable.taskName, TaskTable.taskNumber,
                 Bobbins.id, Bobbins.bobbinNumber,
                 Operators.firstName, Operators.secondName, Operators.surname,
                 Actions.actionType, Actions.doneTime, Actions.successful
             )
             .select { Actions.bobbinId eq id }
             .map(::extractFullAction)
-    }
-
-    fun isNotExist(action: Action): Boolean = transaction(database) {
-        Actions
-            .select {
-                (Actions.operatorId eq action.operatorId) and
-                        (Actions.bobbinId eq action.bobbinId) and
-                        (Actions.actionType eq action.actionType) and
-                        (Actions.successful eq action.successful)
-            }
-            .map(::extractAction)
-            .isNullOrEmpty()
-    }
-
-    fun isNotFix(action: Action): Boolean = transaction(database) {
-        Actions
-            .select {
-                (Actions.bobbinId eq action.bobbinId) and
-                        (Actions.actionType eq action.actionType) and
-                        (Actions.successful neq action.successful)
-            }
-            .map(::extractAction)
-            .isNullOrEmpty()
     }
 
     suspend fun updateAction(action: Action) = safetySuspendTransactionAsync(database) {
