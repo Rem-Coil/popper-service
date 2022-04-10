@@ -52,19 +52,4 @@ class TaskDao(private val database: Database) {
         row[Tasks.taskNumber],
         row[Tasks.quantity]
     )
-
-    fun countBobbin(taskId: Int, actionType: String): Int = transaction(database) {
-        val latestAction = (Actions innerJoin Bobbins innerJoin Tasks)
-            .slice(Actions.bobbinId, Actions.doneTime.max().alias("done_time"))
-            .select {
-                (Tasks.id eq taskId) and
-                        (Actions.actionType.upperCase() eq actionType)
-            }
-            .groupBy(Actions.bobbinId)
-            .alias("latest_action")
-
-        Actions.innerJoin(latestAction, { Actions.bobbinId }, { latestAction[Actions.bobbinId] })
-            .select { (Actions.doneTime eq latestAction[Actions.doneTime]) and (Actions.successful eq true) }
-            .count().toInt()
-    }
 }
