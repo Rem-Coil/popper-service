@@ -11,7 +11,7 @@ data class Task(
     @SerialName("task_number")
     val taskNumber: String,
     val quantity: Int
-){
+) {
     constructor(identity: TaskIdentity) : this(
         1,
         identity.taskName,
