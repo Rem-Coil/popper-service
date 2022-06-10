@@ -8,7 +8,6 @@ import com.remcoil.dao.operator.OperatorDao
 import com.remcoil.data.model.operator.Operator
 import com.remcoil.utils.logger
 import java.util.*
-import kotlin.math.log
 
 
 class OperatorService(private val dao: OperatorDao, private val config: JwtConfig) {

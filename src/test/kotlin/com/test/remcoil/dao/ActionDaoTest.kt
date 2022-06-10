@@ -60,7 +60,7 @@ class ActionDaoTest {
     fun insertAction() = runTest {
         action = actionDao.createAction(Action(1, 1, 1,
             ActionType.WINDING.type,
-            Clock.System.now().toLocalDateTime(TimeZone.UTC)))
+            LocalDateTime(2020, 1,1,12,0,0,0)))
     }
 
     @AfterEach

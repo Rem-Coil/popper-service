@@ -1,8 +1,7 @@
 package com.remcoil.data.database
 
 import org.jetbrains.exposed.dao.id.IntIdTable
-import org.jetbrains.exposed.sql.ReferenceOption
-import org.jetbrains.exposed.sql.`java-time`.datetime
+import org.jetbrains.exposed.sql.javatime.datetime
 
 object Actions: IntIdTable("action") {
     val operatorId = reference("operator_id", Operators)

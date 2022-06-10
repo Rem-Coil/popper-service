@@ -1,13 +1,12 @@
 package com.remcoil.utils
 
 import com.remcoil.utils.exceptions.DatabaseException
-import io.ktor.application.*
 import io.ktor.http.*
-import io.ktor.request.*
-import io.ktor.response.*
+import io.ktor.server.application.*
+import io.ktor.server.request.*
+import io.ktor.server.response.*
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import java.sql.SQLException
 
 suspend inline fun <reified T : Any> ApplicationCall.safetyReceive(onCorrectResult: (T) -> Unit) {
     try {
