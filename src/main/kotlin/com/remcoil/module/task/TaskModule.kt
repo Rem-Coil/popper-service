@@ -1,5 +1,6 @@
 package com.remcoil.module.task
 
+import com.remcoil.data.model.task.Task
 import com.remcoil.data.model.task.TaskIdentity
 import com.remcoil.service.task.TaskService
 import com.remcoil.utils.safetyReceive
@@ -29,6 +30,13 @@ fun Application.taskModule() {
             post {
                 call.safetyReceive<TaskIdentity> { task ->
                     call.respond(service.createTask(task))
+                }
+            }
+
+            put {
+                call.safetyReceive<Task> { task ->
+                    service.updateTask(task)
+                    call.respond(HttpStatusCode.OK)
                 }
             }
 

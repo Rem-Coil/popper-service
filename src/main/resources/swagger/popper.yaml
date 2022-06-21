@@ -10,16 +10,16 @@ servers:
 paths:
 
   /bobbin:
-   get:
-     tags:
-       - bobbin
-     responses:
-       '200':
-         description: List of all bobbins
-         content:
-           application/json:
-             schema:
-               $ref: '#/components/schemas/ListOfBobbins'
+    get:
+      tags:
+        - bobbin
+      responses:
+        '200':
+          description: List of all bobbins
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListOfBobbins'
 
   /bobbin/{id}:
     get:
@@ -70,6 +70,21 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ListOfTasks'
+
+    put:
+      tags:
+        - task
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Task'
+      responses:
+        '200':
+          description: Task updated
+        '400':
+          description: Bad request
 
     post:
       tags:

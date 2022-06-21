@@ -21,6 +21,14 @@ class TaskDao(private val database: Database) {
             .firstOrNull()
     }
 
+    suspend fun updateTask(task: Task) = safetySuspendTransactionAsync(database) {
+        TaskTable.update({TaskTable.id eq task.id}) {
+            it[taskName] = task.taskName
+            it[taskNumber] = task.taskNumber
+            it[quantity] = task.quantity
+        }
+    }
+
     suspend fun createTask(task: Task): Task = safetySuspendTransactionAsync(database) {
         val id = TaskTable.insertAndGetId {
             it[taskName] = task.taskName
