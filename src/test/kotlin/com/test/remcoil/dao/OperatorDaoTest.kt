@@ -2,6 +2,7 @@ package com.test.remcoil.dao
 
 import com.remcoil.dao.operator.OperatorDao
 import com.remcoil.data.model.operator.Operator
+import com.remcoil.data.model.operator.OperatorRole
 import com.test.remcoil.utils.database.DatabaseFactory
 import org.jetbrains.exposed.sql.Database
 import org.junit.jupiter.api.*
@@ -28,7 +29,8 @@ class OperatorDaoTest {
                 "Collins",
                 "1624-07-1969",
                 "apollo",
-                true
+                true,
+                OperatorRole.OPERATOR.type
             )
         }
 

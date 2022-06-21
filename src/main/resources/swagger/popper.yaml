@@ -304,6 +304,22 @@ paths:
         '400':
           description: Operator already exists
 
+  /operator:
+    put:
+      tags:
+        - operator
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Operator'
+      responses:
+        '200':
+          description: Operator updated
+        '400':
+          description: Bad request
+
 components:
   schemas:
 
