@@ -44,6 +44,11 @@ class OperatorService(private val dao: OperatorDao, private val config: JwtConfi
         logger.info("Данные об операторе удалены")
     }
 
+    fun updateOperator(operator: Operator) {
+        dao.updateOperator(operator)
+        logger.info("Обновили данные оператора")
+    }
+
     private fun generateToken(operator: Operator) = JWT.create()
         .withClaim("id", operator.id)
         .withClaim("first_name", operator.firstName)

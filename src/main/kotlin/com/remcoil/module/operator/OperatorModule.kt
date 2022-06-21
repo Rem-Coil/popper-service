@@ -1,6 +1,8 @@
 package com.remcoil.module.operator
 
+import com.remcoil.data.model.operator.Operator
 import com.remcoil.service.operator.OperatorService
+import com.remcoil.utils.safetyReceive
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
@@ -35,6 +37,13 @@ fun Application.operatorModule() {
                     call.respond(hashMapOf("token" to token))
                 } else {
                     call.respond(HttpStatusCode.BadRequest)
+                }
+            }
+
+            put {
+                call.safetyReceive<Operator> { operator ->
+                    service.updateOperator(operator)
+                    call.respond(HttpStatusCode.OK)
                 }
             }
 

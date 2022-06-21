@@ -30,7 +30,7 @@ class OperatorDao(private val database: Database) {
         Operators
             .select { (Operators.active eq true) and (Operators.phone eq operator.phone) }
             .map(::extractOperator)
-            .isNullOrEmpty()
+            .isEmpty()
     }
 
     fun createOperator(operator: Operator): Operator = transaction(database) {
@@ -51,6 +51,18 @@ class OperatorDao(private val database: Database) {
         }
     }
 
+    fun updateOperator(operator: Operator) = transaction {
+        Operators.update({Operators.id eq operator.id}) {
+            it[firstName] = operator.firstName
+            it[secondName] = operator.secondName
+            it[surname] = operator.surname
+            it[phone] = operator.phone
+            it[password] = operator.password
+            it[active] = operator.active
+            it[role] = operator.role
+        }
+    }
+
     fun trueDeleteOperator(phone: String) = transaction(database) {
         Operators.deleteWhere { Operators.phone eq phone }
     }
@@ -62,6 +74,7 @@ class OperatorDao(private val database: Database) {
         row[Operators.surname],
         row[Operators.phone],
         row[Operators.password],
-        row[Operators.active]
+        row[Operators.active],
+        row[Operators.role]
     )
 }
