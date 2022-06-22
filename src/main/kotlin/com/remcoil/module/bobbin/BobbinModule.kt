@@ -94,7 +94,7 @@ fun Application.bobbinModule() {
                                         }
                                     }
                                     td {
-                                        img(src="https://api.qrserver.com/v1/create-qr-code/?data=bobbin${bobbin.id}")
+                                        img(src="https://api.qrserver.com/v1/create-qr-code/?data=bobbin:${bobbin.id}")
                                     }
                                 }
                             }
