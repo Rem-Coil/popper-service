@@ -8,7 +8,6 @@ import com.remcoil.dao.operator.OperatorDao
 import com.remcoil.data.model.operator.Operator
 import com.remcoil.utils.logger
 import java.util.*
-import kotlin.math.log
 
 
 class OperatorService(private val dao: OperatorDao, private val config: JwtConfig) {
@@ -43,6 +42,11 @@ class OperatorService(private val dao: OperatorDao, private val config: JwtConfi
     fun deleteOperator(id: Int) {
         dao.deleteOperator(id)
         logger.info("Данные об операторе удалены")
+    }
+
+    fun updateOperator(operator: Operator) {
+        dao.updateOperator(operator)
+        logger.info("Обновили данные оператора")
     }
 
     private fun generateToken(operator: Operator) = JWT.create()

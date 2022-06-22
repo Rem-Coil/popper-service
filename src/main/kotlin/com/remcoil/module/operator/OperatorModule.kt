@@ -1,11 +1,13 @@
 package com.remcoil.module.operator
 
+import com.remcoil.data.model.operator.Operator
 import com.remcoil.service.operator.OperatorService
-import io.ktor.application.*
+import com.remcoil.utils.safetyReceive
 import io.ktor.http.*
-import io.ktor.request.*
-import io.ktor.response.*
-import io.ktor.routing.*
+import io.ktor.server.application.*
+import io.ktor.server.request.*
+import io.ktor.server.response.*
+import io.ktor.server.routing.*
 import org.kodein.di.*
 import org.kodein.di.ktor.closestDI
 
@@ -35,6 +37,13 @@ fun Application.operatorModule() {
                     call.respond(hashMapOf("token" to token))
                 } else {
                     call.respond(HttpStatusCode.BadRequest)
+                }
+            }
+
+            put {
+                call.safetyReceive<Operator> { operator ->
+                    service.updateOperator(operator)
+                    call.respond(HttpStatusCode.OK)
                 }
             }
 

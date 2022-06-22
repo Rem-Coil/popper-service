@@ -1,9 +1,10 @@
 package com.remcoil.module.site
 
 import com.remcoil.config.AppConfig
-import io.ktor.application.*
-import io.ktor.http.content.*
-import io.ktor.routing.*
+import io.ktor.server.application.*
+import io.ktor.server.http.content.*
+import io.ktor.server.routing.*
+
 
 fun Application.siteModule(config: AppConfig) {
     routing {

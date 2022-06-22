@@ -1,7 +1,6 @@
 package com.remcoil.service.task
 
 import com.remcoil.dao.task.TaskDao
-import com.remcoil.data.model.task.FullTask
 import com.remcoil.data.model.task.Task
 import com.remcoil.data.model.task.TaskIdentity
 import com.remcoil.utils.logger
@@ -29,5 +28,10 @@ class TaskService(private val taskDao: TaskDao) {
         val task = taskDao.createTask(Task(taskIdentity))
         logger.info("Создано ТЗ - ${task.taskName} ${task.taskNumber}")
         return task
+    }
+
+    suspend fun updateTask(task: Task) {
+        taskDao.updateTask(task)
+        logger.info("Обновили ТЗ")
     }
 }

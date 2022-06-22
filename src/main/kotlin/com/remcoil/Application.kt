@@ -12,9 +12,9 @@ import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import com.typesafe.config.ConfigFactory
 import io.github.config4k.extract
-import io.ktor.application.*
-import io.ktor.features.*
 import io.ktor.http.*
+import io.ktor.server.application.*
+import io.ktor.server.plugins.cors.routing.*
 import org.kodein.di.ktor.di
 
 
@@ -39,11 +39,11 @@ fun main() {
         configureSerialization()
         siteModule(config)
         install(CORS) {
-            method(HttpMethod.Get)
-            method(HttpMethod.Post)
-            method(HttpMethod.Put)
-            method(HttpMethod.Delete)
-            method(HttpMethod.Patch)
+            allowMethod(HttpMethod.Get)
+            allowMethod(HttpMethod.Post)
+            allowMethod(HttpMethod.Put)
+            allowMethod(HttpMethod.Delete)
+            allowMethod(HttpMethod.Patch)
             exposeHeader(HttpHeaders.AccessControlAllowOrigin)
             anyHost()
             allowNonSimpleContentTypes = true
