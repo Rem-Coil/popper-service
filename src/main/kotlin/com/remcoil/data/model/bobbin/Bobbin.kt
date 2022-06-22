@@ -7,7 +7,7 @@ import kotlinx.serialization.Serializable
 data class Bobbin(
     val id: Int,
     @SerialName("task_id")
-    val taskId: Int,
+    val batchId: Long,
     @SerialName("bobbin_number")
     val bobbinNumber: String
 )

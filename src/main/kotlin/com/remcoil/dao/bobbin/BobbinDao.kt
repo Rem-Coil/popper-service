@@ -2,10 +2,8 @@ package com.remcoil.dao.bobbin
 
 import com.remcoil.data.database.Bobbins
 import com.remcoil.data.model.bobbin.Bobbin
-import org.jetbrains.exposed.sql.Database
-import org.jetbrains.exposed.sql.ResultRow
-import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.selectAll
+import com.remcoil.utils.safetySuspendTransactionAsync
+import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 
 class BobbinDao(private val database: Database) {
@@ -16,9 +14,15 @@ class BobbinDao(private val database: Database) {
             .map(::extractBobbin)
     }
 
-    fun getByTaskId(id: Int): List<Bobbin> = transaction(database) {
+    fun getByBatchId(id: Long): List<Bobbin> = transaction(database) {
         Bobbins
-            .select { Bobbins.taskId eq id }
+            .select { Bobbins.batchId eq id }
+            .map(::extractBobbin)
+    }
+
+    fun getByBatchesId(idList: List<Long>): List<Bobbin> = transaction(database) {
+        Bobbins
+            .select { Bobbins.batchId inList(idList) }
             .map(::extractBobbin)
     }
 
@@ -29,9 +33,17 @@ class BobbinDao(private val database: Database) {
             .firstOrNull()
     }
 
+    suspend fun createBobbin(bobbin: Bobbin): Bobbin = safetySuspendTransactionAsync(database) {
+        val id = Bobbins.insertAndGetId {
+            it[batchId] = bobbin.batchId
+            it[bobbinNumber] = bobbin.bobbinNumber
+        }
+        bobbin.copy(id = id.value)
+    }
+
     private fun extractBobbin(row: ResultRow): Bobbin = Bobbin(
         row[Bobbins.id].value,
-        row[Bobbins.taskId].value,
+        row[Bobbins.batchId].value,
         row[Bobbins.bobbinNumber]
     )
 }

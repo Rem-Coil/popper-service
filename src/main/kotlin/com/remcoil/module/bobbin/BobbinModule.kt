@@ -29,8 +29,8 @@ fun Application.bobbinModule() {
                 call.respond(bobbin ?: HttpStatusCode.BadRequest)
             }
 
-            get("/task/{id}") {
-                val bobbins = bobbinService.getByTask(call.parameters["id"]!!.toInt())
+            get("/batch/{id}") {
+                val bobbins = bobbinService.getByBatchId(call.parameters["id"]!!.toLong())
                 call.respond(bobbins)
             }
 
@@ -64,7 +64,7 @@ fun Application.bobbinModule() {
 
 
             get("/codes/{id}") {
-                val bobbins = bobbinService.getByTask(call.parameters["id"]!!.toInt())
+                val bobbins = bobbinService.getByBatchId(call.parameters["id"]!!.toLong())
                 val task = taskService.getById(call.parameters["id"]!!.toInt())
 
                 call.respondHtml {
@@ -90,7 +90,7 @@ fun Application.bobbinModule() {
                                             +"ID катушки: ${bobbin.id}"
                                         }
                                         p {
-                                            +"ID тз: ${bobbin.taskId}"
+                                            +"ID партии: ${bobbin.batchId}"
                                         }
                                     }
                                     td {

@@ -18,18 +18,4 @@ data class FullTask(
     val crimping: Int,
     val quality: Int,
     val testing: Int
-) {
-    constructor(identity: TaskIdentity) : this(
-        1,
-        identity.taskName,
-        identity.taskNumber,
-        identity.quantity,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0
-    )
-}
+)

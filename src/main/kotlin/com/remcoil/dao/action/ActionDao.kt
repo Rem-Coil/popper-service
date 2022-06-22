@@ -3,7 +3,7 @@ package com.remcoil.dao.action
 import com.remcoil.data.database.Actions
 import com.remcoil.data.database.Bobbins
 import com.remcoil.data.database.Operators
-import com.remcoil.data.database.TaskTable
+import com.remcoil.data.database.Tasks
 import com.remcoil.data.model.action.Action
 import com.remcoil.data.model.action.FullAction
 import com.remcoil.utils.safetySuspendTransactionAsync
@@ -21,21 +21,21 @@ class ActionDao(private val database: Database) {
     }
 
     fun getByTaskId(id: Int): List<FullAction> = transaction(database) {
-        (Actions innerJoin Operators innerJoin Bobbins innerJoin TaskTable)
+        (Actions innerJoin Operators innerJoin Bobbins innerJoin Tasks)
             .slice(
-                TaskTable.id, TaskTable.taskName, TaskTable.taskNumber,
+                Tasks.id, Tasks.taskName, Tasks.taskNumber,
                 Bobbins.id, Bobbins.bobbinNumber,
                 Operators.firstName, Operators.secondName, Operators.surname,
                 Actions.actionType, Actions.doneTime, Actions.successful
             )
-            .select { TaskTable.id eq id }
+            .select { Tasks.id eq id }
             .map(::extractFullAction)
     }
 
     fun getByBobbinId(id: Int): List<FullAction> = transaction(database) {
-        (Actions innerJoin Operators innerJoin Bobbins innerJoin TaskTable)
+        (Actions innerJoin Operators innerJoin Bobbins innerJoin Tasks)
             .slice(
-                TaskTable.id, TaskTable.taskName, TaskTable.taskNumber,
+                Tasks.id, Tasks.taskName, Tasks.taskNumber,
                 Bobbins.id, Bobbins.bobbinNumber,
                 Operators.firstName, Operators.secondName, Operators.surname,
                 Actions.actionType, Actions.doneTime, Actions.successful

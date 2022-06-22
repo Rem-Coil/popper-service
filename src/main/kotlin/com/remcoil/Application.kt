@@ -4,6 +4,7 @@ import com.remcoil.config.AppConfig
 import com.remcoil.data.migrate
 import com.remcoil.di.*
 import com.remcoil.module.action.actionModule
+import com.remcoil.module.batch.batchModule
 import com.remcoil.module.bobbin.bobbinModule
 import com.remcoil.module.operator.operatorModule
 import com.remcoil.module.site.siteModule
@@ -31,11 +32,13 @@ fun main() {
             taskComponents()
             actionComponents()
             bobbinComponents()
+            batchComponents()
         }
         operatorModule()
         taskModule()
         actionModule()
         bobbinModule()
+        batchModule()
         configureSerialization()
         siteModule(config)
         install(CORS) {

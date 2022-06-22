@@ -115,7 +115,7 @@ paths:
             type: integer
       responses:
         '200':
-          description: Task infromation
+          description: Task information
           content:
             application/json:
               schema:
@@ -135,6 +135,69 @@ paths:
       responses:
         '200':
           description: Task deleted successfully
+
+  /batch:
+    get:
+      tags:
+        - batch
+      responses:
+        '200':
+          description: List of batches
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListOfBatch'
+    post:
+      tags:
+        - batch
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Batch'
+      responses:
+        '400':
+          description: Bad request
+        '200':
+          description: Action created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Action'
+
+  /batch/{id}:
+    get:
+      tags:
+        - batch
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: number
+      responses:
+        '200':
+          description: Batch information
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Batch'
+        '400':
+          description: Batch not found
+
+    delete:
+      tags:
+        - batch
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: number
+      responses:
+        '200':
+          description: Batch deleted successfully
 
   /action:
     get:
@@ -419,9 +482,16 @@ components:
       properties:
         id:
           type: integer
-        task_id:
-          type: integer
+        batch_id:
+          type: number
         bobbin_number:
+          type: integer
+
+    Batch:
+      properties:
+        id:
+          type: number
+        task_id:
           type: integer
 
     ListOfActions:
@@ -449,13 +519,20 @@ components:
       items:
         $ref: '#/components/schemas/Task'
 
+    ListOfBatch:
+      type: array
+      items:
+        $ref: '#/components/schemas/Batch'
+
     TaskIdentity:
       properties:
         task_name:
           type: string
         task_number:
           type: string
-        quantity:
+        batch_number:
+          type: integer
+        batch_size:
           type: integer
 
     Credentials:

@@ -18,10 +18,15 @@ class BobbinService(private val dao: BobbinDao) {
         return bobbin
     }
 
-    fun getByTask(taskId: Int): List<Bobbin> {
-        val bobbins = dao.getByTaskId(taskId)
-        logger.info("Отдали катушки по ТЗ - $taskId")
+    fun getByBatchId(batchId: Long): List<Bobbin> {
+        val bobbins = dao.getByBatchId(batchId)
+        logger.info("Отдали катушки партии - $batchId")
         return bobbins
     }
 
+    suspend fun createBobbin(bobbin: Bobbin): Bobbin {
+        val createdBobbin = dao.createBobbin(bobbin)
+        logger.info("Добавили катушку с id = ")
+        return createdBobbin
+    }
 }
