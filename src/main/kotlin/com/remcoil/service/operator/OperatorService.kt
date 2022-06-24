@@ -61,6 +61,7 @@ class OperatorService(private val operatorDao: OperatorDao, private val config: 
         .withClaim("second_name", operator.secondName)
         .withClaim("surname", operator.surname)
         .withClaim("phone", operator.phone)
+        .withClaim("role", operator.role)
         .withExpiresAt(Date(System.currentTimeMillis() + config.time))
         .sign(Algorithm.HMAC256(config.secret))
 
