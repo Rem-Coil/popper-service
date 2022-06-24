@@ -692,6 +692,8 @@ components:
           type: string
         active:
           type: boolean
+        role:
+          type: string
 
     Bobbin:
       properties:

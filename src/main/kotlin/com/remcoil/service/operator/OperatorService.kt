@@ -6,14 +6,16 @@ import com.remcoil.config.JwtConfig
 import com.remcoil.data.model.operator.OperatorCredentials
 import com.remcoil.dao.operator.OperatorDao
 import com.remcoil.data.model.operator.Operator
+import com.remcoil.data.model.operator.OperatorRole
+import com.remcoil.utils.exceptions.WrongParamException
 import com.remcoil.utils.logger
 import java.util.*
 
 
-class OperatorService(private val dao: OperatorDao, private val config: JwtConfig) {
+class OperatorService(private val operatorDao: OperatorDao, private val config: JwtConfig) {
 
     fun getOperator(credentials: OperatorCredentials): String? {
-        val operator = dao.getOperator(credentials.phone)
+        val operator = operatorDao.getOperator(credentials.phone)
 
         if (operator != null && credentials.password == operator.password) {
             logger.info("Вернули оператора - ${operator.firstName} ${operator.surname}")
@@ -24,15 +26,15 @@ class OperatorService(private val dao: OperatorDao, private val config: JwtConfi
     }
 
     fun getAllOperators(onlyActive: Boolean): List<Operator> {
-        val operators = dao.getAllOperators(onlyActive)
+        val operators = operatorDao.getAllOperators(onlyActive)
         logger.info("Отдали всех операторов")
         return operators
     }
 
     fun createOperator(operator: Operator): String? {
-        val op = if (dao.isNotExist(operator)) generateToken(dao.createOperator(operator)) else null
+        val op = if (operatorDao.isNotExist(operator) || !checkRole(operator)) generateToken(operatorDao.createOperator(operator)) else null
         if (op == null) {
-            logger.info("Оператор с такими данными уже существует")
+            logger.info("Некорректные данные")
         } else {
             logger.info("Сохранили данные об операторе")
         }
@@ -40,12 +42,16 @@ class OperatorService(private val dao: OperatorDao, private val config: JwtConfi
     }
 
     fun deleteOperator(id: Int) {
-        dao.deleteOperator(id)
+        operatorDao.deleteOperator(id)
         logger.info("Данные об операторе удалены")
     }
 
     fun updateOperator(operator: Operator) {
-        dao.updateOperator(operator)
+        if (checkRole(operator) && !operatorDao.isNotExist(operator)) {
+            operatorDao.updateOperator(operator)
+        } else {
+            throw WrongParamException("Некорректные данные")
+        }
         logger.info("Обновили данные оператора")
     }
 
@@ -57,4 +63,12 @@ class OperatorService(private val dao: OperatorDao, private val config: JwtConfi
         .withClaim("phone", operator.phone)
         .withExpiresAt(Date(System.currentTimeMillis() + config.time))
         .sign(Algorithm.HMAC256(config.secret))
+
+    private fun checkRole(operator: Operator): Boolean {
+        if (operator.role == OperatorRole.OPERATOR.type ||
+            operator.role == OperatorRole.QUALITY_ENGINEER.type) {
+            return true
+        }
+        return false
+    }
 }
