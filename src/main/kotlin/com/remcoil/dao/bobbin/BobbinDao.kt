@@ -26,7 +26,7 @@ class BobbinDao(private val database: Database) {
             .map(::extractBobbin)
     }
 
-    fun getById(id: Int): Bobbin? = transaction(database) {
+    fun getById(id: Long): Bobbin? = transaction(database) {
         Bobbins
             .select { Bobbins.id eq id }
             .map(::extractBobbin)
@@ -41,7 +41,7 @@ class BobbinDao(private val database: Database) {
         bobbin.copy(id = id.value)
     }
 
-    suspend fun deleteById(id: Int) = safetySuspendTransactionAsync(database){
+    suspend fun deleteById(id: Long) = safetySuspendTransactionAsync(database){
         Bobbins.deleteWhere { Bobbins.id eq id }
     }
 

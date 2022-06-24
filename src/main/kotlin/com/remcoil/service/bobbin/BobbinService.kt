@@ -13,7 +13,7 @@ class BobbinService(private val bobbinDao: BobbinDao) {
         return bobbins
     }
 
-    fun getById(id: Int): Bobbin? {
+    fun getById(id: Long): Bobbin? {
         val bobbin = bobbinDao.getById(id)
         logger.info("Отдали катушку - $id")
         return bobbin
@@ -37,7 +37,7 @@ class BobbinService(private val bobbinDao: BobbinDao) {
         return createdBobbin
     }
 
-    suspend fun deleteById(bobbinId: Int) {
+    suspend fun deleteById(bobbinId: Long) {
         bobbinDao.deleteById(bobbinId)
         logger.info("Удалили катушку с id = $bobbinId")
     }

@@ -16,7 +16,7 @@ class ActionDao(private val database: Database) {
             .map(::extractAction)
     }
 
-    suspend fun getByBobbinId(id: Int): List<Action> = safetySuspendTransactionAsync(database) {
+    suspend fun getByBobbinId(id: Long): List<Action> = safetySuspendTransactionAsync(database) {
         Actions
             .select { Actions.bobbinId eq id }
             .map(::extractAction)
@@ -43,7 +43,7 @@ class ActionDao(private val database: Database) {
         action.copy(id = id.value)
     }
 
-    fun deleteAction(id: Int) = transaction(database) {
+    fun deleteAction(id: Long) = transaction(database) {
         Actions.deleteWhere { Actions.id eq id }
     }
 

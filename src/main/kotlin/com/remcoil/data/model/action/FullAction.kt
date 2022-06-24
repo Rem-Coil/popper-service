@@ -17,11 +17,11 @@ data class FullAction(
     @SerialName("batch_number")
     val batchNumber: String,
     @SerialName("bobbin_id")
-    val bobbinId: Int,
+    val bobbinId: Long,
     @SerialName("bobbin_number")
     val bobbinNumber: String,
     @SerialName("action_id")
-    val actionId: Int,
+    val actionId: Long,
     @SerialName("action_type")
     val actionType: String,
     @SerialName("done_time")

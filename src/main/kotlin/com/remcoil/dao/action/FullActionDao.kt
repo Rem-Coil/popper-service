@@ -29,13 +29,13 @@ class FullActionDao(private val database: Database) {
             .map(::extractFullAction)
     }
 
-    fun getByBobbinId(bobbinId: Int): List<FullAction> = transaction(database) {
+    fun getByBobbinId(bobbinId: Long): List<FullAction> = transaction(database) {
         FullActions
             .select { FullActions.bobbinId eq bobbinId}
             .map(::extractFullAction)
     }
 
-    fun getById(id: Int): FullAction? = transaction(database) {
+    fun getById(id: Long): FullAction? = transaction(database) {
         FullActions
             .select {FullActions.actionId eq id}
             .map(::extractFullAction)

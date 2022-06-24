@@ -23,12 +23,12 @@ fun Application.actionModule() {
             }
 
             get("/bobbin/{bobbin_id}") {
-                val actions = actionService.getByBobbinId(call.parameters["bobbin_id"]!!.toInt())
+                val actions = actionService.getByBobbinId(call.parameters["bobbin_id"]!!.toLong())
                 call.respond(actions)
             }
 
             delete("/{id}") {
-                actionService.deleteAction(call.parameters["id"]!!.toInt())
+                actionService.deleteAction(call.parameters["id"]!!.toLong())
                 call.respond(HttpStatusCode.OK)
             }
 
@@ -62,12 +62,12 @@ fun Application.actionModule() {
                 }
 
                 get("/bobbin/{bobbin_id}") {
-                    val actions = actionService.getFullByBobbinId(call.parameters["bobbin_id"]!!.toInt())
+                    val actions = actionService.getFullByBobbinId(call.parameters["bobbin_id"]!!.toLong())
                     call.respond(actions)
                 }
 
                 get("/{id}") {
-                    val action = actionService.getFullById(call.parameters["id"]!!.toInt())
+                    val action = actionService.getFullById(call.parameters["id"]!!.toLong())
                     call.respond(action ?: HttpStatusCode.BadRequest)
                 }
             }

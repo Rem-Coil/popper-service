@@ -46,7 +46,7 @@ paths:
           name: id
           required: true
           schema:
-            type: integer
+            type: number
       responses:
         '200':
           description: Bobbin information
@@ -65,7 +65,7 @@ paths:
           name: id
           required: true
           schema:
-            type: integer
+            type: number
       responses:
         '200':
           description: Bobbin deleted
@@ -83,7 +83,7 @@ paths:
           name: batch_id
           required: true
           schema:
-            type: integer
+            type: number
       responses:
         '200':
           description: List of bobbins of one batch
@@ -390,7 +390,7 @@ paths:
           name: bobbin_id
           required: true
           schema:
-            type: integer
+            type: number
       responses:
         '200':
           description: Full list of one bobbin actions
@@ -408,7 +408,7 @@ paths:
           name: id
           required: true
           schema:
-            type: integer
+            type: number
       responses:
         '200':
           description: Action deleted successfully
@@ -470,7 +470,7 @@ paths:
           name: bobbin_id
           required: true
           schema:
-            type: integer
+            type: number
       responses:
         '200':
           description: Full list of one bobbin actions
@@ -488,7 +488,7 @@ paths:
           name: id
           required: true
           schema:
-            type: integer
+            type: number
       responses:
         '200':
           description: Full action
@@ -600,11 +600,11 @@ components:
         batch_number:
           type: string
         bobbin_id:
-          type: integer
+          type: number
         bobbin_number:
           type: integer
         action_id:
-          type: integer
+          type: number
         action_type:
           type: string
         done_time:
@@ -623,7 +623,7 @@ components:
     Action:
       properties:
         id:
-          type: integer
+          type: number
         operator_id:
           type: integer
         bobbin_id:
@@ -698,7 +698,7 @@ components:
     Bobbin:
       properties:
         id:
-          type: integer
+          type: number
         batch_id:
           type: number
         bobbin_number:

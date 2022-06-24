@@ -27,7 +27,7 @@ fun Application.bobbinModule() {
             }
 
             get("/{id}") {
-                val bobbin = bobbinService.getById(call.parameters["id"]!!.toInt())
+                val bobbin = bobbinService.getById(call.parameters["id"]!!.toLong())
                 call.respond(bobbin ?: HttpStatusCode.BadRequest)
             }
 
@@ -44,7 +44,7 @@ fun Application.bobbinModule() {
             }
 
             delete("/{id}") {
-                bobbinService.deleteById(call.parameters["id"]!!.toInt())
+                bobbinService.deleteById(call.parameters["id"]!!.toLong())
                 call.respond(HttpStatusCode.OK)
             }
 

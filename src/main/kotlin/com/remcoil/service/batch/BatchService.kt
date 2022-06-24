@@ -81,7 +81,7 @@ class BatchService(
     suspend fun createByTask(task: Task, quantity: Int, batchNumber: Int) {
         val batch = createBatch(Batch(0, task.id, "${task.taskNumber} / $batchNumber"))
         for (i in 0 until quantity) {
-            bobbinService.createBobbin(Bobbin(0, batch.id, "${task.taskName} - ${batch.batchNumber} - $i"))
+            bobbinService.createBobbin(Bobbin(0, batch.id, "${task.taskName} - ${batch.batchNumber} - ${i+1}"))
         }
     }
 

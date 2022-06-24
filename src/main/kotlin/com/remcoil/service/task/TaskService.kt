@@ -69,7 +69,7 @@ class TaskService(
     suspend fun createTask(taskIdentity: TaskIdentity): Task {
         val task = taskDao.createTask(Task(taskIdentity))
         for (i in 0 until taskIdentity.batchNumber) {
-            batchService.createByTask(task, taskIdentity.batchSize, i)
+            batchService.createByTask(task, taskIdentity.batchSize, i+1)
         }
         logger.info("Создано ТЗ - ${task.taskName} ${task.taskNumber}")
         return task

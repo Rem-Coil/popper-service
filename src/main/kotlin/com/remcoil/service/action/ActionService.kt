@@ -27,13 +27,13 @@ class ActionService(private val actionDao: ActionDao,
         return actions
     }
 
-    fun getFullByBobbinId(bobbinId: Int): List<FullAction> {
+    fun getFullByBobbinId(bobbinId: Long): List<FullAction> {
         val actions = fullActionDao.getByBobbinId(bobbinId)
         logger.info("Отдали все операции по катушке с id = $bobbinId")
         return actions
     }
 
-    fun getFullById(id: Int): FullAction? {
+    fun getFullById(id: Long): FullAction? {
         val actions = fullActionDao.getById(id)
         logger.info("Отдали операцию с id - $id")
         return actions
@@ -45,7 +45,7 @@ class ActionService(private val actionDao: ActionDao,
         return actions
     }
 
-    suspend fun getByBobbinId(bobbinId: Int): List<Action> {
+    suspend fun getByBobbinId(bobbinId: Long): List<Action> {
         val actions = actionDao.getByBobbinId(bobbinId)
         logger.info("Отдали все операции по катушке - $bobbinId")
         return actions
@@ -62,7 +62,7 @@ class ActionService(private val actionDao: ActionDao,
         return act
     }
 
-    fun deleteAction(actionId: Int) {
+    fun deleteAction(actionId: Long) {
         actionDao.deleteAction(actionId)
         logger.info("Удалили данные об операции - $actionId")
     }
