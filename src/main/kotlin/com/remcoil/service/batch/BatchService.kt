@@ -15,30 +15,30 @@ class BatchService(
     private val bobbinService: BobbinService,
     private val actionService: ActionService
 ) {
-    fun getAll(): List<Batch> {
+    suspend fun getAll(): List<Batch> {
         val batches = batchDao.getAll()
         logger.info("Отдали все партии")
         return batches
     }
 
-    fun getById(id: Long): Batch? {
+    suspend fun getById(id: Long): Batch? {
         val batch = batchDao.getById(id)
         logger.info("Отдали партию с id = $id")
         return batch
     }
 
-    fun getByTaskId(taskId: Int): List<Batch> {
+    suspend fun getByTaskId(taskId: Int): List<Batch> {
         val batches = batchDao.getByTaskId(taskId)
         logger.info("Отдали партии для ТЗ - $taskId")
         return batches
     }
 
-    fun getFullById(batchId: Long): FullBatch {
+    suspend fun getFullById(batchId: Long): FullBatch {
         val batch = getById(batchId)
         return toFullBatch(batch!!)
     }
 
-    fun getAllFull(): List<FullBatch> {
+    suspend fun getAllFull(): List<FullBatch> {
         val batches = getAll()
         val fullBatches = mutableListOf<FullBatch>()
 
@@ -48,9 +48,9 @@ class BatchService(
         return fullBatches
     }
 
-    private fun toFullBatch(batch: Batch): FullBatch {
+    private suspend fun toFullBatch(batch: Batch): FullBatch {
         val quantity = bobbinService.getByBatchId(batch.id).count()
-        val fullBatch = FullBatch(id = batch.id, batchNumber = batch.batchNumber, task_id = batch.taskId, quantity = quantity, winding = 0, output = 0, isolation = 0, molding = 0, crimping = 0, quality = 0, testing = 0,)
+        val fullBatch = FullBatch(id = batch.id, batchNumber = batch.batchNumber, task_id = batch.taskId, quantity = quantity)
 
         val bobbins = actionService.getFullByBatchId(batch.id).groupBy { it.bobbinId }
 

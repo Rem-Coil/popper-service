@@ -9,37 +9,37 @@ import com.remcoil.utils.logger
 class ActionService(private val actionDao: ActionDao,
                     private val fullActionDao: FullActionDao) {
 
-    fun getAllFull(): List<FullAction> {
+    suspend fun getAllFull(): List<FullAction> {
         val actions = fullActionDao.getAll()
         logger.info("Отдали все операции")
         return actions
     }
 
-    fun getFullByBatchId(batchId: Long): List<FullAction> {
+    suspend fun getFullByBatchId(batchId: Long): List<FullAction> {
         val actions = fullActionDao.getByBatchId(batchId)
         logger.info("Отдали все операции по ТЗ - $batchId")
         return actions
     }
 
-    fun getFullByTaskId(taskId: Int): List<FullAction> {
+    suspend fun getFullByTaskId(taskId: Int): List<FullAction> {
         val actions = fullActionDao.getByTaskId(taskId)
         logger.info("Отдали все операции по ТЗ - $taskId")
         return actions
     }
 
-    fun getFullByBobbinId(bobbinId: Long): List<FullAction> {
+    suspend fun getFullByBobbinId(bobbinId: Long): List<FullAction> {
         val actions = fullActionDao.getByBobbinId(bobbinId)
         logger.info("Отдали все операции по катушке с id = $bobbinId")
         return actions
     }
 
-    fun getFullById(id: Long): FullAction? {
+    suspend fun getFullById(id: Long): FullAction? {
         val actions = fullActionDao.getById(id)
         logger.info("Отдали операцию с id - $id")
         return actions
     }
 
-    fun getAll(): List<Action> {
+    suspend fun getAll(): List<Action> {
         val actions = actionDao.getAll()
         logger.info("Отдали все операции")
         return actions
@@ -62,7 +62,7 @@ class ActionService(private val actionDao: ActionDao,
         return act
     }
 
-    fun deleteAction(actionId: Long) {
+    suspend fun deleteAction(actionId: Long) {
         actionDao.deleteAction(actionId)
         logger.info("Удалили данные об операции - $actionId")
     }

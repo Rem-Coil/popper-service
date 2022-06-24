@@ -7,25 +7,25 @@ import com.remcoil.utils.logger
 
 class BobbinService(private val bobbinDao: BobbinDao) {
 
-    fun getAll(): List<Bobbin> {
+    suspend fun getAll(): List<Bobbin> {
         val bobbins = bobbinDao.getAll()
         logger.info("Отдали все катушки")
         return bobbins
     }
 
-    fun getById(id: Long): Bobbin? {
+    suspend fun getById(id: Long): Bobbin? {
         val bobbin = bobbinDao.getById(id)
         logger.info("Отдали катушку - $id")
         return bobbin
     }
 
-    fun getByBatchId(batchId: Long): List<Bobbin> {
+    suspend fun getByBatchId(batchId: Long): List<Bobbin> {
         val bobbins = bobbinDao.getByBatchId(batchId)
         logger.info("Отдали катушки партии - $batchId")
         return bobbins
     }
 
-    fun getByBatches(batches : List<Batch>): List<Bobbin> {
+    suspend fun getByBatches(batches : List<Batch>): List<Bobbin> {
         val bobbins = bobbinDao.getByBatchesId(batches.map { batch -> batch.id })
         logger.info("Отдали катушки для партий $batches")
         return bobbins

@@ -4,24 +4,23 @@ import com.remcoil.data.database.Batches
 import com.remcoil.data.model.batch.Batch
 import com.remcoil.utils.safetySuspendTransactionAsync
 import org.jetbrains.exposed.sql.*
-import org.jetbrains.exposed.sql.transactions.transaction
 
 
 class BatchDao(private val database: Database) {
-    fun getAll() = transaction(database) {
+    suspend fun getAll() = safetySuspendTransactionAsync(database) {
         Batches
             .selectAll()
             .map(::extractBatch)
     }
 
-    fun getById(id: Long): Batch? = transaction(database) {
+    suspend fun getById(id: Long): Batch? = safetySuspendTransactionAsync(database) {
         Batches
             .select { Batches.id eq id }
             .map(::extractBatch)
             .firstOrNull()
     }
 
-    fun getByTaskId(id: Int): List<Batch> = transaction(database) {
+    suspend fun getByTaskId(id: Int): List<Batch> = safetySuspendTransactionAsync(database) {
         Batches
             .select { Batches.taskId eq id }
             .map(::extractBatch)

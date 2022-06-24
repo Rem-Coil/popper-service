@@ -4,29 +4,28 @@ import com.remcoil.data.database.Bobbins
 import com.remcoil.data.model.bobbin.Bobbin
 import com.remcoil.utils.safetySuspendTransactionAsync
 import org.jetbrains.exposed.sql.*
-import org.jetbrains.exposed.sql.transactions.transaction
 
 class BobbinDao(private val database: Database) {
 
-    fun getAll(): List<Bobbin> = transaction(database) {
+    suspend fun getAll(): List<Bobbin> = safetySuspendTransactionAsync(database) {
         Bobbins
             .selectAll()
             .map(::extractBobbin)
     }
 
-    fun getByBatchId(id: Long): List<Bobbin> = transaction(database) {
+    suspend fun getByBatchId(id: Long): List<Bobbin> = safetySuspendTransactionAsync(database) {
         Bobbins
             .select { Bobbins.batchId eq id }
             .map(::extractBobbin)
     }
 
-    fun getByBatchesId(idList: List<Long>): List<Bobbin> = transaction(database) {
+    suspend fun getByBatchesId(idList: List<Long>): List<Bobbin> = safetySuspendTransactionAsync(database) {
         Bobbins
             .select { Bobbins.batchId inList(idList) }
             .map(::extractBobbin)
     }
 
-    fun getById(id: Long): Bobbin? = transaction(database) {
+    suspend fun getById(id: Long): Bobbin? = safetySuspendTransactionAsync(database) {
         Bobbins
             .select { Bobbins.id eq id }
             .map(::extractBobbin)

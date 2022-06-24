@@ -14,7 +14,7 @@ import java.util.*
 
 class OperatorService(private val operatorDao: OperatorDao, private val config: JwtConfig) {
 
-    fun getOperator(credentials: OperatorCredentials): String? {
+    suspend fun getOperator(credentials: OperatorCredentials): String? {
         val operator = operatorDao.getOperator(credentials.phone)
 
         if (operator != null && credentials.password == operator.password) {
@@ -25,14 +25,14 @@ class OperatorService(private val operatorDao: OperatorDao, private val config: 
         return null
     }
 
-    fun getAllOperators(onlyActive: Boolean): List<Operator> {
+    suspend fun getAllOperators(onlyActive: Boolean): List<Operator> {
         val operators = operatorDao.getAllOperators(onlyActive)
         logger.info("Отдали всех операторов")
         return operators
     }
 
-    fun createOperator(operator: Operator): String? {
-        val op = if (operatorDao.isNotExist(operator) || !checkRole(operator)) generateToken(operatorDao.createOperator(operator)) else null
+    suspend fun createOperator(operator: Operator): String? {
+        val op = if (operatorDao.isNotExist(operator) && checkRole(operator)) generateToken(operatorDao.createOperator(operator)) else null
         if (op == null) {
             logger.info("Некорректные данные")
         } else {
@@ -41,12 +41,12 @@ class OperatorService(private val operatorDao: OperatorDao, private val config: 
         return op
     }
 
-    fun deleteOperator(id: Int) {
+    suspend fun deleteOperator(id: Int) {
         operatorDao.deleteOperator(id)
         logger.info("Данные об операторе удалены")
     }
 
-    fun updateOperator(operator: Operator) {
+    suspend fun updateOperator(operator: Operator) {
         if (checkRole(operator) && !operatorDao.isNotExist(operator)) {
             operatorDao.updateOperator(operator)
         } else {

@@ -15,24 +15,24 @@ class TaskService(
     private val bobbinService: BobbinService
 ) {
 
-    fun getAll(): List<Task> {
+    suspend fun getAll(): List<Task> {
         val tasks = taskDao.getAllTasks()
         logger.info("Вернули все ТЗ")
         return tasks
     }
 
-    fun getById(taskId: Int): Task? {
+    suspend fun getById(taskId: Int): Task? {
         val task = taskDao.getById(taskId)
         logger.info("Вернули данные от ТЗ - $taskId")
         return task
     }
 
-    fun getFullById(taskId: Int): FullTask {
+    suspend fun getFullById(taskId: Int): FullTask {
         val task = getById(taskId)
         return toFullTask(task!!)
     }
 
-    fun getAllFull(): List<FullTask> {
+    suspend fun getAllFull(): List<FullTask> {
         val tasks = getAll()
         val fullTasks = mutableListOf<FullTask>()
 
@@ -42,9 +42,9 @@ class TaskService(
         return fullTasks
     }
 
-    private fun toFullTask(task: Task): FullTask {
+    private suspend fun toFullTask(task: Task): FullTask {
         val batches = batchService.getByTaskId(task.id)
-        val fullTask = FullTask(task.id, task.taskName, task.taskNumber, 0, 0, 0, 0, 0, 0, 0, 0)
+        val fullTask = FullTask(task.id, task.taskName, task.taskNumber)
 
         for (batch in batches) {
             val fullBatch = batchService.getFullById(batch.id)
@@ -80,7 +80,7 @@ class TaskService(
         logger.info("Обновили ТЗ")
     }
 
-    fun getBobbinsByTaskId(taskId: Int): List<Bobbin> {
+    suspend fun getBobbinsByTaskId(taskId: Int): List<Bobbin> {
         val batches = batchService.getByTaskId(taskId)
         return bobbinService.getByBatches(batches)
     }

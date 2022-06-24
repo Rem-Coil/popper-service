@@ -10,12 +10,12 @@ data class FullTask(
     val taskName: String,
     @SerialName("task_number")
     val taskNumber: String,
-    var quantity: Int,
-    var winding: Int,
-    var output: Int,
-    var isolation: Int,
-    var molding: Int,
-    var crimping: Int,
-    var quality: Int,
-    var testing: Int
+    var quantity: Int = 0,
+    var winding: Int = 0,
+    var output: Int = 0,
+    var isolation: Int = 0,
+    var molding: Int = 0,
+    var crimping: Int = 0,
+    var quality: Int = 0,
+    var testing: Int = 0
 )

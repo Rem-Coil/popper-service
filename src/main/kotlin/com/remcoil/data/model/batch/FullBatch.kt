@@ -9,12 +9,12 @@ data class FullBatch(
     val task_id: Int,
     @SerialName("batch_number")
     val batchNumber: String,
-    val quantity: Int,
-    var winding: Int,
-    var output: Int,
-    var isolation: Int,
-    var molding: Int,
-    var crimping: Int,
-    var quality: Int,
-    var testing: Int
+    val quantity: Int = 0,
+    var winding: Int = 0,
+    var output: Int = 0,
+    var isolation: Int = 0,
+    var molding: Int = 0,
+    var crimping: Int = 0,
+    var quality: Int = 0,
+    var testing: Int = 0
 )

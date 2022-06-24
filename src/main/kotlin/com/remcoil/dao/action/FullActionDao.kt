@@ -2,40 +2,40 @@ package com.remcoil.dao.action
 
 import com.remcoil.data.database.FullActions
 import com.remcoil.data.model.action.FullAction
+import com.remcoil.utils.safetySuspendTransactionAsync
 import kotlinx.datetime.toKotlinLocalDateTime
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.selectAll
-import org.jetbrains.exposed.sql.transactions.transaction
 
 class FullActionDao(private val database: Database) {
 
-    fun getAll(): List<FullAction> = transaction(database) {
+    suspend fun getAll(): List<FullAction> = safetySuspendTransactionAsync(database) {
         FullActions
             .selectAll()
             .map(::extractFullAction)
     }
 
-    fun getByTaskId(taskId: Int): List<FullAction> = transaction(database) {
+    suspend fun getByTaskId(taskId: Int): List<FullAction> = safetySuspendTransactionAsync(database) {
         FullActions
             .select { FullActions.taskId eq taskId}
             .map(::extractFullAction)
     }
 
-    fun getByBatchId(batchId: Long): List<FullAction> = transaction(database) {
+    suspend fun getByBatchId(batchId: Long): List<FullAction> = safetySuspendTransactionAsync(database) {
         FullActions
             .select { FullActions.batchId eq batchId }
             .map(::extractFullAction)
     }
 
-    fun getByBobbinId(bobbinId: Long): List<FullAction> = transaction(database) {
+    suspend fun getByBobbinId(bobbinId: Long): List<FullAction> = safetySuspendTransactionAsync(database) {
         FullActions
             .select { FullActions.bobbinId eq bobbinId}
             .map(::extractFullAction)
     }
 
-    fun getById(id: Long): FullAction? = transaction(database) {
+    suspend fun getById(id: Long): FullAction? = safetySuspendTransactionAsync(database) {
         FullActions
             .select {FullActions.actionId eq id}
             .map(::extractFullAction)

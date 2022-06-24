@@ -6,11 +6,10 @@ import com.remcoil.utils.safetySuspendTransactionAsync
 import kotlinx.datetime.toJavaLocalDateTime
 import kotlinx.datetime.toKotlinLocalDateTime
 import org.jetbrains.exposed.sql.*
-import org.jetbrains.exposed.sql.transactions.transaction
 
 class ActionDao(private val database: Database) {
 
-    fun getAll(): List<Action> = transaction(database) {
+    suspend fun getAll(): List<Action> = safetySuspendTransactionAsync(database) {
         Actions
             .selectAll()
             .map(::extractAction)
@@ -43,7 +42,7 @@ class ActionDao(private val database: Database) {
         action.copy(id = id.value)
     }
 
-    fun deleteAction(id: Long) = transaction(database) {
+    suspend fun deleteAction(id: Long) = safetySuspendTransactionAsync(database) {
         Actions.deleteWhere { Actions.id eq id }
     }
 
