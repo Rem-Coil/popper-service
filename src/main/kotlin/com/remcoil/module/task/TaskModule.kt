@@ -12,37 +12,54 @@ import org.kodein.di.instance
 import org.kodein.di.ktor.closestDI
 
 fun Application.taskModule() {
-    val service: TaskService by closestDI().instance()
+    val taskService: TaskService by closestDI().instance()
 
     routing {
         route("/task") {
 
+            get("/bobbins/{task_id}") {
+                val bobbins = taskService.getBobbinsByTaskId(call.parameters["task_id"]!!.toInt())
+                call.respond(bobbins)
+            }
+
             get {
-                val tasks = service.getAllTasks()
+                val tasks = taskService.getAll()
                 call.respond(tasks)
             }
 
             get("/{id}") {
-                val task = service.getById(call.parameters["id"]!!.toInt())
+                val task = taskService.getById(call.parameters["id"]!!.toInt())
                 call.respond(task ?: HttpStatusCode.BadRequest)
             }
 
             post {
                 call.safetyReceive<TaskIdentity> { task ->
-                    call.respond(service.createTask(task))
+                    call.respond(taskService.createTask(task))
                 }
             }
 
             put {
                 call.safetyReceive<Task> { task ->
-                    service.updateTask(task)
+                    taskService.updateTask(task)
                     call.respond(HttpStatusCode.OK)
                 }
             }
 
             delete("/{id}") {
-                service.deleteTask(call.parameters["id"]!!.toInt())
+                taskService.deleteTask(call.parameters["id"]!!.toInt())
                 call.respond(HttpStatusCode.OK)
+            }
+
+            route("/full") {
+                get {
+                    val tasks = taskService.getAllFull()
+                    call.respond(tasks)
+                }
+
+                get("/{id}") {
+                    val task = taskService.getFullById(call.parameters["id"]!!.toInt())
+                    call.respond(task)
+                }
             }
         }
     }

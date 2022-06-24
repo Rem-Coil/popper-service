@@ -1,6 +1,5 @@
 package com.remcoil.dao.task
 
-import com.remcoil.data.database.Bobbins
 import com.remcoil.data.database.Tasks
 import com.remcoil.data.model.task.Task
 import com.remcoil.utils.safetySuspendTransactionAsync
@@ -34,15 +33,6 @@ class TaskDao(private val database: Database) {
             it[taskNumber] = task.taskNumber
         }
         task.copy(id = id.value)
-    }
-
-    private fun createBobbins(number: String, id: Long, quantity: Int) {
-        for (i in 1..quantity) {
-            Bobbins.insert {
-                it[batchId] = id
-                it[bobbinNumber] = "$number-$i"
-            }
-        }
     }
 
     suspend fun deleteTask(id: Int) = safetySuspendTransactionAsync(database) {

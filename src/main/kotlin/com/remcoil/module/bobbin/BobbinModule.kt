@@ -1,7 +1,9 @@
 package com.remcoil.module.bobbin
 
+import com.remcoil.data.model.bobbin.Bobbin
 import com.remcoil.service.bobbin.BobbinService
 import com.remcoil.service.task.TaskService
+import com.remcoil.utils.safetyReceive
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.html.*
@@ -29,9 +31,21 @@ fun Application.bobbinModule() {
                 call.respond(bobbin ?: HttpStatusCode.BadRequest)
             }
 
-            get("/batch/{id}") {
-                val bobbins = bobbinService.getByBatchId(call.parameters["id"]!!.toLong())
+            get("/batch/{batch_id}") {
+                val bobbins = bobbinService.getByBatchId(call.parameters["batch_id"]!!.toLong())
                 call.respond(bobbins)
+            }
+
+            post {
+                call.safetyReceive<Bobbin> { bobbin ->
+                    val createdBobbin = bobbinService.createBobbin(bobbin)
+                    call.respond(createdBobbin)
+                }
+            }
+
+            delete("/{id}") {
+                bobbinService.deleteById(call.parameters["id"]!!.toInt())
+                call.respond(HttpStatusCode.OK)
             }
 
             get("/styles.css") {
@@ -94,7 +108,7 @@ fun Application.bobbinModule() {
                                         }
                                     }
                                     td {
-                                        img(src="https://api.qrserver.com/v1/create-qr-code/?data=bobbin:${bobbin.id}")
+                                        img(src = "https://api.qrserver.com/v1/create-qr-code/?data=bobbin:${bobbin.id}")
                                     }
                                 }
                             }

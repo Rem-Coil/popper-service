@@ -25,6 +25,11 @@ fun Application.batchModule() {
                 call.respond(batch ?: HttpStatusCode.BadRequest)
             }
 
+            get("task/{task_id}") {
+                val batches = batchService.getByTaskId(call.parameters["task_id"]!!.toInt())
+                call.respond(batches)
+            }
+
             post {
                 call.safetyReceive<Batch> { batch ->
                     call.respond(batchService.createBatch(batch))
@@ -34,6 +39,18 @@ fun Application.batchModule() {
             delete("/{id}") {
                 batchService.deleteBatchById(call.parameters["id"]!!.toLong())
                 call.respond(HttpStatusCode.OK)
+            }
+
+            route("/full") {
+                get {
+                    val batches = batchService.getAllFull()
+                    call.respond(batches)
+                }
+
+                get("/{id}") {
+                    val batch = batchService.getFullById(call.parameters["id"]!!.toLong())
+                    call.respond(batch)
+                }
             }
         }
     }

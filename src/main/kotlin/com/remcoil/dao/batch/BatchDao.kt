@@ -3,7 +3,6 @@ package com.remcoil.dao.batch
 import com.remcoil.data.database.Batches
 import com.remcoil.data.model.batch.Batch
 import com.remcoil.utils.safetySuspendTransactionAsync
-import kotlinx.css.data
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 
@@ -30,7 +29,8 @@ class BatchDao(private val database: Database) {
 
     suspend fun createBatch(batch: Batch) = safetySuspendTransactionAsync(database) {
         val id = Batches.insertAndGetId {
-            it[Batches.taskId] = batch.taskId
+            it[taskId] = batch.taskId
+            it[batchNumber] = batch.batchNumber
         }
         batch.copy(id = id.value)
     }
@@ -41,6 +41,7 @@ class BatchDao(private val database: Database) {
 
     private fun extractBatch(resultRow: ResultRow): Batch = Batch(
         resultRow[Batches.id].value,
-        resultRow[Batches.taskId].value
+        resultRow[Batches.taskId].value,
+        resultRow[Batches.batchNumber]
     )
 }

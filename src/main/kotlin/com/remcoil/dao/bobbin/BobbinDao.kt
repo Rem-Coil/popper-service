@@ -33,12 +33,16 @@ class BobbinDao(private val database: Database) {
             .firstOrNull()
     }
 
-    suspend fun createBobbin(bobbin: Bobbin): Bobbin = safetySuspendTransactionAsync(database) {
+    suspend fun create(bobbin: Bobbin): Bobbin = safetySuspendTransactionAsync(database) {
         val id = Bobbins.insertAndGetId {
             it[batchId] = bobbin.batchId
             it[bobbinNumber] = bobbin.bobbinNumber
         }
         bobbin.copy(id = id.value)
+    }
+
+    suspend fun deleteById(id: Int) = safetySuspendTransactionAsync(database){
+        Bobbins.deleteWhere { Bobbins.id eq id }
     }
 
     private fun extractBobbin(row: ResultRow): Bobbin = Bobbin(

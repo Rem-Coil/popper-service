@@ -6,5 +6,7 @@ import kotlinx.serialization.SerialName
 data class Batch(
     val id: Long,
     @SerialName("task_name")
-    val taskId: Int
+    val taskId: Int,
+    @SerialName("batch_number")
+    val batchNumber: String
 )

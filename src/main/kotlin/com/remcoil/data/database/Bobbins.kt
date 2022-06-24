@@ -5,5 +5,5 @@ import org.jetbrains.exposed.sql.ReferenceOption
 
 object Bobbins: IntIdTable("bobbin") {
     val batchId = reference("batch_id", Batches, onDelete = ReferenceOption.CASCADE)
-    val bobbinNumber = varchar("bobbin_number", 32)
+    val bobbinNumber = varchar("bobbin_number", 128)
 }
