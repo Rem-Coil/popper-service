@@ -1,7 +1,9 @@
 package com.remcoil.module.bobbin
 
+import com.remcoil.data.model.bobbin.Bobbin
 import com.remcoil.service.bobbin.BobbinService
 import com.remcoil.service.task.TaskService
+import com.remcoil.utils.safetyReceive
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.html.*
@@ -25,13 +27,25 @@ fun Application.bobbinModule() {
             }
 
             get("/{id}") {
-                val bobbin = bobbinService.getById(call.parameters["id"]!!.toInt())
+                val bobbin = bobbinService.getById(call.parameters["id"]!!.toLong())
                 call.respond(bobbin ?: HttpStatusCode.BadRequest)
             }
 
-            get("/task/{id}") {
-                val bobbins = bobbinService.getByTask(call.parameters["id"]!!.toInt())
+            get("/batch/{batch_id}") {
+                val bobbins = bobbinService.getByBatchId(call.parameters["batch_id"]!!.toLong())
                 call.respond(bobbins)
+            }
+
+            post {
+                call.safetyReceive<Bobbin> { bobbin ->
+                    val createdBobbin = bobbinService.createBobbin(bobbin)
+                    call.respond(createdBobbin)
+                }
+            }
+
+            delete("/{id}") {
+                bobbinService.deleteById(call.parameters["id"]!!.toLong())
+                call.respond(HttpStatusCode.OK)
             }
 
             get("/styles.css") {
@@ -64,7 +78,7 @@ fun Application.bobbinModule() {
 
 
             get("/codes/{id}") {
-                val bobbins = bobbinService.getByTask(call.parameters["id"]!!.toInt())
+                val bobbins = bobbinService.getByBatchId(call.parameters["id"]!!.toLong())
                 val task = taskService.getById(call.parameters["id"]!!.toInt())
 
                 call.respondHtml {
@@ -90,11 +104,11 @@ fun Application.bobbinModule() {
                                             +"ID катушки: ${bobbin.id}"
                                         }
                                         p {
-                                            +"ID тз: ${bobbin.taskId}"
+                                            +"ID партии: ${bobbin.batchId}"
                                         }
                                     }
                                     td {
-                                        img(src="https://api.qrserver.com/v1/create-qr-code/?data=bobbin:${bobbin.id}")
+                                        img(src = "https://api.qrserver.com/v1/create-qr-code/?data=bobbin:${bobbin.id}")
                                     }
                                 }
                             }

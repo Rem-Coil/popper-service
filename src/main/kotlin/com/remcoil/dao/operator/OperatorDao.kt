@@ -2,38 +2,38 @@ package com.remcoil.dao.operator
 
 import com.remcoil.data.model.operator.Operator
 import com.remcoil.data.database.Operators
+import com.remcoil.utils.safetySuspendTransactionAsync
 import org.jetbrains.exposed.sql.*
-import org.jetbrains.exposed.sql.transactions.transaction
 
 class OperatorDao(private val database: Database) {
-    fun getOperator(phone: String): Operator? = transaction(database) {
+    suspend fun getOperator(phone: String): Operator? = safetySuspendTransactionAsync(database) {
         Operators
             .select { (Operators.phone eq phone) and (Operators.active eq true)}
             .map (::extractOperator)
             .firstOrNull()
     }
 
-    fun getAllOperators(onlyActive: Boolean): List<Operator> = transaction(database) {
+    suspend fun getAllOperators(onlyActive: Boolean): List<Operator> = safetySuspendTransactionAsync(database) {
         Operators
             .select { (Operators.active eq true) or (Operators.active eq onlyActive)}
             .map(::extractOperator)
     }
 
-    fun getById(id: Int): Operator? = transaction(database) {
+    suspend fun getById(id: Int): Operator? = safetySuspendTransactionAsync(database) {
         Operators
             .select { Operators.id eq id }
             .map(::extractOperator)
             .firstOrNull()
     }
 
-    fun isNotExist(operator: Operator): Boolean = transaction(database) {
+    suspend fun isNotExist(operator: Operator): Boolean = safetySuspendTransactionAsync(database) {
         Operators
             .select { (Operators.active eq true) and (Operators.phone eq operator.phone) }
             .map(::extractOperator)
             .isEmpty()
     }
 
-    fun createOperator(operator: Operator): Operator = transaction(database) {
+    suspend fun createOperator(operator: Operator): Operator = safetySuspendTransactionAsync(database) {
         val id = Operators.insertAndGetId {
             it[firstName] = operator.firstName
             it[secondName] = operator.secondName
@@ -41,17 +41,18 @@ class OperatorDao(private val database: Database) {
             it[phone] = operator.phone
             it[password] = operator.password
             it[active] = true
+            it[role] = operator.role
         }
         operator.copy(id = id.value)
     }
 
-    fun deleteOperator(id: Int) = transaction(database) {
+    suspend fun deleteOperator(id: Int) = safetySuspendTransactionAsync(database) {
         Operators.update({ Operators.id eq id }) {
             it[active] = false
         }
     }
 
-    fun updateOperator(operator: Operator) = transaction {
+    suspend fun updateOperator(operator: Operator) = safetySuspendTransactionAsync(database) {
         Operators.update({Operators.id eq operator.id}) {
             it[firstName] = operator.firstName
             it[secondName] = operator.secondName
@@ -63,7 +64,7 @@ class OperatorDao(private val database: Database) {
         }
     }
 
-    fun trueDeleteOperator(phone: String) = transaction(database) {
+    suspend fun trueDeleteOperator(phone: String) = safetySuspendTransactionAsync(database) {
         Operators.deleteWhere { Operators.phone eq phone }
     }
 

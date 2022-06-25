@@ -12,41 +12,63 @@ import org.kodein.di.instance
 import org.kodein.di.ktor.closestDI
 
 fun Application.actionModule() {
-    val service: ActionService by closestDI().instance()
+    val actionService: ActionService by closestDI().instance()
 
     routing {
         route("/action") {
 
             get() {
-                val actions = service.getAll()
+                val actions = actionService.getAll()
                 call.respond(actions)
             }
 
-            get("/task/{taskId}") {
-                val actions = service.getByTaskId(call.parameters["taskId"]!!.toInt())
-                call.respond(actions)
-            }
-
-            get("/bobbin/{bobbinId}") {
-                val actions = service.getByBobbinId(call.parameters["bobbinId"]!!.toInt())
+            get("/bobbin/{bobbin_id}") {
+                val actions = actionService.getByBobbinId(call.parameters["bobbin_id"]!!.toLong())
                 call.respond(actions)
             }
 
             delete("/{id}") {
-                service.deleteAction(call.parameters["id"]!!.toInt())
+                actionService.deleteAction(call.parameters["id"]!!.toLong())
                 call.respond(HttpStatusCode.OK)
             }
 
             post {
                 call.safetyReceive<Action> { action ->
-                    call.respond(service.createAction(action)?: HttpStatusCode.Forbidden)
+                    call.respond(actionService.createAction(action))
                 }
             }
 
             put {
                 call.safetyReceive<Action> { action ->
-                    service.updateAction(action)
+                    actionService.updateAction(action)
                     call.respond(HttpStatusCode.OK)
+                }
+            }
+
+            route("/full") {
+                get() {
+                    val actions = actionService.getAllFull()
+                    call.respond(actions)
+                }
+
+                get("/task/{task_id}") {
+                    val actions = actionService.getFullByTaskId(call.parameters["task_id"]!!.toInt())
+                    call.respond(actions)
+                }
+
+                get("/batch/{batch_id}") {
+                    val actions = actionService.getFullByBatchId(call.parameters["batch_id"]!!.toLong())
+                    call.respond(actions)
+                }
+
+                get("/bobbin/{bobbin_id}") {
+                    val actions = actionService.getFullByBobbinId(call.parameters["bobbin_id"]!!.toLong())
+                    call.respond(actions)
+                }
+
+                get("/{id}") {
+                    val action = actionService.getFullById(call.parameters["id"]!!.toLong())
+                    call.respond(action ?: HttpStatusCode.BadRequest)
                 }
             }
         }

@@ -2,10 +2,13 @@ package com.remcoil.di
 
 import com.remcoil.config.AppConfig
 import com.remcoil.dao.action.ActionDao
+import com.remcoil.dao.action.FullActionDao
+import com.remcoil.dao.batch.BatchDao
 import com.remcoil.dao.bobbin.BobbinDao
 import com.remcoil.dao.operator.OperatorDao
 import com.remcoil.dao.task.TaskDao
 import com.remcoil.service.action.ActionService
+import com.remcoil.service.batch.BatchService
 import com.remcoil.service.bobbin.BobbinService
 import com.remcoil.service.operator.OperatorService
 import com.remcoil.service.task.TaskService
@@ -44,15 +47,21 @@ fun DI.Builder.operatorComponents() {
 
 fun DI.Builder.taskComponents() {
     bind<TaskDao>() with singleton { TaskDao(instance()) }
-    bind<TaskService>() with singleton { TaskService(instance()) }
+    bind<TaskService>() with singleton { TaskService(instance(), instance(), instance())  }
 }
 
 fun DI.Builder.actionComponents() {
     bind<ActionDao>() with singleton { ActionDao(instance()) }
-    bind<ActionService>() with singleton { ActionService(instance()) }
+    bind<FullActionDao>() with singleton { FullActionDao(instance()) }
+    bind<ActionService>() with singleton { ActionService(instance(), instance()) }
 }
 
 fun DI.Builder.bobbinComponents() {
     bind<BobbinDao>() with singleton { BobbinDao(instance()) }
     bind<BobbinService>() with singleton { BobbinService(instance()) }
+}
+
+fun DI.Builder.batchComponents() {
+    bind<BatchDao>() with singleton { BatchDao(instance()) }
+    bind<BatchService>() with singleton { BatchService(instance(), instance(), instance()) }
 }

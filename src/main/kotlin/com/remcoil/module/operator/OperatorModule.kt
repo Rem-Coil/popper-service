@@ -2,6 +2,7 @@ package com.remcoil.module.operator
 
 import com.remcoil.data.model.operator.Operator
 import com.remcoil.service.operator.OperatorService
+import com.remcoil.utils.exceptions.WrongParamException
 import com.remcoil.utils.safetyReceive
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -42,8 +43,12 @@ fun Application.operatorModule() {
 
             put {
                 call.safetyReceive<Operator> { operator ->
-                    service.updateOperator(operator)
-                    call.respond(HttpStatusCode.OK)
+                    try {
+                        service.updateOperator(operator)
+                        call.respond(HttpStatusCode.OK)
+                    } catch (e: WrongParamException) {
+                        call.respond(HttpStatusCode.BadRequest)
+                    }
                 }
             }
 

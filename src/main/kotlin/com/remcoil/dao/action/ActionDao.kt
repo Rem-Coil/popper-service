@@ -1,47 +1,24 @@
 package com.remcoil.dao.action
 
-import com.remcoil.data.database.Actions
-import com.remcoil.data.database.Bobbins
-import com.remcoil.data.database.Operators
-import com.remcoil.data.database.TaskTable
+import com.remcoil.data.database.*
 import com.remcoil.data.model.action.Action
-import com.remcoil.data.model.action.FullAction
 import com.remcoil.utils.safetySuspendTransactionAsync
 import kotlinx.datetime.toJavaLocalDateTime
 import kotlinx.datetime.toKotlinLocalDateTime
 import org.jetbrains.exposed.sql.*
-import org.jetbrains.exposed.sql.transactions.transaction
 
 class ActionDao(private val database: Database) {
 
-    fun getAll(): List<Action> = transaction(database) {
+    suspend fun getAll(): List<Action> = safetySuspendTransactionAsync(database) {
         Actions
             .selectAll()
             .map(::extractAction)
     }
 
-    fun getByTaskId(id: Int): List<FullAction> = transaction(database) {
-        (Actions innerJoin Operators innerJoin Bobbins innerJoin TaskTable)
-            .slice(
-                TaskTable.id, TaskTable.taskName, TaskTable.taskNumber,
-                Bobbins.id, Bobbins.bobbinNumber,
-                Operators.firstName, Operators.secondName, Operators.surname,
-                Actions.actionType, Actions.doneTime, Actions.successful
-            )
-            .select { TaskTable.id eq id }
-            .map(::extractFullAction)
-    }
-
-    fun getByBobbinId(id: Int): List<FullAction> = transaction(database) {
-        (Actions innerJoin Operators innerJoin Bobbins innerJoin TaskTable)
-            .slice(
-                TaskTable.id, TaskTable.taskName, TaskTable.taskNumber,
-                Bobbins.id, Bobbins.bobbinNumber,
-                Operators.firstName, Operators.secondName, Operators.surname,
-                Actions.actionType, Actions.doneTime, Actions.successful
-            )
+    suspend fun getByBobbinId(id: Long): List<Action> = safetySuspendTransactionAsync(database) {
+        Actions
             .select { Actions.bobbinId eq id }
-            .map(::extractFullAction)
+            .map(::extractAction)
     }
 
     suspend fun updateAction(action: Action) = safetySuspendTransactionAsync(database) {
@@ -65,20 +42,9 @@ class ActionDao(private val database: Database) {
         action.copy(id = id.value)
     }
 
-    fun deleteAction(id: Int) = transaction(database) {
+    suspend fun deleteAction(id: Long) = safetySuspendTransactionAsync(database) {
         Actions.deleteWhere { Actions.id eq id }
     }
-
-    private fun extractFullAction(row: ResultRow): FullAction = FullAction(
-        row[Bobbins.id].value,
-        row[Bobbins.bobbinNumber],
-        row[Operators.firstName],
-        row[Operators.secondName],
-        row[Operators.surname],
-        row[Actions.actionType],
-        row[Actions.doneTime].toKotlinLocalDateTime(),
-        row[Actions.successful]
-    )
 
     private fun extractAction(row: ResultRow): Action = Action(
         row[Actions.id].value,

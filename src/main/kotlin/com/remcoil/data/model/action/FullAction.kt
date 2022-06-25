@@ -6,16 +6,31 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class FullAction(
-    val bobbinId: Int,
+    @SerialName("task_id")
+    val taskId: Int,
+    @SerialName("task_name")
+    val taskName: String,
+    @SerialName("task_number")
+    val taskNumber: String,
+    @SerialName("batch_id")
+    val batchId: Long,
+    @SerialName("batch_number")
+    val batchNumber: String,
+    @SerialName("bobbin_id")
+    val bobbinId: Long,
     @SerialName("bobbin_number")
     val bobbinNumber: String,
-    val firstname: String,
-    @SerialName("second_name")
-    val secondName: String,
-    val surname: String,
+    @SerialName("action_id")
+    val actionId: Long,
     @SerialName("action_type")
     val actionType: String,
     @SerialName("done_time")
     val doneTime: LocalDateTime,
-    val successful: Boolean
+    val successful: Boolean,
+    @SerialName("operator_id")
+    val operatorId: Int,
+    val firstname: String,
+    @SerialName("second_name")
+    val secondName: String,
+    val surname: String
 )

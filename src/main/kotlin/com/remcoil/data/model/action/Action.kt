@@ -7,11 +7,11 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class Action(
-    val id: Int,
+    val id: Long,
     @SerialName("operator_id")
     val operatorId: Int,
     @SerialName("bobbin_id")
-    val bobbinId: Int,
+    val bobbinId: Long,
     @SerialName("action_type")
     val actionType: String,
     @SerialName("done_time")

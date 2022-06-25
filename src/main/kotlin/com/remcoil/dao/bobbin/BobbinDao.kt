@@ -2,36 +2,51 @@ package com.remcoil.dao.bobbin
 
 import com.remcoil.data.database.Bobbins
 import com.remcoil.data.model.bobbin.Bobbin
-import org.jetbrains.exposed.sql.Database
-import org.jetbrains.exposed.sql.ResultRow
-import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.selectAll
-import org.jetbrains.exposed.sql.transactions.transaction
+import com.remcoil.utils.safetySuspendTransactionAsync
+import org.jetbrains.exposed.sql.*
 
 class BobbinDao(private val database: Database) {
 
-    fun getAll(): List<Bobbin> = transaction(database) {
+    suspend fun getAll(): List<Bobbin> = safetySuspendTransactionAsync(database) {
         Bobbins
             .selectAll()
             .map(::extractBobbin)
     }
 
-    fun getByTaskId(id: Int): List<Bobbin> = transaction(database) {
+    suspend fun getByBatchId(id: Long): List<Bobbin> = safetySuspendTransactionAsync(database) {
         Bobbins
-            .select { Bobbins.taskId eq id }
+            .select { Bobbins.batchId eq id }
             .map(::extractBobbin)
     }
 
-    fun getById(id: Int): Bobbin? = transaction(database) {
+    suspend fun getByBatchesId(idList: List<Long>): List<Bobbin> = safetySuspendTransactionAsync(database) {
+        Bobbins
+            .select { Bobbins.batchId inList(idList) }
+            .map(::extractBobbin)
+    }
+
+    suspend fun getById(id: Long): Bobbin? = safetySuspendTransactionAsync(database) {
         Bobbins
             .select { Bobbins.id eq id }
             .map(::extractBobbin)
             .firstOrNull()
     }
 
+    suspend fun create(bobbin: Bobbin): Bobbin = safetySuspendTransactionAsync(database) {
+        val id = Bobbins.insertAndGetId {
+            it[batchId] = bobbin.batchId
+            it[bobbinNumber] = bobbin.bobbinNumber
+        }
+        bobbin.copy(id = id.value)
+    }
+
+    suspend fun deleteById(id: Long) = safetySuspendTransactionAsync(database){
+        Bobbins.deleteWhere { Bobbins.id eq id }
+    }
+
     private fun extractBobbin(row: ResultRow): Bobbin = Bobbin(
         row[Bobbins.id].value,
-        row[Bobbins.taskId].value,
+        row[Bobbins.batchId].value,
         row[Bobbins.bobbinNumber]
     )
 }

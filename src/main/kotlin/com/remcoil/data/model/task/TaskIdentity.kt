@@ -9,5 +9,8 @@ data class TaskIdentity(
     val taskName: String,
     @SerialName("task_number")
     val taskNumber: String,
-    val quantity: Int
+    @SerialName("batch_number")
+    val batchNumber: Int,
+    @SerialName("batch_size")
+    val batchSize: Int
 )
