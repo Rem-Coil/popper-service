@@ -6,6 +6,7 @@ import com.remcoil.service.action.ActionService
 import com.remcoil.utils.safetyReceive
 import io.ktor.http.*
 import io.ktor.server.application.*
+import io.ktor.server.auth.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 
@@ -17,35 +18,36 @@ fun Application.actionModule() {
 
     routing {
         route("/action") {
-
             get() {
                 val actions = actionService.getAll()
                 call.respond(actions)
             }
+
 
             get("/bobbin/{bobbin_id}") {
                 val actions = actionService.getByBobbinId(call.parameters["bobbin_id"]!!.toLong())
                 call.respond(actions)
             }
 
-            delete("/{id}") {
-                actionService.deleteAction(call.parameters["id"]!!.toLong())
-                call.respond(HttpStatusCode.OK)
-            }
-
-            post {
-                call.safetyReceive<Action> { action ->
-                    call.respond(actionService.createAction(action))
-                }
-            }
-
-            put {
-                call.safetyReceive<Action> { action ->
-                    actionService.updateAction(action)
+            authenticate("jwt-access") {
+                delete("/{id}") {
+                    actionService.deleteAction(call.parameters["id"]!!.toLong())
                     call.respond(HttpStatusCode.OK)
                 }
-            }
 
+                post {
+                    call.safetyReceive<Action> { action ->
+                        call.respond(actionService.createAction(action))
+                    }
+                }
+
+                put {
+                    call.safetyReceive<Action> { action ->
+                        actionService.updateAction(action)
+                        call.respond(HttpStatusCode.OK)
+                    }
+                }
+            }
             route("/comment") {
                 get {
                     val comments = actionService.getAllComments()
@@ -55,20 +57,22 @@ fun Application.actionModule() {
                     val comment = actionService.getCommentByActionId(call.parameters["action_id"]!!.toLong())
                     call.respond(comment ?: HttpStatusCode.BadRequest)
                 }
-                post {
-                    call.safetyReceive<DefectsComment> { comment ->
-                        call.respond(actionService.createComment(comment))
+                authenticate("jwt-access") {
+                    post {
+                        call.safetyReceive<DefectsComment> { comment ->
+                            call.respond(actionService.createComment(comment))
+                        }
                     }
-                }
-                put {
-                    call.safetyReceive<DefectsComment> { comment ->
-                        actionService.updateComment(comment)
+                    put {
+                        call.safetyReceive<DefectsComment> { comment ->
+                            actionService.updateComment(comment)
+                            call.respond(HttpStatusCode.OK)
+                        }
+                    }
+                    delete("/{action_id}") {
+                        actionService.deleteComment(call.parameters["action_id"]!!.toLong())
                         call.respond(HttpStatusCode.OK)
                     }
-                }
-                delete("/{action_id}") {
-                    actionService.deleteComment(call.parameters["action_id"]!!.toLong())
-                    call.respond(HttpStatusCode.OK)
                 }
             }
 

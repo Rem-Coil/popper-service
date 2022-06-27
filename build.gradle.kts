@@ -44,6 +44,7 @@ dependencies {
     implementation("io.ktor:ktor-server-auth:$ktorVersion")
     implementation("io.ktor:ktor-server-auth-jwt:$ktorVersion")
 
+
     implementation("org.jetbrains.kotlin-wrappers:kotlin-css:1.0.0-pre.301-kotlin-1.6.10")
 
 
