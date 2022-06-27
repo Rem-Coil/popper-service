@@ -1,6 +1,7 @@
 package com.remcoil.module.action
 
 import com.remcoil.data.model.action.Action
+import com.remcoil.data.model.action.DefectsComment
 import com.remcoil.service.action.ActionService
 import com.remcoil.utils.safetyReceive
 import io.ktor.http.*
@@ -45,8 +46,34 @@ fun Application.actionModule() {
                 }
             }
 
+            route("/comment") {
+                get {
+                    val comments = actionService.getAllComments()
+                    call.respond(comments)
+                }
+                get("/{action_id}") {
+                    val comment = actionService.getCommentByActionId(call.parameters["action_id"]!!.toLong())
+                    call.respond(comment ?: HttpStatusCode.BadRequest)
+                }
+                post {
+                    call.safetyReceive<DefectsComment> { comment ->
+                        call.respond(actionService.createComment(comment))
+                    }
+                }
+                put {
+                    call.safetyReceive<DefectsComment> { comment ->
+                        actionService.updateComment(comment)
+                        call.respond(HttpStatusCode.OK)
+                    }
+                }
+                delete("/{action_id}") {
+                    actionService.deleteComment(call.parameters["action_id"]!!.toLong())
+                    call.respond(HttpStatusCode.OK)
+                }
+            }
+
             route("/full") {
-                get() {
+                get {
                     val actions = actionService.getAllFull()
                     call.respond(actions)
                 }

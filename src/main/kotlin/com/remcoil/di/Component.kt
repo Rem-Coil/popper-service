@@ -2,6 +2,7 @@ package com.remcoil.di
 
 import com.remcoil.config.AppConfig
 import com.remcoil.dao.action.ActionDao
+import com.remcoil.dao.action.DefectsCommentDao
 import com.remcoil.dao.action.FullActionDao
 import com.remcoil.dao.batch.BatchDao
 import com.remcoil.dao.bobbin.BobbinDao
@@ -53,7 +54,8 @@ fun DI.Builder.taskComponents() {
 fun DI.Builder.actionComponents() {
     bind<ActionDao>() with singleton { ActionDao(instance()) }
     bind<FullActionDao>() with singleton { FullActionDao(instance()) }
-    bind<ActionService>() with singleton { ActionService(instance(), instance()) }
+    bind<DefectsCommentDao>() with singleton { DefectsCommentDao(instance()) }
+    bind<ActionService>() with singleton { ActionService(instance(), instance(), instance()) }
 }
 
 fun DI.Builder.bobbinComponents() {

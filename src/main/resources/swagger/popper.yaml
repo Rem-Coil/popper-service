@@ -490,12 +490,91 @@ paths:
           schema:
             type: number
       responses:
+        '400':
+          description: Wrong action ID
         '200':
           description: Full action
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/FullActions'
+
+  /action/comment:
+    get:
+      tags:
+        - action
+      responses:
+        '200':
+          description: List of all comments
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListOfComments'
+
+    post:
+      tags:
+        - action
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DefectsComment'
+      responses:
+        '200':
+          description: Comment created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DefectsComment'
+
+    put:
+      tags:
+        - action
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DefectsComment'
+      responses:
+        '200':
+          description: Comment update
+
+
+  /action/comment/{action_id}:
+    get:
+      tags:
+        - action
+      parameters:
+        - in: path
+          name: action_id
+          required: true
+          schema:
+            type: number
+      responses:
+        '400':
+          description: Wrong action ID
+        '200':
+          description: Defect Comment
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DefectsComment'
+
+    delete:
+      tags:
+        - action
+      parameters:
+        - in: path
+          name: action_id
+          required: true
+          schema:
+            type: number
+      responses:
+        '200':
+          description: Comment deleted successfully
+
 
   /operator?active_only=true:
     get:
@@ -774,6 +853,11 @@ components:
       items:
         $ref: '#/components/schemas/FullBatch'
 
+    ListOfComments:
+      type: array
+      items:
+        $ref: '#/components/schemas/DefectsComment'
+
     TaskIdentity:
       properties:
         task_name:
@@ -790,4 +874,11 @@ components:
         phone:
           type: string
         password:
+          type: string
+
+    DefectsComment:
+      properties:
+        action_id:
+          type: number
+        comment:
           type: string
