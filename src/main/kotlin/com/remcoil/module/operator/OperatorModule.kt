@@ -1,12 +1,12 @@
 package com.remcoil.module.operator
 
 import com.remcoil.data.model.operator.Operator
+import com.remcoil.data.model.operator.OperatorCredentials
 import com.remcoil.service.operator.OperatorService
 import com.remcoil.utils.exceptions.WrongParamException
 import com.remcoil.utils.safetyReceive
 import io.ktor.http.*
 import io.ktor.server.application.*
-import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import org.kodein.di.*
@@ -24,20 +24,24 @@ fun Application.operatorModule() {
             }
 
             post("/sign_in") {
-                val token = service.getOperator(call.receive())
-                if (token == null) {
-                    call.respond(HttpStatusCode.Unauthorized)
-                } else {
-                    call.respond(hashMapOf("token" to token))
+                call.safetyReceive<OperatorCredentials> {operatorCredentials ->
+                    val token = service.getOperator(operatorCredentials)
+                    if (token == null) {
+                        call.respond(HttpStatusCode.Unauthorized)
+                    } else {
+                        call.respond(hashMapOf("token" to token))
+                    }
                 }
             }
 
             post("/sign_up") {
-                val token = service.createOperator(call.receive())
-                if (token != null) {
-                    call.respond(hashMapOf("token" to token))
-                } else {
-                    call.respond(HttpStatusCode.BadRequest)
+                call.safetyReceive<Operator> { operator ->
+                    val token = service.createOperator(operator)
+                    if (token != null) {
+                        call.respond(hashMapOf("token" to token))
+                    } else {
+                        call.respond(HttpStatusCode.BadRequest)
+                    }
                 }
             }
 
