@@ -1,12 +1,14 @@
 package com.remcoil.module.action
 
 import com.remcoil.data.model.action.Action
+import com.remcoil.data.model.action.ActionDto
 import com.remcoil.data.model.action.DefectsComment
 import com.remcoil.service.action.ActionService
 import com.remcoil.utils.safetyReceive
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
+import io.ktor.server.auth.jwt.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 
@@ -36,14 +38,28 @@ fun Application.actionModule() {
                 }
 
                 post {
-                    call.safetyReceive<Action> { action ->
-                        call.respond(actionService.createAction(action))
+                    call.safetyReceive<ActionDto> { actionDto ->
+                        val principal = call.principal<JWTPrincipal>()
+                        call.respond(
+                            actionService.createAction(
+                                Action(
+                                    actionDto,
+                                    principal!!.payload.getClaim("id").asInt()
+                                )
+                            )
+                        )
                     }
                 }
 
                 put {
-                    call.safetyReceive<Action> { action ->
-                        actionService.updateAction(action)
+                    call.safetyReceive<ActionDto> { actionDto ->
+                        val principal = call.principal<JWTPrincipal>()
+                        actionService.updateAction(
+                            Action(
+                                actionDto,
+                                principal!!.payload.getClaim("id").asInt()
+                            )
+                        )
                         call.respond(HttpStatusCode.OK)
                     }
                 }

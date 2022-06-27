@@ -357,7 +357,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Action'
+              $ref: '#/components/schemas/ActionDto'
       responses:
         '400':
           description: Bad request
@@ -379,7 +379,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Action'
+              $ref: '#/components/schemas/ActionDto'
       responses:
         '200':
           description: Action update
@@ -724,6 +724,19 @@ components:
           type: number
         operator_id:
           type: integer
+        bobbin_id:
+          type: integer
+        action_type:
+          type: string
+        done_time:
+          type: string
+        successful:
+          type: boolean
+
+    ActionDto:
+      properties:
+        id:
+          type: number
         bobbin_id:
           type: integer
         action_type:
