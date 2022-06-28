@@ -16,10 +16,7 @@ import com.remcoil.service.task.TaskService
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import org.jetbrains.exposed.sql.Database
-import org.kodein.di.DI
-import org.kodein.di.bind
-import org.kodein.di.instance
-import org.kodein.di.singleton
+import org.kodein.di.*
 
 fun DI.Builder.coreComponents(config: AppConfig) {
     bind<AppConfig>() with singleton { config }
@@ -65,5 +62,5 @@ fun DI.Builder.bobbinComponents() {
 
 fun DI.Builder.batchComponents() {
     bind<BatchDao>() with singleton { BatchDao(instance()) }
-    bind<BatchService>() with singleton { BatchService(instance(), instance(), instance()) }
+    bind<BatchService>() with singleton { BatchService(instance(), instance(), instance(), instance()) }
 }

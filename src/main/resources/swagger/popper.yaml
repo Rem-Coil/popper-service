@@ -238,7 +238,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Batch'
+              $ref: '#/components/schemas/BatchIdentity'
       responses:
         '400':
           description: Bad request
@@ -821,6 +821,13 @@ components:
           type: integer
         batch_number:
           type: string
+
+    BatchIdentity:
+      properties:
+        task_id:
+          type: integer
+        batch_size:
+          type: integer
 
     FullBatch:
       properties:

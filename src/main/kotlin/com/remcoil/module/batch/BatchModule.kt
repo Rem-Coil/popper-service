@@ -1,6 +1,6 @@
 package com.remcoil.module.batch
 
-import com.remcoil.data.model.batch.Batch
+import com.remcoil.data.model.batch.BatchIdentity
 import com.remcoil.service.batch.BatchService
 import com.remcoil.utils.safetyReceive
 import io.ktor.http.*
@@ -31,8 +31,8 @@ fun Application.batchModule() {
             }
 
             post {
-                call.safetyReceive<Batch> { batch ->
-                    call.respond(batchService.createBatch(batch))
+                call.safetyReceive<BatchIdentity> { batchIdentity ->
+                    call.respond(batchService.createByIdentity(batchIdentity) ?: HttpStatusCode.BadRequest)
                 }
             }
 

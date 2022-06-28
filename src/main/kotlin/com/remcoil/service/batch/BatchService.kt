@@ -1,8 +1,10 @@
 package com.remcoil.service.batch
 
 import com.remcoil.dao.batch.BatchDao
+import com.remcoil.dao.task.TaskDao
 import com.remcoil.data.model.action.ActionType
 import com.remcoil.data.model.batch.Batch
+import com.remcoil.data.model.batch.BatchIdentity
 import com.remcoil.data.model.batch.FullBatch
 import com.remcoil.data.model.bobbin.Bobbin
 import com.remcoil.data.model.task.Task
@@ -12,6 +14,7 @@ import com.remcoil.utils.logger
 
 class BatchService(
     private val batchDao: BatchDao,
+    private val taskDao: TaskDao,
     private val bobbinService: BobbinService,
     private val actionService: ActionService
 ) {
@@ -50,7 +53,8 @@ class BatchService(
 
     private suspend fun toFullBatch(batch: Batch): FullBatch {
         val quantity = bobbinService.getByBatchId(batch.id).count()
-        val fullBatch = FullBatch(id = batch.id, batchNumber = batch.batchNumber, task_id = batch.taskId, quantity = quantity)
+        val fullBatch =
+            FullBatch(id = batch.id, batchNumber = batch.batchNumber, task_id = batch.taskId, quantity = quantity)
 
         val bobbins = actionService.getFullByBatchId(batch.id).groupBy { it.bobbinId }
 
@@ -71,17 +75,35 @@ class BatchService(
         return fullBatch
     }
 
-    suspend fun createBatch(batch: Batch): Batch {
+    suspend fun createByIdentity(batchIdentity: BatchIdentity): Batch? {
+        val task = taskDao.getById(batchIdentity.taskId) ?: return null
+        val batches = getByTaskId(batchIdentity.taskId)
+
+        val batchNumber = defineBatchNumber(batches) ?: return null
+        val createdBatch = createByTask(task, batchIdentity.BatchSize, batchNumber + 1)
+        logger.info("Создали партию с id ${createdBatch.id}")
+        return createdBatch
+    }
+
+    private fun defineBatchNumber(batches: List<Batch>): Int? {
+        return batches.maxOfOrNull { batch -> batch.batchNumber.substringAfterLast(" / ").toInt() }
+    }
+
+    private suspend fun createBatch(batch: Batch): Batch {
         val createdBatch = batchDao.createBatch(batch)
         logger.info("Создали партию с id ${createdBatch.id}")
         return createdBatch
     }
 
-
-    suspend fun createByTask(task: Task, quantity: Int, batchNumber: Int) {
+    suspend fun createByTask(task: Task, quantity: Int, batchNumber: Int): Batch {
         val batch = createBatch(Batch(0, task.id, "${task.taskNumber} / $batchNumber"))
+        createBobbins(task, batch, quantity)
+        return batch
+    }
+
+    private suspend fun createBobbins(task: Task, batch: Batch, quantity: Int) {
         for (i in 0 until quantity) {
-            bobbinService.createBobbin(Bobbin(0, batch.id, "${task.taskName} - ${batch.batchNumber} - ${i+1}"))
+            bobbinService.createBobbin(Bobbin(0, batch.id, "${task.taskName} - ${batch.batchNumber} - ${i + 1}"))
         }
     }
 
