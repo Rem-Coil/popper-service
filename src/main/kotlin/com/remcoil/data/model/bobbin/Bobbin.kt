@@ -6,8 +6,8 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class Bobbin(
     val id: Long,
-    @SerialName("task_id")
+    @SerialName("batch_id")
     val batchId: Long,
     @SerialName("bobbin_number")
-    val bobbinNumber: String
+    var bobbinNumber: String
 )

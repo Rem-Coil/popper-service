@@ -8,5 +8,5 @@ data class Batch(
     @SerialName("task_id")
     val taskId: Int,
     @SerialName("batch_number")
-    val batchNumber: String
+    var batchNumber: String
 )

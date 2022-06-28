@@ -85,6 +85,21 @@ class BatchService(
         }
     }
 
+    suspend fun updateBatch(batch: Batch, task: Task) {
+        batchDao.updateBatch(batch)
+        logger.info("Обновили партию с id = ${batch.id}")
+        updateBobbins(batch, task)
+    }
+
+    private suspend fun updateBobbins(batch: Batch, task: Task) {
+        val bobbins = bobbinService.getByBatchId(batch.id)
+        for (bobbin in bobbins) {
+            val numberTail = bobbin.bobbinNumber.substringAfterLast(" - ")
+            bobbin.bobbinNumber = "${task.taskName} - ${batch.batchNumber} - $numberTail"
+            bobbinService.updateBobbin(bobbin)
+        }
+    }
+
     suspend fun deleteBatchById(id: Long) {
         batchDao.deleteBatchById(id)
     }

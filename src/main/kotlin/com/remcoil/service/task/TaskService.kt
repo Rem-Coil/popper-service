@@ -76,8 +76,21 @@ class TaskService(
     }
 
     suspend fun updateTask(task: Task) {
+        val oldTask = getById(task.id) ?: return
         taskDao.updateTask(task)
         logger.info("Обновили ТЗ")
+        if (oldTask != task) {
+            updateBatches(task)
+        }
+    }
+
+    private suspend fun updateBatches(task: Task) {
+        val batches = batchService.getByTaskId(task.id)
+        for (batch in batches) {
+            val numberTail = batch.batchNumber.substringAfterLast(" / ")
+            batch.batchNumber = "${task.taskNumber} / $numberTail"
+            batchService.updateBatch(batch, task)
+        }
     }
 
     suspend fun getBobbinsByTaskId(taskId: Int): List<Bobbin> {
