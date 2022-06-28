@@ -41,10 +41,20 @@ class BatchService(
         return toFullBatch(batch!!)
     }
 
+    suspend fun getFullByTaskId(taskId: Int): List<FullBatch> {
+        val batches = getByTaskId(taskId)
+
+        val fullBatches = mutableListOf<FullBatch>()
+        for (batch in batches) {
+            fullBatches.add(toFullBatch(batch))
+        }
+        return fullBatches
+    }
+
     suspend fun getAllFull(): List<FullBatch> {
         val batches = getAll()
-        val fullBatches = mutableListOf<FullBatch>()
 
+        val fullBatches = mutableListOf<FullBatch>()
         for (batch in batches) {
             fullBatches.add(toFullBatch(batch))
         }

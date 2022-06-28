@@ -198,7 +198,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ListOfFullActions'
+                $ref: '#/components/schemas/ListOfFullTasks'
 
   /task/full/{id}:
     get:
@@ -216,7 +216,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ListOfFullActions'
+                $ref: '#/components/schemas/ListOfFullTasks'
 
 
   /batch:
@@ -318,7 +318,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ListOfFullBatches'
+                $ref: '#/components/schemas/FullBatch'
         '400':
           description: Batch not found
 
@@ -768,22 +768,8 @@ components:
           type: string
         task_number:
           type: string
-        quantity:
-          type: integer
-        winding:
-          type: integer
-        output:
-          type: integer
-        isolation:
-          type: integer
-        molding:
-          type: integer
-        crimping:
-          type: integer
-        quality:
-          type: integer
-        testing:
-          type: integer
+        batches:
+          $ref: '#/components/schemas/ListOfFullBatches'
 
     Operator:
       properties:
@@ -880,12 +866,17 @@ components:
       items:
         $ref: '#/components/schemas/Task'
 
+    ListOfFullTasks:
+      type: array
+      items:
+        $ref: '#/components/schemas/FullTask'
+
     ListOfBatch:
       type: array
       items:
         $ref: '#/components/schemas/Batch'
 
-    ListOfFullBatch:
+    ListOfFullBatches:
       type: array
       items:
         $ref: '#/components/schemas/FullBatch'

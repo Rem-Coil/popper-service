@@ -43,22 +43,8 @@ class TaskService(
     }
 
     private suspend fun toFullTask(task: Task): FullTask {
-        val batches = batchService.getByTaskId(task.id)
-        val fullTask = FullTask(task.id, task.taskName, task.taskNumber)
-
-        for (batch in batches) {
-            val fullBatch = batchService.getFullById(batch.id)
-            fullTask.quantity += fullBatch.quantity
-            fullTask.winding += fullBatch.winding
-            fullTask.output += fullBatch.output
-            fullTask.isolation += fullBatch.isolation
-            fullTask.molding += fullBatch.molding
-            fullTask.crimping += fullBatch.crimping
-            fullTask.quality += fullBatch.quality
-            fullTask.testing += fullBatch.testing
-        }
-
-        return fullTask
+        val batches = batchService.getFullByTaskId(task.id)
+        return FullTask(task.id, task.taskName, task.taskNumber, batches)
     }
 
     suspend fun deleteTask(taskId: Int) {

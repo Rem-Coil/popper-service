@@ -1,5 +1,6 @@
 package com.remcoil.data.model.task
 
+import com.remcoil.data.model.batch.FullBatch
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -10,12 +11,5 @@ data class FullTask(
     val taskName: String,
     @SerialName("task_number")
     val taskNumber: String,
-    var quantity: Int = 0,
-    var winding: Int = 0,
-    var output: Int = 0,
-    var isolation: Int = 0,
-    var molding: Int = 0,
-    var crimping: Int = 0,
-    var quality: Int = 0,
-    var testing: Int = 0
+    val batches: List<FullBatch>
 )
