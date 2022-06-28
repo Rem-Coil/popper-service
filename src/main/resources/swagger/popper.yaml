@@ -759,8 +759,6 @@ components:
           type: string
         task_number:
           type: string
-        quantity:
-          type: integer
 
     FullTask:
       properties:
