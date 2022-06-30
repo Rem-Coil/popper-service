@@ -69,19 +69,21 @@ class BatchService(
         val bobbins = actionService.getFullByBatchId(batch.id).groupBy { it.bobbinId }
 
         for (bobbin in bobbins) {
-            val lastAction = bobbin.value.maxByOrNull { it.doneTime }
-            val inc = if (lastAction!!.successful) 1 else 0
-            when (lastAction.actionType) {
-                ActionType.WINDING.type -> fullBatch.winding += inc
-                ActionType.OUTPUT.type -> fullBatch.output += inc
-                ActionType.ISOLATION.type -> fullBatch.isolation += inc
-                ActionType.MOLDING.type -> fullBatch.molding += inc
-                ActionType.CRIMPING.type -> fullBatch.crimping += inc
-                ActionType.QUALITY.type -> fullBatch.quality += inc
-                ActionType.TESTING.type -> fullBatch.testing += inc
+            val actions = bobbin.value.groupBy { it.actionType }
+            for (action in actions) {
+                val lastAction = action.value.maxByOrNull { it.doneTime }
+                val inc = if (lastAction!!.successful) 1 else 0
+                when (lastAction.actionType) {
+                    ActionType.WINDING.type -> fullBatch.winding += inc
+                    ActionType.OUTPUT.type -> fullBatch.output += inc
+                    ActionType.ISOLATION.type -> fullBatch.isolation += inc
+                    ActionType.MOLDING.type -> fullBatch.molding += inc
+                    ActionType.CRIMPING.type -> fullBatch.crimping += inc
+                    ActionType.QUALITY.type -> fullBatch.quality += inc
+                    ActionType.TESTING.type -> fullBatch.testing += inc
+                }
             }
         }
-
         return fullBatch
     }
 
