@@ -9,15 +9,16 @@ import com.remcoil.data.model.operator.Operator
 import com.remcoil.data.model.operator.OperatorRole
 import com.remcoil.utils.exceptions.WrongParamException
 import com.remcoil.utils.logger
+import io.ktor.server.plugins.*
 import java.util.*
 
 
 class OperatorService(private val operatorDao: OperatorDao, private val config: JwtConfig) {
 
-    suspend fun getOperator(credentials: OperatorCredentials): String? {
+    suspend fun getActiveOperator(credentials: OperatorCredentials): String? {
         val operator = operatorDao.getOperator(credentials.phone)
 
-        if (operator != null && credentials.password == operator.password) {
+        if (operator != null && credentials.password == operator.password && operator.active) {
             logger.info("Вернули оператора - ${operator.firstName} ${operator.surname}")
             return generateToken(operator)
         }
@@ -39,6 +40,15 @@ class OperatorService(private val operatorDao: OperatorDao, private val config: 
             logger.info("Сохранили данные об операторе")
         }
         return op
+    }
+
+    suspend fun setOperatorState(id: Int, active: Boolean) {
+        if (operatorDao.isExist(id)) {
+            operatorDao.setActive(id, active)
+        } else {
+            throw NotFoundException("Оператор не найден")
+        }
+        logger.info("Оператор заархивирован")
     }
 
     suspend fun deleteOperator(id: Int) {

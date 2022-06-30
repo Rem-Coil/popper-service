@@ -33,6 +33,13 @@ class OperatorDao(private val database: Database) {
             .isEmpty()
     }
 
+    suspend fun isExist(id: Int): Boolean = safetySuspendTransactionAsync(database) {
+        Operators
+            .select { Operators.id eq id }
+            .map(::extractOperator)
+            .isNotEmpty()
+    }
+
     suspend fun createOperator(operator: Operator): Operator = safetySuspendTransactionAsync(database) {
         val id = Operators.insertAndGetId {
             it[firstName] = operator.firstName
@@ -46,9 +53,9 @@ class OperatorDao(private val database: Database) {
         operator.copy(id = id.value)
     }
 
-    suspend fun deleteOperator(id: Int) = safetySuspendTransactionAsync(database) {
+    suspend fun setActive(id: Int, active: Boolean) = safetySuspendTransactionAsync(database) {
         Operators.update({ Operators.id eq id }) {
-            it[active] = false
+            it[Operators.active] = active
         }
     }
 
@@ -64,8 +71,8 @@ class OperatorDao(private val database: Database) {
         }
     }
 
-    suspend fun trueDeleteOperator(phone: String) = safetySuspendTransactionAsync(database) {
-        Operators.deleteWhere { Operators.phone eq phone }
+    suspend fun deleteOperator(id: Int) = safetySuspendTransactionAsync(database) {
+        Operators.deleteWhere { Operators.id eq id }
     }
 
     private fun extractOperator(row: ResultRow): Operator = Operator(

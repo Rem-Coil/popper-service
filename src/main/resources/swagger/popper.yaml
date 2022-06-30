@@ -606,6 +606,28 @@ paths:
               schema:
                 $ref: '#/components/schemas/ListOfOperators'
 
+  /operator/state/{id}?active:
+    put:
+      tags:
+        - operator
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+        - in: query
+          name: active
+          required: true
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: Operator state updated
+        '404':
+          description: Operator not found
+
+
   /operator/{id}:
     delete:
       tags:

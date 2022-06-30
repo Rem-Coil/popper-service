@@ -7,6 +7,7 @@ import com.remcoil.utils.exceptions.WrongParamException
 import com.remcoil.utils.safetyReceive
 import io.ktor.http.*
 import io.ktor.server.application.*
+import io.ktor.server.plugins.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import org.kodein.di.*
@@ -25,7 +26,7 @@ fun Application.operatorModule() {
 
             post("/sign_in") {
                 call.safetyReceive<OperatorCredentials> {operatorCredentials ->
-                    val token = service.getOperator(operatorCredentials)
+                    val token = service.getActiveOperator(operatorCredentials)
                     if (token == null) {
                         call.respond(HttpStatusCode.Unauthorized)
                     } else {
@@ -53,6 +54,16 @@ fun Application.operatorModule() {
                     } catch (e: WrongParamException) {
                         call.respond(HttpStatusCode.BadRequest)
                     }
+                }
+            }
+
+            put("state/{id}") {
+                try {
+                    service.setOperatorState(call.parameters["id"]!!.toInt(), call.request.queryParameters["active"].toBoolean())
+                    call.respond(HttpStatusCode.OK)
+                }
+                catch (e: NotFoundException) {
+                    call.respond(HttpStatusCode.NotFound)
                 }
             }
 
