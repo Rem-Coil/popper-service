@@ -68,6 +68,7 @@ fun main() {
             allowMethod(HttpMethod.Put)
             allowMethod(HttpMethod.Delete)
             allowMethod(HttpMethod.Patch)
+            allowHeader(HttpHeaders.Authorization)
             exposeHeader(HttpHeaders.AccessControlAllowOrigin)
             anyHost()
             allowNonSimpleContentTypes = true
