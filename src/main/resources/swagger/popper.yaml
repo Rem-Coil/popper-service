@@ -3,6 +3,7 @@ info:
   title: Popper
   description: Backend spec for popper app
   version: 0.0.1
+
 servers:
   - url: 'https://popper-service.herokuapp.com/'
   - url: 'http://localhost:80'
@@ -197,7 +198,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ListOfFullActions'
+                $ref: '#/components/schemas/ListOfFullTasks'
 
   /task/full/{id}:
     get:
@@ -215,7 +216,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ListOfFullActions'
+                $ref: '#/components/schemas/ListOfFullTasks'
 
 
   /batch:
@@ -237,7 +238,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Batch'
+              $ref: '#/components/schemas/BatchIdentity'
       responses:
         '400':
           description: Bad request
@@ -317,7 +318,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ListOfFullBatches'
+                $ref: '#/components/schemas/FullBatch'
         '400':
           description: Batch not found
 
@@ -347,6 +348,8 @@ paths:
                 $ref: '#/components/schemas/ListOfActions'
 
     post:
+      security:
+        - bearerAuth: [ ]
       tags:
         - action
       requestBody:
@@ -354,7 +357,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Action'
+              $ref: '#/components/schemas/ActionDto'
       responses:
         '400':
           description: Bad request
@@ -367,6 +370,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/Action'
     put:
+      security:
+        - bearerAuth: [ ]
       tags:
         - action
       requestBody:
@@ -374,7 +379,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Action'
+              $ref: '#/components/schemas/ActionDto'
       responses:
         '200':
           description: Action update
@@ -401,6 +406,8 @@ paths:
 
   /action/{id}:
     delete:
+      security:
+        - bearerAuth: [ ]
       tags:
         - action
       parameters:
@@ -490,12 +497,97 @@ paths:
           schema:
             type: number
       responses:
+        '400':
+          description: Wrong action ID
         '200':
           description: Full action
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/FullActions'
+
+  /action/comment:
+    get:
+      tags:
+        - action
+      responses:
+        '200':
+          description: List of all comments
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListOfComments'
+
+    post:
+      security:
+        - bearerAuth: [ ]
+      tags:
+        - action
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DefectsComment'
+      responses:
+        '200':
+          description: Comment created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DefectsComment'
+
+    put:
+      security:
+        - bearerAuth: [ ]
+      tags:
+        - action
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DefectsComment'
+      responses:
+        '200':
+          description: Comment update
+
+
+  /action/comment/{action_id}:
+    get:
+      tags:
+        - action
+      parameters:
+        - in: path
+          name: action_id
+          required: true
+          schema:
+            type: number
+      responses:
+        '400':
+          description: Wrong action ID
+        '200':
+          description: Defect Comment
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DefectsComment'
+
+    delete:
+      security:
+        - bearerAuth: [ ]
+      tags:
+        - action
+      parameters:
+        - in: path
+          name: action_id
+          required: true
+          schema:
+            type: number
+      responses:
+        '200':
+          description: Comment deleted successfully
+
 
   /operator?active_only=true:
     get:
@@ -585,6 +677,12 @@ paths:
           description: Bad request
 
 components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
   schemas:
 
     FullAction:
@@ -635,6 +733,19 @@ components:
         successful:
           type: boolean
 
+    ActionDto:
+      properties:
+        id:
+          type: number
+        bobbin_id:
+          type: integer
+        action_type:
+          type: string
+        done_time:
+          type: string
+        successful:
+          type: boolean
+
     Token:
       properties:
         token:
@@ -648,8 +759,6 @@ components:
           type: string
         task_number:
           type: string
-        quantity:
-          type: integer
 
     FullTask:
       properties:
@@ -659,22 +768,8 @@ components:
           type: string
         task_number:
           type: string
-        quantity:
-          type: integer
-        winding:
-          type: integer
-        output:
-          type: integer
-        isolation:
-          type: integer
-        molding:
-          type: integer
-        crimping:
-          type: integer
-        quality:
-          type: integer
-        testing:
-          type: integer
+        batches:
+          $ref: '#/components/schemas/ListOfFullBatches'
 
     Operator:
       properties:
@@ -712,6 +807,13 @@ components:
           type: integer
         batch_number:
           type: string
+
+    BatchIdentity:
+      properties:
+        task_id:
+          type: integer
+        batch_size:
+          type: integer
 
     FullBatch:
       properties:
@@ -764,15 +866,25 @@ components:
       items:
         $ref: '#/components/schemas/Task'
 
+    ListOfFullTasks:
+      type: array
+      items:
+        $ref: '#/components/schemas/FullTask'
+
     ListOfBatch:
       type: array
       items:
         $ref: '#/components/schemas/Batch'
 
-    ListOfFullBatch:
+    ListOfFullBatches:
       type: array
       items:
         $ref: '#/components/schemas/FullBatch'
+
+    ListOfComments:
+      type: array
+      items:
+        $ref: '#/components/schemas/DefectsComment'
 
     TaskIdentity:
       properties:
@@ -790,4 +902,11 @@ components:
         phone:
           type: string
         password:
+          type: string
+
+    DefectsComment:
+      properties:
+        action_id:
+          type: number
+        comment:
           type: string

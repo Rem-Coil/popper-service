@@ -2,6 +2,7 @@ package com.remcoil.di
 
 import com.remcoil.config.AppConfig
 import com.remcoil.dao.action.ActionDao
+import com.remcoil.dao.action.DefectsCommentDao
 import com.remcoil.dao.action.FullActionDao
 import com.remcoil.dao.batch.BatchDao
 import com.remcoil.dao.bobbin.BobbinDao
@@ -15,10 +16,7 @@ import com.remcoil.service.task.TaskService
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import org.jetbrains.exposed.sql.Database
-import org.kodein.di.DI
-import org.kodein.di.bind
-import org.kodein.di.instance
-import org.kodein.di.singleton
+import org.kodein.di.*
 
 fun DI.Builder.coreComponents(config: AppConfig) {
     bind<AppConfig>() with singleton { config }
@@ -53,7 +51,8 @@ fun DI.Builder.taskComponents() {
 fun DI.Builder.actionComponents() {
     bind<ActionDao>() with singleton { ActionDao(instance()) }
     bind<FullActionDao>() with singleton { FullActionDao(instance()) }
-    bind<ActionService>() with singleton { ActionService(instance(), instance()) }
+    bind<DefectsCommentDao>() with singleton { DefectsCommentDao(instance()) }
+    bind<ActionService>() with singleton { ActionService(instance(), instance(), instance()) }
 }
 
 fun DI.Builder.bobbinComponents() {
@@ -63,5 +62,5 @@ fun DI.Builder.bobbinComponents() {
 
 fun DI.Builder.batchComponents() {
     bind<BatchDao>() with singleton { BatchDao(instance()) }
-    bind<BatchService>() with singleton { BatchService(instance(), instance(), instance()) }
+    bind<BatchService>() with singleton { BatchService(instance(), instance(), instance(), instance()) }
 }

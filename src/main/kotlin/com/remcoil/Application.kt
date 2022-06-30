@@ -1,5 +1,7 @@
 package com.remcoil
 
+import com.auth0.jwt.JWT
+import com.auth0.jwt.algorithms.Algorithm
 import com.remcoil.config.AppConfig
 import com.remcoil.data.migrate
 import com.remcoil.di.*
@@ -15,6 +17,8 @@ import com.typesafe.config.ConfigFactory
 import io.github.config4k.extract
 import io.ktor.http.*
 import io.ktor.server.application.*
+import io.ktor.server.auth.*
+import io.ktor.server.auth.jwt.*
 import io.ktor.server.plugins.cors.routing.*
 import org.kodein.di.ktor.di
 
@@ -41,6 +45,23 @@ fun main() {
         batchModule()
         configureSerialization()
         siteModule(config)
+        install(Authentication) {
+            jwt("jwt-access") {
+                verifier(
+                    JWT
+                        .require(Algorithm.HMAC256(config.jwt.secret))
+                        .build()
+                )
+
+                validate { credential ->
+                    if (credential.payload.getClaim("role").asString() != "") {
+                        JWTPrincipal(credential.payload)
+                    } else {
+                        null
+                    }
+                }
+            }
+        }
         install(CORS) {
             allowMethod(HttpMethod.Get)
             allowMethod(HttpMethod.Post)

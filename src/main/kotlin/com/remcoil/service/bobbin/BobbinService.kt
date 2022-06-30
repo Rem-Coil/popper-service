@@ -32,7 +32,7 @@ class BobbinService(private val bobbinDao: BobbinDao) {
     }
 
     suspend fun createBobbin(bobbin: Bobbin): Bobbin {
-        val createdBobbin = bobbinDao.create(bobbin)
+        val createdBobbin = bobbinDao.createBobbin(bobbin)
         logger.info("Добавили катушку с id = ${bobbin.id}")
         return createdBobbin
     }
@@ -40,5 +40,10 @@ class BobbinService(private val bobbinDao: BobbinDao) {
     suspend fun deleteById(bobbinId: Long) {
         bobbinDao.deleteById(bobbinId)
         logger.info("Удалили катушку с id = $bobbinId")
+    }
+
+    suspend fun updateBobbin(bobbin: Bobbin) {
+        bobbinDao.updateBobbin(bobbin)
+        logger.info("Обновили катушку с id = ${bobbin.id}")
     }
 }

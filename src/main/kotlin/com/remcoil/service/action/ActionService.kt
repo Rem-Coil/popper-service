@@ -1,13 +1,43 @@
 package com.remcoil.service.action
 
 import com.remcoil.dao.action.ActionDao
+import com.remcoil.dao.action.DefectsCommentDao
 import com.remcoil.dao.action.FullActionDao
 import com.remcoil.data.model.action.Action
+import com.remcoil.data.model.action.DefectsComment
 import com.remcoil.data.model.action.FullAction
 import com.remcoil.utils.logger
 
 class ActionService(private val actionDao: ActionDao,
-                    private val fullActionDao: FullActionDao) {
+                    private val fullActionDao: FullActionDao,
+                    private val defectsCommentDao: DefectsCommentDao) {
+    suspend fun getAllComments(): List<DefectsComment> {
+        val comments = defectsCommentDao.getAll()
+        logger.info("Отдали все комментарии")
+        return comments
+    }
+
+    suspend fun getCommentByActionId(actionId: Long): DefectsComment? {
+        val comment = defectsCommentDao.getByActionId(actionId)
+        logger.info("Отдали комментарии для операции с id = $actionId")
+        return comment
+    }
+
+    suspend fun createComment(comment: DefectsComment): DefectsComment {
+        val createdComment = defectsCommentDao.createComment(comment)
+        logger.info("Сохранили комментарий для операции с id = ${createdComment.actionId}")
+        return createdComment
+    }
+
+    suspend fun updateComment(comment: DefectsComment) {
+        defectsCommentDao.updateComment(comment)
+        logger.info("Обновили комментарий для операции с id = ${comment.actionId}")
+    }
+
+    suspend fun deleteComment(actionId: Long) {
+        defectsCommentDao.deleteComment(actionId)
+        logger.info("Удалили комментарий для операции с id = $actionId")
+    }
 
     suspend fun getAllFull(): List<FullAction> {
         val actions = fullActionDao.getAll()

@@ -43,22 +43,8 @@ class TaskService(
     }
 
     private suspend fun toFullTask(task: Task): FullTask {
-        val batches = batchService.getByTaskId(task.id)
-        val fullTask = FullTask(task.id, task.taskName, task.taskNumber)
-
-        for (batch in batches) {
-            val fullBatch = batchService.getFullById(batch.id)
-            fullTask.quantity += fullBatch.quantity
-            fullTask.winding += fullBatch.winding
-            fullTask.output += fullBatch.output
-            fullTask.isolation += fullBatch.isolation
-            fullTask.molding += fullBatch.molding
-            fullTask.crimping += fullBatch.crimping
-            fullTask.quality += fullBatch.quality
-            fullTask.testing += fullBatch.testing
-        }
-
-        return fullTask
+        val batches = batchService.getFullByTaskId(task.id)
+        return FullTask(task.id, task.taskName, task.taskNumber, batches)
     }
 
     suspend fun deleteTask(taskId: Int) {
@@ -76,8 +62,21 @@ class TaskService(
     }
 
     suspend fun updateTask(task: Task) {
+        val oldTask = getById(task.id) ?: return
         taskDao.updateTask(task)
         logger.info("Обновили ТЗ")
+        if (oldTask != task) {
+            updateBatches(task)
+        }
+    }
+
+    private suspend fun updateBatches(task: Task) {
+        val batches = batchService.getByTaskId(task.id)
+        for (batch in batches) {
+            val numberTail = batch.batchNumber.substringAfterLast(" / ")
+            batch.batchNumber = "${task.taskNumber} / $numberTail"
+            batchService.updateBatch(batch, task)
+        }
     }
 
     suspend fun getBobbinsByTaskId(taskId: Int): List<Bobbin> {

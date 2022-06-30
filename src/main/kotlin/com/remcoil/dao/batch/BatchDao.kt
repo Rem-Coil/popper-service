@@ -38,6 +38,13 @@ class BatchDao(private val database: Database) {
         Batches.deleteWhere { Batches.id eq id }
     }
 
+    suspend fun updateBatch(batch: Batch) = safetySuspendTransactionAsync(database) {
+        Batches.update({Batches.id eq batch.id}) {
+            it[taskId] = batch.taskId
+            it[batchNumber] = batch.batchNumber
+        }
+    }
+
     private fun extractBatch(resultRow: ResultRow): Batch = Batch(
         resultRow[Batches.id].value,
         resultRow[Batches.taskId].value,
