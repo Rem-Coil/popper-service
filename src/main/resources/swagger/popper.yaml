@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   title: Popper
   description: Backend spec for popper app
-  version: 0.0.1
+  version: 0.2.0
 
 servers:
   - url: 'https://popper-service.herokuapp.com/'
