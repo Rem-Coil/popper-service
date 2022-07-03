@@ -528,14 +528,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/DefectsComment'
+              $ref: '#/components/schemas/ActionWithComment'
       responses:
         '200':
           description: Comment created
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/DefectsComment'
+                $ref: '#/components/schemas/ActionWithComment'
 
     put:
       security:
@@ -930,5 +930,22 @@ components:
       properties:
         action_id:
           type: number
+        comment:
+          type: string
+
+    ActionWithComment:
+      properties:
+        id:
+          type: number
+        operator_id:
+          type: integer
+        bobbin_id:
+          type: integer
+        action_type:
+          type: string
+        done_time:
+          type: string
+        successful:
+          type: boolean
         comment:
           type: string

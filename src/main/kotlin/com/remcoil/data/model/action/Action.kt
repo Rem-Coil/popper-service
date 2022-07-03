@@ -27,6 +27,15 @@ data class Action(
         dto.doneTime,
         dto.successful
     )
+
+    constructor(actionWithComment: ActionWithComment) : this(
+        actionWithComment.id,
+        actionWithComment.operatorId,
+        actionWithComment.bobbinId,
+        actionWithComment.actionType,
+        actionWithComment.doneTime,
+        actionWithComment.successful
+    )
 }
 
 

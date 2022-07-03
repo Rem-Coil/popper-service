@@ -2,6 +2,7 @@ package com.remcoil.module.action
 
 import com.remcoil.data.model.action.Action
 import com.remcoil.data.model.action.ActionDto
+import com.remcoil.data.model.action.ActionWithComment
 import com.remcoil.data.model.action.DefectsComment
 import com.remcoil.service.action.ActionService
 import com.remcoil.utils.safetyReceive
@@ -75,8 +76,8 @@ fun Application.actionModule() {
                 }
                 authenticate("jwt-access") {
                     post {
-                        call.safetyReceive<DefectsComment> { comment ->
-                            call.respond(actionService.createComment(comment))
+                        call.safetyReceive<ActionWithComment> { actionWithComment ->
+                            call.respond(actionService.createWithComment(actionWithComment))
                         }
                     }
                     put {

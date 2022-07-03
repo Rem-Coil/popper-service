@@ -4,6 +4,7 @@ import com.remcoil.dao.action.ActionDao
 import com.remcoil.dao.action.DefectsCommentDao
 import com.remcoil.dao.action.FullActionDao
 import com.remcoil.data.model.action.Action
+import com.remcoil.data.model.action.ActionWithComment
 import com.remcoil.data.model.action.DefectsComment
 import com.remcoil.data.model.action.FullAction
 import com.remcoil.utils.logger
@@ -23,10 +24,11 @@ class ActionService(private val actionDao: ActionDao,
         return comment
     }
 
-    suspend fun createComment(comment: DefectsComment): DefectsComment {
-        val createdComment = defectsCommentDao.createComment(comment)
-        logger.info("Сохранили комментарий для операции с id = ${createdComment.actionId}")
-        return createdComment
+    suspend fun createWithComment(actionWithComment: ActionWithComment): ActionWithComment {
+        val action = createAction(Action(actionWithComment))
+        defectsCommentDao.createComment(DefectsComment(action.id, actionWithComment.comment))
+        logger.info("Сохранили комментарий для операции с id = ${action.id}")
+        return actionWithComment.copy(id = action.id)
     }
 
     suspend fun updateComment(comment: DefectsComment) {
