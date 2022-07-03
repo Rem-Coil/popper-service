@@ -69,7 +69,7 @@ fun Application.actionModule() {
                 }
                 get("/{action_id}") {
                     val comment = actionService.getCommentByActionId(call.parameters["action_id"]!!.toLong())
-                    call.respond(comment ?: HttpStatusCode.BadRequest)
+                    call.respond(comment ?: HttpStatusCode.NoContent)
                 }
                 authenticate("jwt-access") {
                     post {
@@ -115,7 +115,7 @@ fun Application.actionModule() {
 
                 get("/{id}") {
                     val action = actionService.getFullById(call.parameters["id"]!!.toLong())
-                    call.respond(action ?: HttpStatusCode.BadRequest)
+                    call.respond(action ?: HttpStatusCode.NoContent)
                 }
             }
         }
