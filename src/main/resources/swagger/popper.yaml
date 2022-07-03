@@ -528,7 +528,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ActionWithComment'
+              $ref: '#/components/schemas/ActionWithCommentDto'
       responses:
         '200':
           description: Comment created
@@ -930,6 +930,21 @@ components:
       properties:
         action_id:
           type: number
+        comment:
+          type: string
+
+    ActionWithCommentDto:
+      properties:
+        id:
+          type: number
+        bobbin_id:
+          type: integer
+        action_type:
+          type: string
+        done_time:
+          type: string
+        successful:
+          type: boolean
         comment:
           type: string
 

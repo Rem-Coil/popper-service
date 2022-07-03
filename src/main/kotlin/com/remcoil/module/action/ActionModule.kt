@@ -1,9 +1,6 @@
 package com.remcoil.module.action
 
-import com.remcoil.data.model.action.Action
-import com.remcoil.data.model.action.ActionDto
-import com.remcoil.data.model.action.ActionWithComment
-import com.remcoil.data.model.action.DefectsComment
+import com.remcoil.data.model.action.*
 import com.remcoil.service.action.ActionService
 import com.remcoil.utils.safetyReceive
 import io.ktor.http.*
@@ -76,8 +73,10 @@ fun Application.actionModule() {
                 }
                 authenticate("jwt-access") {
                     post {
-                        call.safetyReceive<ActionWithComment> { actionWithComment ->
-                            call.respond(actionService.createWithComment(actionWithComment))
+                        call.safetyReceive<ActionWithCommentDto> { actionWithCommentDto ->
+                            val principal = call.principal<JWTPrincipal>()
+                            call.respond(actionService.createWithComment(
+                                ActionWithComment(actionWithCommentDto, principal!!.payload.getClaim("id").asInt())))
                         }
                     }
                     put {
