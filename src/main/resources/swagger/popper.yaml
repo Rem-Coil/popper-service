@@ -334,6 +334,19 @@ paths:
               schema:
                 $ref: '#/components/schemas/ListOfFullBatches'
 
+  /batch/codes/{batch_id}:
+    get:
+      tags:
+        - batch
+      parameters:
+        - in: path
+          name: batch_id
+          required: true
+          schema:
+            type: number
+      responses:
+        '200':
+          description: Bobbin's QR codes by batch
 
   /action:
     get:
@@ -497,8 +510,8 @@ paths:
           schema:
             type: number
       responses:
-        '400':
-          description: Wrong action ID
+        '204':
+          description: No content
         '200':
           description: Full action
           content:
@@ -564,8 +577,8 @@ paths:
           schema:
             type: number
       responses:
-        '400':
-          description: Wrong action ID
+        '204':
+          description: No content
         '200':
           description: Defect Comment
           content:
