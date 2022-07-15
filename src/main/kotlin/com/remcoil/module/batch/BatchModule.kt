@@ -72,27 +72,35 @@ fun Application.batchModule() {
                         margin(0.px, LinearDimension.auto)
                     }
                     td {
+                        width = 200.px
                         textAlign = TextAlign.center
-                        padding(20.px, 40.px)
+                        padding(20.px, 20.px)
                         fontSize = 12.pt
                     }
                     h3 {
                         textAlign = TextAlign.center
                     }
                     p {
-                        padding(5.px)
+                        margin(0.px)
                     }
                     tr {
                         height = 150.px
                     }
                     img {
+                        marginTop = 10.px
                         height = 150.px
                     }
                 }
             }
 
             get("/codes/{batch_id}") {
-                val bobbins = bobbinService.getByBatchId(call.parameters["batch_id"]!!.toLong())
+                val batchId = call.parameters["batch_id"]!!.toLong()
+                val batch = batchService.getById(batchId)
+                if (batch == null) {
+                    call.respondHtml {HttpStatusCode.NoContent}
+                    return@get
+                }
+                val bobbins = bobbinService.getByBatchId(batchId)
                 val bobbinsIterator = bobbins.iterator()
                 call.respondHtml {
                     head {
@@ -100,12 +108,26 @@ fun Application.batchModule() {
                     }
                     body {
                         table {
+                            tr {
+                                td {
+                                    p {
+                                        +"Партия"
+                                    }
+                                    p {
+                                        +batch.batchNumber
+                                    }
+                                    img(src = "https://api.qrserver.com/v1/create-qr-code/?data=batch:${batch.id}")
+                                }
+                            }
                             while (bobbinsIterator.hasNext()) {
                                 tr {
                                     for (i in 1..5) {
                                         if (bobbinsIterator.hasNext()) {
                                             val bobbin = bobbinsIterator.next()
                                             td {
+                                                p {
+                                                    +"Катушка"
+                                                }
                                                 p {
                                                     +bobbin.bobbinNumber
                                                 }
