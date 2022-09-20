@@ -1,5 +1,6 @@
 package com.remcoil.data.model.action
 
+import com.remcoil.utils.LocalDateTimeSerializer
 import kotlinx.datetime.LocalDateTime
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -25,6 +26,7 @@ data class FullAction(
     @SerialName("action_type")
     val actionType: String,
     @SerialName("done_time")
+    @Serializable(with = LocalDateTimeSerializer::class)
     val doneTime: LocalDateTime,
     val successful: Boolean,
     @SerialName("operator_id")
