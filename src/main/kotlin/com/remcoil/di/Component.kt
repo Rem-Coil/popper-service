@@ -57,7 +57,7 @@ fun DI.Builder.actionComponents() {
 
 fun DI.Builder.commentComponents() {
     bind<CommentDao>() with singleton { CommentDao(instance()) }
-    bind<CommentService>() with singleton { CommentService(instance()) }
+    bind<CommentService>() with singleton { CommentService(instance(), instance()) }
 }
 
 fun DI.Builder.bobbinComponents() {

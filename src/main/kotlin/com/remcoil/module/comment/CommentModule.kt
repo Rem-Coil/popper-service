@@ -6,7 +6,6 @@ import com.remcoil.utils.safetyReceive
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
-import io.ktor.server.auth.jwt.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import org.kodein.di.instance
@@ -28,8 +27,8 @@ fun Application.commentModule() {
             authenticate("jwt-access") {
                 post {
                     call.safetyReceive<Comment> { comment ->
-                        val principal = call.principal<JWTPrincipal>()
-                        call.respond(commentService.createComment(comment))
+//                        val principal = call.principal<JWTPrincipal>()
+                        call.respond(commentService.createComment(comment) ?: HttpStatusCode.BadRequest)
                     }
                 }
                 put {

@@ -51,6 +51,12 @@ class ActionService(private val actionDao: ActionDao,
         return actions
     }
 
+    suspend fun getById(actionId: Long): Action? {
+        val action = actionDao.getById(actionId)
+        logger.info("Отдали операцию с id=${actionId}")
+        return action
+    }
+
     suspend fun updateAction(action: Action) {
         actionDao.updateAction(action)
         logger.info("Данные об операции с id=${action.id}")
@@ -65,5 +71,10 @@ class ActionService(private val actionDao: ActionDao,
     suspend fun deleteAction(actionId: Long) {
         actionDao.deleteAction(actionId)
         logger.info("Удалили данные об операции - $actionId")
+    }
+
+    suspend fun isUnsuccessful(actionId: Long): Boolean {
+        val action = getById(actionId)
+        return action != null && !action.successful
     }
 }

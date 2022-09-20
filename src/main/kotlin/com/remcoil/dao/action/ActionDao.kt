@@ -15,6 +15,13 @@ class ActionDao(private val database: Database) {
             .map(::extractAction)
     }
 
+    suspend fun getById(id: Long) = safetySuspendTransactionAsync(database) {
+        Actions
+            .select { Actions.id eq id }
+            .map (::extractAction)
+            .firstOrNull()
+    }
+
     suspend fun getByBobbinId(id: Long): List<Action> = safetySuspendTransactionAsync(database) {
         Actions
             .select { Actions.bobbinId eq id }
