@@ -1,6 +1,7 @@
 package com.remcoil.module.action
 
 import com.remcoil.data.model.action.*
+import com.remcoil.data.model.comment.Comment
 import com.remcoil.service.action.ActionService
 import com.remcoil.utils.safetyReceive
 import io.ktor.http.*
@@ -58,35 +59,6 @@ fun Application.actionModule() {
                                 principal!!.payload.getClaim("id").asInt()
                             )
                         )
-                        call.respond(HttpStatusCode.OK)
-                    }
-                }
-            }
-            route("/comment") {
-                get {
-                    val comments = actionService.getAllComments()
-                    call.respond(comments)
-                }
-                get("/{action_id}") {
-                    val comment = actionService.getCommentByActionId(call.parameters["action_id"]!!.toLong())
-                    call.respond(comment ?: HttpStatusCode.NoContent)
-                }
-                authenticate("jwt-access") {
-                    post {
-                        call.safetyReceive<ActionWithCommentDto> { actionWithCommentDto ->
-                            val principal = call.principal<JWTPrincipal>()
-                            call.respond(actionService.createWithComment(
-                                ActionWithComment(actionWithCommentDto, principal!!.payload.getClaim("id").asInt())))
-                        }
-                    }
-                    put {
-                        call.safetyReceive<DefectsComment> { comment ->
-                            actionService.updateComment(comment)
-                            call.respond(HttpStatusCode.OK)
-                        }
-                    }
-                    delete("/{action_id}") {
-                        actionService.deleteComment(call.parameters["action_id"]!!.toLong())
                         call.respond(HttpStatusCode.OK)
                     }
                 }

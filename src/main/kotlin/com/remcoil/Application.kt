@@ -8,6 +8,7 @@ import com.remcoil.di.*
 import com.remcoil.module.action.actionModule
 import com.remcoil.module.batch.batchModule
 import com.remcoil.module.bobbin.bobbinModule
+import com.remcoil.module.comment.commentModule
 import com.remcoil.module.operator.operatorModule
 import com.remcoil.module.site.siteModule
 import com.remcoil.module.task.taskModule
@@ -35,6 +36,7 @@ fun main() {
             operatorComponents()
             taskComponents()
             actionComponents()
+            commentComponents()
             bobbinComponents()
             batchComponents()
         }
@@ -43,6 +45,7 @@ fun main() {
         actionModule()
         bobbinModule()
         batchModule()
+        commentModule()
         configureSerialization()
         siteModule(config)
         install(Authentication) {

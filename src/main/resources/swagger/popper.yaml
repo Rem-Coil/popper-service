@@ -6,7 +6,7 @@ info:
 
 servers:
   - url: 'https://popper-service.herokuapp.com/'
-  - url: 'http://localhost:80'
+  - url: 'http://0.0.0.0:8080'
   - url: 'https://webpanel.remcoil.space/'
 paths:
 
@@ -519,10 +519,10 @@ paths:
               schema:
                 $ref: '#/components/schemas/FullActions'
 
-  /action/comment:
+  /comment:
     get:
       tags:
-        - action
+        - comment
       responses:
         '200':
           description: List of all comments
@@ -535,41 +535,41 @@ paths:
       security:
         - bearerAuth: [ ]
       tags:
-        - action
+        - comment
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ActionWithCommentDto'
+              $ref: '#/components/schemas/Comment'
       responses:
         '200':
           description: Comment created
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ActionWithComment'
+                $ref: '#/components/schemas/Comment'
 
     put:
       security:
         - bearerAuth: [ ]
       tags:
-        - action
+        - comment
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/DefectsComment'
+              $ref: '#/components/schemas/Comment'
       responses:
         '200':
           description: Comment update
 
 
-  /action/comment/{action_id}:
+  /comment/{action_id}:
     get:
       tags:
-        - action
+        - comment
       parameters:
         - in: path
           name: action_id
@@ -584,13 +584,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/DefectsComment'
+                $ref: '#/components/schemas/omment'
 
     delete:
       security:
         - bearerAuth: [ ]
       tags:
-        - action
+        - comment
       parameters:
         - in: path
           name: action_id
@@ -919,7 +919,7 @@ components:
     ListOfComments:
       type: array
       items:
-        $ref: '#/components/schemas/DefectsComment'
+        $ref: '#/components/schemas/Comment'
 
     TaskIdentity:
       properties:
@@ -939,41 +939,9 @@ components:
         password:
           type: string
 
-    DefectsComment:
+    Comment:
       properties:
         action_id:
           type: number
-        comment:
-          type: string
-
-    ActionWithCommentDto:
-      properties:
-        id:
-          type: number
-        bobbin_id:
-          type: integer
-        action_type:
-          type: string
-        done_time:
-          type: string
-        successful:
-          type: boolean
-        comment:
-          type: string
-
-    ActionWithComment:
-      properties:
-        id:
-          type: number
-        operator_id:
-          type: integer
-        bobbin_id:
-          type: integer
-        action_type:
-          type: string
-        done_time:
-          type: string
-        successful:
-          type: boolean
         comment:
           type: string
