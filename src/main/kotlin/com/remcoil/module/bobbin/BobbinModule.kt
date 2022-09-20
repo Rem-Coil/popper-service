@@ -39,7 +39,12 @@ fun Application.bobbinModule() {
             }
 
             delete("/{id}") {
-                bobbinService.deleteById(call.parameters["id"]!!.toLong())
+                bobbinService.deactivateById(call.parameters["id"]!!.toLong())
+                call.respond(HttpStatusCode.OK)
+            }
+
+            delete("delete/{id}") {
+                bobbinService.trueDeleteById(call.parameters["id"]!!.toLong())
                 call.respond(HttpStatusCode.OK)
             }
         }

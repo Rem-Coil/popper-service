@@ -11,6 +11,7 @@ object FullActions:  Table("full_action") {
     val batchNumber = varchar("batch_number", 64)
     val bobbinId = long("bobbin_id")
     val bobbinNumber = varchar("bobbin_number", 128)
+    val active = bool("active")
     val actionId = long("action_id")
     val actionType = varchar("action_type", 50)
     val doneTime = datetime("done_time")

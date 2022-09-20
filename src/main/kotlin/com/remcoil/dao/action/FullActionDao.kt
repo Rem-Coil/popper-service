@@ -4,10 +4,7 @@ import com.remcoil.data.database.FullActions
 import com.remcoil.data.model.action.FullAction
 import com.remcoil.utils.safetySuspendTransactionAsync
 import kotlinx.datetime.toKotlinLocalDateTime
-import org.jetbrains.exposed.sql.Database
-import org.jetbrains.exposed.sql.ResultRow
-import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.selectAll
+import org.jetbrains.exposed.sql.*
 
 class FullActionDao(private val database: Database) {
 
@@ -25,7 +22,7 @@ class FullActionDao(private val database: Database) {
 
     suspend fun getByBatchId(batchId: Long): List<FullAction> = safetySuspendTransactionAsync(database) {
         FullActions
-            .select { FullActions.batchId eq batchId }
+            .select { FullActions.batchId eq batchId and FullActions.active}
             .map(::extractFullAction)
     }
 

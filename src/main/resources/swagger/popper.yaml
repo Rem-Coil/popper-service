@@ -69,11 +69,21 @@ paths:
             type: number
       responses:
         '200':
+          description: Bobbin marked as defected
+
+  /bobbin/delete/{id}:
+    delete:
+      tags:
+        - bobbin
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: number
+      responses:
+        '200':
           description: Bobbin deleted
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Bobbin'
 
   /bobbin/batch/{batch_id}:
     get:
@@ -833,6 +843,8 @@ components:
           type: number
         bobbin_number:
           type: integer
+        active:
+          type: boolean
 
     Batch:
       properties:

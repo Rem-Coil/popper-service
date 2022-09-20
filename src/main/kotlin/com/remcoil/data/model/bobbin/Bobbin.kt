@@ -9,5 +9,6 @@ data class Bobbin(
     @SerialName("batch_id")
     val batchId: Long,
     @SerialName("bobbin_number")
-    var bobbinNumber: String
+    var bobbinNumber: String,
+    var active: Boolean
 )
