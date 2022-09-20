@@ -52,7 +52,7 @@ fun DI.Builder.taskComponents() {
 fun DI.Builder.actionComponents() {
     bind<ActionDao>() with singleton { ActionDao(instance()) }
     bind<FullActionDao>() with singleton { FullActionDao(instance()) }
-    bind<ActionService>() with singleton { ActionService(instance(), instance()) }
+    bind<ActionService>() with singleton { ActionService(instance(), instance(), instance()) }
 }
 
 fun DI.Builder.commentComponents() {

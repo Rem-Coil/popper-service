@@ -4,10 +4,14 @@ import com.remcoil.dao.action.ActionDao
 import com.remcoil.dao.action.FullActionDao
 import com.remcoil.data.model.action.Action
 import com.remcoil.data.model.action.FullAction
+import com.remcoil.service.bobbin.BobbinService
+import com.remcoil.utils.exceptions.InActiveBobbinException
 import com.remcoil.utils.logger
 
-class ActionService(private val actionDao: ActionDao,
-                    private val fullActionDao: FullActionDao
+class ActionService(
+    private val actionDao: ActionDao,
+    private val fullActionDao: FullActionDao,
+    private val bobbinService: BobbinService
 ) {
     suspend fun getAllFull(): List<FullAction> {
         val actions = fullActionDao.getAll()
@@ -58,14 +62,22 @@ class ActionService(private val actionDao: ActionDao,
     }
 
     suspend fun updateAction(action: Action) {
-        actionDao.updateAction(action)
-        logger.info("Данные об операции с id=${action.id}")
+        if (bobbinService.isActive(action.bobbinId)) {
+            actionDao.updateAction(action)
+            logger.info("Данные об операции с id=${action.id}")
+        } else {
+            throw InActiveBobbinException("Катушка с id=${action.bobbinId} неактивна")
+        }
     }
 
     suspend fun createAction(action: Action): Action {
-        val act = actionDao.createAction(action)
-        logger.info("Запись с id=${act.id} сохранена")
-        return act
+        if (bobbinService.isActive(action.bobbinId)) {
+            val act = actionDao.createAction(action)
+            logger.info("Запись с id=${act.id} сохранена")
+            return act
+        } else {
+            throw InActiveBobbinException("Катушка с id=${action.bobbinId} неактивна")
+        }
     }
 
     suspend fun deleteAction(actionId: Long) {

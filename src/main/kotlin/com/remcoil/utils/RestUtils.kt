@@ -8,6 +8,7 @@ import io.ktor.server.response.*
 import kotlinx.serialization.SerializationException
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import java.time.DateTimeException
 
 suspend inline fun <reified T : Any> ApplicationCall.safetyReceive(onCorrectResult: (T) -> Unit) {
     try {
@@ -18,6 +19,8 @@ suspend inline fun <reified T : Any> ApplicationCall.safetyReceive(onCorrectResu
     } catch (e: DatabaseException) {
         respond(HttpStatusCode.BadRequest, e.message.toString())
     } catch (e: SerializationException) {
+        respond(HttpStatusCode.BadRequest, e.message.toString())
+    } catch (e: DateTimeException) {
         respond(HttpStatusCode.BadRequest, e.message.toString())
     }
 }

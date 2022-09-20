@@ -1,8 +1,8 @@
 package com.remcoil.module.action
 
 import com.remcoil.data.model.action.*
-import com.remcoil.data.model.comment.Comment
 import com.remcoil.service.action.ActionService
+import com.remcoil.utils.exceptions.InActiveBobbinException
 import com.remcoil.utils.safetyReceive
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -39,27 +39,35 @@ fun Application.actionModule() {
                 post {
                     call.safetyReceive<ActionDto> { actionDto ->
                         val principal = call.principal<JWTPrincipal>()
-                        call.respond(
-                            actionService.createAction(
-                                Action(
-                                    actionDto,
-                                    principal!!.payload.getClaim("id").asInt()
+                        try {
+                            call.respond(
+                                actionService.createAction(
+                                    Action(
+                                        actionDto,
+                                        principal!!.payload.getClaim("id").asInt()
+                                    )
                                 )
                             )
-                        )
+                        } catch (e: InActiveBobbinException) {
+                            call.respond(HttpStatusCode.BadRequest)
+                        }
                     }
                 }
 
                 put {
                     call.safetyReceive<ActionDto> { actionDto ->
                         val principal = call.principal<JWTPrincipal>()
-                        actionService.updateAction(
-                            Action(
-                                actionDto,
-                                principal!!.payload.getClaim("id").asInt()
+                        try {
+                            actionService.updateAction(
+                                Action(
+                                    actionDto,
+                                    principal!!.payload.getClaim("id").asInt()
+                                )
                             )
-                        )
-                        call.respond(HttpStatusCode.OK)
+                            call.respond(HttpStatusCode.OK)
+                        } catch (e: InActiveBobbinException) {
+                            call.respond(HttpStatusCode.BadRequest)
+                        }
                     }
                 }
             }
