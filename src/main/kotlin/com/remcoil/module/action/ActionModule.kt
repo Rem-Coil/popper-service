@@ -3,6 +3,7 @@ package com.remcoil.module.action
 import com.remcoil.data.model.action.*
 import com.remcoil.service.action.ActionService
 import com.remcoil.utils.exceptions.InActiveBobbinException
+import com.remcoil.utils.exceptions.WrongParamException
 import com.remcoil.utils.safetyReceive
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -49,6 +50,19 @@ fun Application.actionModule() {
                                 )
                             )
                         } catch (e: InActiveBobbinException) {
+                            call.respond(HttpStatusCode.BadRequest)
+                        }
+                    }
+                }
+
+                patch("/{id}") {
+                    call.safetyReceive<Map<String, Boolean>> { success ->
+                        try {
+                            actionService.updateSuccess(call.parameters["id"]!!.toLong(), success["success"]!!)
+                            call.respond(HttpStatusCode.OK)
+                        } catch (e: WrongParamException) {
+                            call.respond(HttpStatusCode.BadRequest)
+                        } catch (e: InvalidBodyException) {
                             call.respond(HttpStatusCode.BadRequest)
                         }
                     }

@@ -6,6 +6,7 @@ import com.remcoil.data.model.action.Action
 import com.remcoil.data.model.action.FullAction
 import com.remcoil.service.bobbin.BobbinService
 import com.remcoil.utils.exceptions.InActiveBobbinException
+import com.remcoil.utils.exceptions.WrongParamException
 import com.remcoil.utils.logger
 
 class ActionService(
@@ -65,6 +66,16 @@ class ActionService(
         if (bobbinService.isActive(action.bobbinId)) {
             actionDao.updateAction(action)
             logger.info("Данные об операции с id=${action.id}")
+        } else {
+            throw InActiveBobbinException("Катушка с id=${action.bobbinId} неактивна")
+        }
+    }
+
+    suspend fun updateSuccess(actionId: Long, success: Boolean) {
+        val action = getById(actionId) ?: throw WrongParamException("Операция не найдена")
+        if (bobbinService.isActive(action.bobbinId)) {
+            actionDao.updateSuccess(actionId, success)
+            logger.info("Обновили поле successful")
         } else {
             throw InActiveBobbinException("Катушка с id=${action.bobbinId} неактивна")
         }

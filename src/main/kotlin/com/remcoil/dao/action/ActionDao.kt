@@ -61,4 +61,11 @@ class ActionDao(private val database: Database) {
         row[Actions.doneTime].toKotlinLocalDateTime(),
         row[Actions.successful]
     )
+
+    suspend fun updateSuccess(actionId: Long, success: Boolean) = safetySuspendTransactionAsync(database){
+        Actions
+            .update({Actions.id eq actionId}) {
+                it[successful] = success
+            }
+    }
 }

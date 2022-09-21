@@ -428,6 +428,31 @@ paths:
                 $ref: '#/components/schemas/ListOfActions'
 
   /action/{id}:
+    patch:
+      security:
+        - bearerAuth: [ ]
+      tags:
+        - action
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: number
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              properties:
+                success:
+                  type: boolean
+      responses:
+        '200':
+          description: Action patched
+        '400':
+          description: Wrong data
+
     delete:
       security:
         - bearerAuth: [ ]
