@@ -71,11 +71,11 @@ class ActionService(
         }
     }
 
-    suspend fun updateSuccess(actionId: Long, success: Boolean) {
+    suspend fun updateType(actionId: Long, type: String) {
         val action = getById(actionId) ?: throw WrongParamException("Операция не найдена")
         if (bobbinService.isActive(action.bobbinId)) {
-            actionDao.updateSuccess(actionId, success)
-            logger.info("Обновили поле successful")
+            actionDao.updateType(actionId, type)
+            logger.info("Тип операции обновлен")
         } else {
             throw InActiveBobbinException("Катушка с id=${action.bobbinId} неактивна")
         }

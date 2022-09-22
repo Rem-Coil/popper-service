@@ -445,8 +445,8 @@ paths:
           application/json:
             schema:
               properties:
-                success:
-                  type: boolean
+                action_type:
+                  type: string
       responses:
         '200':
           description: Action patched

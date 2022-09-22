@@ -56,9 +56,9 @@ fun Application.actionModule() {
                 }
 
                 patch("/{id}") {
-                    call.safetyReceive<Map<String, Boolean>> { success ->
+                    call.safetyReceive<Map<String, String>> { actionType ->
                         try {
-                            actionService.updateSuccess(call.parameters["id"]!!.toLong(), success["success"]!!)
+                            actionService.updateType(call.parameters["id"]!!.toLong(), actionType["action_type"]!!)
                             call.respond(HttpStatusCode.OK)
                         } catch (e: WrongParamException) {
                             call.respond(HttpStatusCode.BadRequest)
