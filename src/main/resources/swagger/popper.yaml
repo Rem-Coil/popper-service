@@ -884,8 +884,6 @@ components:
       properties:
         task_id:
           type: integer
-        batch_size:
-          type: integer
 
     FullBatch:
       properties:

@@ -5,7 +5,5 @@ import kotlinx.serialization.SerialName
 @kotlinx.serialization.Serializable
 class BatchIdentity(
     @SerialName("task_id")
-    val taskId: Int,
-    @SerialName("batch_size")
-    val BatchSize: Int
+    val taskId: Int
 )

@@ -92,7 +92,8 @@ class BatchService(
         val batches = getByTaskId(batchIdentity.taskId)
 
         val batchNumber = defineBatchNumber(batches) ?: return null
-        val createdBatch = createByTask(task, batchIdentity.BatchSize, batchNumber + 1)
+        val quantity = bobbinService.getByBatchId(batches.first().id).count {bobbin -> bobbin.active }
+        val createdBatch = createByTask(task, quantity, batchNumber + 1)
         logger.info("Создали партию с id ${createdBatch.id}")
         return createdBatch
     }
