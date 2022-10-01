@@ -45,7 +45,7 @@ class BobbinService(private val bobbinDao: BobbinDao) {
     suspend fun deactivateById(bobbinId: Long) {
         val bobbin = getById(bobbinId)
         if (bobbin != null) {
-            bobbinDao.deactivateById(bobbinId)
+            bobbinDao.deactivateById(bobbinId, bobbin.bobbinNumber)
             logger.info("Забраковали катушка с id = $bobbinId")
             bobbin.active = true
             createBobbin(bobbin)

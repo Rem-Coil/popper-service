@@ -3,7 +3,7 @@ package com.remcoil.service.action
 import com.remcoil.dao.action.ActionDao
 import com.remcoil.dao.action.FullActionDao
 import com.remcoil.data.model.action.Action
-import com.remcoil.data.model.action.FullAction
+import com.remcoil.data.model.action.full.FullAction
 import com.remcoil.service.bobbin.BobbinService
 import com.remcoil.utils.exceptions.InActiveBobbinException
 import com.remcoil.utils.exceptions.WrongParamException

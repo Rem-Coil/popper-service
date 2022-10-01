@@ -1,4 +1,4 @@
-package com.remcoil.data.model.action
+package com.remcoil.data.model.action.full
 
 import com.remcoil.utils.LocalDateTimeSerializer
 import kotlinx.datetime.LocalDateTime

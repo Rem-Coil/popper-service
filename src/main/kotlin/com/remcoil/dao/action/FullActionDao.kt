@@ -1,7 +1,7 @@
 package com.remcoil.dao.action
 
 import com.remcoil.data.database.FullActions
-import com.remcoil.data.model.action.FullAction
+import com.remcoil.data.model.action.full.FullAction
 import com.remcoil.utils.safetySuspendTransactionAsync
 import kotlinx.datetime.toKotlinLocalDateTime
 import org.jetbrains.exposed.sql.*

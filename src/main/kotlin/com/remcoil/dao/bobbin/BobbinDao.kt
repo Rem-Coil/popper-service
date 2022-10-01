@@ -45,10 +45,11 @@ class BobbinDao(private val database: Database) {
         Bobbins.deleteWhere { Bobbins.id eq id }
     }
 
-    suspend fun deactivateById(id: Long) = safetySuspendTransactionAsync(database) {
+    suspend fun deactivateById(id: Long, bobbinNumber: String) = safetySuspendTransactionAsync(database) {
         Bobbins
             .update({Bobbins.id eq id}) {
                 it[active] = false
+                it[Bobbins.bobbinNumber] = "$bobbinNumber def"
             }
     }
 
