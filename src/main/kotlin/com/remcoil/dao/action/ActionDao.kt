@@ -49,6 +49,17 @@ class ActionDao(private val database: Database) {
         action.copy(id = id.value)
     }
 
+    suspend fun createBatchAction(actions: List<Action>) = safetySuspendTransactionAsync(database) {
+        Actions.batchInsert(actions) {action: Action ->
+            this[Actions.operatorId] = action.operatorId
+            this[Actions.bobbinId] = action.bobbinId
+            this[Actions.actionType] = action.actionType
+            this[Actions.doneTime] = action.doneTime.toJavaLocalDateTime()
+            this[Actions.successful] = action.successful
+        }
+            .map(::extractAction)
+    }
+
     suspend fun deleteAction(id: Long) = safetySuspendTransactionAsync(database) {
         Actions.deleteWhere { Actions.id eq id }
     }

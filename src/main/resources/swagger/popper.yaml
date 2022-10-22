@@ -409,6 +409,30 @@ paths:
         '400':
           description: Bad request
 
+  /action/batch:
+    post:
+      security:
+        - bearerAuth: [ ]
+      tags:
+        - batch action
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BatchAction'
+      responses:
+        '400':
+          description: Bad request
+        '403':
+          description: Action already exists
+        '200':
+          description: Action created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListOfActions'
+
   /action/bobbin/{bobbin_id}:
     get:
       tags:
@@ -471,7 +495,7 @@ paths:
   /action/full:
     get:
       tags:
-        - action
+        - full action
       responses:
         '200':
           description: Full list of actions
@@ -483,7 +507,7 @@ paths:
   /action/full/task/{task_id}:
     get:
       tags:
-        - action
+        - full action
       parameters:
         - in: path
           name: task_id
@@ -501,7 +525,7 @@ paths:
   /action/full/batch/{batch_id}:
     get:
       tags:
-        - action
+        - full action
       parameters:
         - in: path
           name: batch_id
@@ -519,7 +543,7 @@ paths:
   /action/full/bobbin/{bobbin_id}:
     get:
       tags:
-        - action
+        - full action
       parameters:
         - in: path
           name: bobbin_id
@@ -537,7 +561,7 @@ paths:
   /action/full/{id}:
     get:
       tags:
-        - action
+        - full action
       parameters:
         - in: path
           name: id
@@ -795,6 +819,19 @@ components:
         operator_id:
           type: integer
         bobbin_id:
+          type: integer
+        action_type:
+          type: string
+        done_time:
+          type: string
+        successful:
+          type: boolean
+
+    BatchAction:
+      properties:
+        id:
+          type: number
+        batch_id:
           type: integer
         action_type:
           type: string

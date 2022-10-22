@@ -1,9 +1,8 @@
 package com.remcoil.service.action
 
 import com.remcoil.dao.action.ActionDao
-import com.remcoil.dao.action.FullActionDao
 import com.remcoil.data.model.action.Action
-import com.remcoil.data.model.action.full.FullAction
+import com.remcoil.data.model.action.BatchAction
 import com.remcoil.service.bobbin.BobbinService
 import com.remcoil.utils.exceptions.InActiveBobbinException
 import com.remcoil.utils.exceptions.WrongParamException
@@ -11,39 +10,8 @@ import com.remcoil.utils.logger
 
 class ActionService(
     private val actionDao: ActionDao,
-    private val fullActionDao: FullActionDao,
     private val bobbinService: BobbinService
 ) {
-    suspend fun getAllFull(): List<FullAction> {
-        val actions = fullActionDao.getAll()
-        logger.info("Отдали все операции")
-        return actions
-    }
-
-    suspend fun getFullByBatchId(batchId: Long): List<FullAction> {
-        val actions = fullActionDao.getByBatchId(batchId)
-        logger.info("Отдали все операции по ТЗ - $batchId")
-        return actions
-    }
-
-    suspend fun getFullByTaskId(taskId: Int): List<FullAction> {
-        val actions = fullActionDao.getByTaskId(taskId)
-        logger.info("Отдали все операции по ТЗ - $taskId")
-        return actions
-    }
-
-    suspend fun getFullByBobbinId(bobbinId: Long): List<FullAction> {
-        val actions = fullActionDao.getByBobbinId(bobbinId)
-        logger.info("Отдали все операции по катушке с id = $bobbinId")
-        return actions
-    }
-
-    suspend fun getFullById(id: Long): FullAction? {
-        val actions = fullActionDao.getById(id)
-        logger.info("Отдали операцию с id - $id")
-        return actions
-    }
-
     suspend fun getAll(): List<Action> {
         val actions = actionDao.getAll()
         logger.info("Отдали все операции")
@@ -89,6 +57,28 @@ class ActionService(
         } else {
             throw InActiveBobbinException("Катушка с id=${action.bobbinId} неактивна")
         }
+    }
+
+    suspend fun createBatchActions(batchAction: BatchAction, operatorId: Int): List<Action> {
+        val bobbinIdList = bobbinService.getByBatchId(batchAction.batchId)
+            .filter { bobbin -> bobbin.active }
+            .map { bobbin -> bobbin.id }
+
+        val actions = ArrayList<Action>()
+        for (bobbinId in bobbinIdList) {
+            actions.add(
+                Action(
+                    id = 0,
+                    operatorId = operatorId,
+                    bobbinId = bobbinId,
+                    actionType = batchAction.actionType,
+                    doneTime = batchAction.doneTime,
+                    successful = batchAction.successful
+                )
+            )
+        }
+
+        return actionDao.createBatchAction(actions)
     }
 
     suspend fun deleteAction(actionId: Long) {

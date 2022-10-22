@@ -9,6 +9,7 @@ import com.remcoil.dao.bobbin.BobbinDao
 import com.remcoil.dao.operator.OperatorDao
 import com.remcoil.dao.task.TaskDao
 import com.remcoil.service.action.ActionService
+import com.remcoil.service.action.FullActionService
 import com.remcoil.service.batch.BatchService
 import com.remcoil.service.bobbin.BobbinService
 import com.remcoil.service.comment.CommentService
@@ -52,7 +53,8 @@ fun DI.Builder.taskComponents() {
 fun DI.Builder.actionComponents() {
     bind<ActionDao>() with singleton { ActionDao(instance()) }
     bind<FullActionDao>() with singleton { FullActionDao(instance()) }
-    bind<ActionService>() with singleton { ActionService(instance(), instance(), instance()) }
+    bind<FullActionService>() with singleton { FullActionService(instance()) }
+    bind<ActionService>() with singleton { ActionService(instance(), instance()) }
 }
 
 fun DI.Builder.commentComponents() {

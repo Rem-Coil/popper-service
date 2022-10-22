@@ -8,7 +8,7 @@ import com.remcoil.data.model.batch.BatchIdentity
 import com.remcoil.data.model.batch.FullBatch
 import com.remcoil.data.model.bobbin.Bobbin
 import com.remcoil.data.model.task.Task
-import com.remcoil.service.action.ActionService
+import com.remcoil.service.action.FullActionService
 import com.remcoil.service.bobbin.BobbinService
 import com.remcoil.utils.logger
 
@@ -16,7 +16,7 @@ class BatchService(
     private val batchDao: BatchDao,
     private val taskDao: TaskDao,
     private val bobbinService: BobbinService,
-    private val actionService: ActionService
+    private val fullActionService: FullActionService
 ) {
     suspend fun getAll(): List<Batch> {
         val batches = batchDao.getAll()
@@ -66,7 +66,7 @@ class BatchService(
         val fullBatch =
             FullBatch(id = batch.id, batchNumber = batch.batchNumber, task_id = batch.taskId, quantity = quantity)
 
-        val bobbins = actionService.getFullByBatchId(batch.id).groupBy { it.bobbinId }
+        val bobbins = fullActionService.getFullByBatchId(batch.id).groupBy { it.bobbinId }
 
         for (bobbin in bobbins) {
             val actions = bobbin.value.groupBy { it.actionType }

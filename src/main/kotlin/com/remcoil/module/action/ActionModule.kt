@@ -2,6 +2,7 @@ package com.remcoil.module.action
 
 import com.remcoil.data.model.action.*
 import com.remcoil.service.action.ActionService
+import com.remcoil.service.action.FullActionService
 import com.remcoil.utils.exceptions.InActiveBobbinException
 import com.remcoil.utils.exceptions.WrongParamException
 import com.remcoil.utils.safetyReceive
@@ -17,6 +18,7 @@ import org.kodein.di.ktor.closestDI
 
 fun Application.actionModule() {
     val actionService: ActionService by closestDI().instance()
+    val fullActionService: FullActionService by closestDI().instance()
 
     routing {
         route("/action") {
@@ -32,6 +34,20 @@ fun Application.actionModule() {
             }
 
             authenticate("jwt-access") {
+                route("/batch") {
+                    post {
+                        call.safetyReceive<BatchAction> { batchAction ->
+                            val principal = call.principal<JWTPrincipal>()
+                            call.respond(
+                                actionService.createBatchActions(
+                                    batchAction,
+                                    principal!!.payload.getClaim("id").asInt()
+                                )
+                            )
+                        }
+                    }
+                }
+
                 delete("/{id}") {
                     actionService.deleteAction(call.parameters["id"]!!.toLong())
                     call.respond(HttpStatusCode.OK)
@@ -88,27 +104,27 @@ fun Application.actionModule() {
 
             route("/full") {
                 get {
-                    val actions = actionService.getAllFull()
+                    val actions = fullActionService.getAllFull()
                     call.respond(actions)
                 }
 
                 get("/task/{task_id}") {
-                    val actions = actionService.getFullByTaskId(call.parameters["task_id"]!!.toInt())
+                    val actions = fullActionService.getFullByTaskId(call.parameters["task_id"]!!.toInt())
                     call.respond(actions)
                 }
 
                 get("/batch/{batch_id}") {
-                    val actions = actionService.getFullByBatchId(call.parameters["batch_id"]!!.toLong())
+                    val actions = fullActionService.getFullByBatchId(call.parameters["batch_id"]!!.toLong())
                     call.respond(actions)
                 }
 
                 get("/bobbin/{bobbin_id}") {
-                    val actions = actionService.getFullByBobbinId(call.parameters["bobbin_id"]!!.toLong())
+                    val actions = fullActionService.getFullByBobbinId(call.parameters["bobbin_id"]!!.toLong())
                     call.respond(actions)
                 }
 
                 get("/{id}") {
-                    val action = actionService.getFullById(call.parameters["id"]!!.toLong())
+                    val action = fullActionService.getFullById(call.parameters["id"]!!.toLong())
                     call.respond(action ?: HttpStatusCode.NoContent)
                 }
             }
