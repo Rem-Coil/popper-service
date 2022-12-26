@@ -25,7 +25,7 @@ fun Application.operatorModule() {
             }
 
             post("/sign_in") {
-                call.safetyReceive<OperatorCredentials> {operatorCredentials ->
+                call.safetyReceive<OperatorCredentials> { operatorCredentials ->
                     val token = service.getActiveOperator(operatorCredentials)
                     if (token == null) {
                         call.respond(HttpStatusCode.Unauthorized)
@@ -59,10 +59,12 @@ fun Application.operatorModule() {
 
             put("state/{id}") {
                 try {
-                    service.setOperatorState(call.parameters["id"]!!.toInt(), call.request.queryParameters["active"].toBoolean())
+                    service.setOperatorState(
+                        call.parameters["id"]!!.toInt(),
+                        call.request.queryParameters["active"].toBoolean()
+                    )
                     call.respond(HttpStatusCode.OK)
-                }
-                catch (e: NotFoundException) {
+                } catch (e: NotFoundException) {
                     call.respond(HttpStatusCode.NotFound)
                 }
             }

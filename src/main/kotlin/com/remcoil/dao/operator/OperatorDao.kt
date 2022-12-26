@@ -4,6 +4,7 @@ import com.remcoil.data.model.operator.Operator
 import com.remcoil.data.database.Operators
 import com.remcoil.utils.safetySuspendTransactionAsync
 import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 
 class OperatorDao(private val database: Database) {
     suspend fun getOperator(phone: String): Operator? = safetySuspendTransactionAsync(database) {

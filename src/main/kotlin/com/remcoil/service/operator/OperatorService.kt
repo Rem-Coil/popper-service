@@ -33,7 +33,9 @@ class OperatorService(private val operatorDao: OperatorDao, private val config: 
     }
 
     suspend fun createOperator(operator: Operator): String? {
-        val op = if (operatorDao.isNotExist(operator) && checkRole(operator)) generateToken(operatorDao.createOperator(operator)) else null
+        val op = if (operatorDao.isNotExist(operator) && checkRole(operator)) generateToken(
+            operatorDao.createOperator(operator)
+        ) else null
         if (op == null) {
             logger.info("Некорректные данные")
         } else {
@@ -77,7 +79,8 @@ class OperatorService(private val operatorDao: OperatorDao, private val config: 
 
     private fun checkRole(operator: Operator): Boolean {
         if (operator.role == OperatorRole.OPERATOR.type ||
-            operator.role == OperatorRole.QUALITY_ENGINEER.type) {
+            operator.role == OperatorRole.QUALITY_ENGINEER.type
+        ) {
             return true
         }
         return false

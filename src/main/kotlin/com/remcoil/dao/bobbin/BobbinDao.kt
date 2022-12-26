@@ -4,6 +4,7 @@ import com.remcoil.data.database.Bobbins
 import com.remcoil.data.model.bobbin.Bobbin
 import com.remcoil.utils.safetySuspendTransactionAsync
 import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 
 class BobbinDao(private val database: Database) {
 

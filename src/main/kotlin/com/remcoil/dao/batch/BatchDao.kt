@@ -4,6 +4,7 @@ import com.remcoil.data.database.Batches
 import com.remcoil.data.model.batch.Batch
 import com.remcoil.utils.safetySuspendTransactionAsync
 import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 
 
 class BatchDao(private val database: Database) {

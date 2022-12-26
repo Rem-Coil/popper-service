@@ -4,6 +4,7 @@ import com.remcoil.data.database.Tasks
 import com.remcoil.data.model.task.Task
 import com.remcoil.utils.safetySuspendTransactionAsync
 import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 
 class TaskDao(private val database: Database) {
 

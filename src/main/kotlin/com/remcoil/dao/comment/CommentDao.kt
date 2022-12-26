@@ -4,6 +4,7 @@ import com.remcoil.data.database.DefectComments
 import com.remcoil.data.model.comment.Comment
 import com.remcoil.utils.safetySuspendTransactionAsync
 import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 
 
 class CommentDao(private val database: Database) {
@@ -24,7 +25,7 @@ class CommentDao(private val database: Database) {
     suspend fun createComment(comment: Comment) = safetySuspendTransactionAsync(database) {
         val insert = DefectComments
             .insert {
-                it[DefectComments.actionId] = comment.actionId
+                it[actionId] = comment.actionId
                 it[DefectComments.comment] = comment.comment
             }
         comment.copy(actionId = insert[DefectComments.actionId].value)

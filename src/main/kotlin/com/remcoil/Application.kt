@@ -40,14 +40,6 @@ fun main() {
             bobbinComponents()
             batchComponents()
         }
-        operatorModule()
-        taskModule()
-        actionModule()
-        bobbinModule()
-        batchModule()
-        commentModule()
-        configureSerialization()
-        siteModule(config)
         install(Authentication) {
             jwt("jwt-access") {
                 verifier(
@@ -65,6 +57,14 @@ fun main() {
                 }
             }
         }
+        operatorModule()
+        taskModule()
+        actionModule()
+        bobbinModule()
+        batchModule()
+        commentModule()
+        configureSerialization()
+        siteModule(config)
         install(CORS) {
             allowMethod(HttpMethod.Get)
             allowMethod(HttpMethod.Post)
@@ -77,6 +77,5 @@ fun main() {
             allowNonSimpleContentTypes = true
             allowCredentials = true
         }
-
     }.start(wait = true)
 }

@@ -97,7 +97,7 @@ fun Application.batchModule() {
                 val batchId = call.parameters["batch_id"]!!.toLong()
                 val batch = batchService.getById(batchId)
                 if (batch == null) {
-                    call.respondHtml {HttpStatusCode.NoContent}
+                    call.respondHtml { HttpStatusCode.NoContent }
                     return@get
                 }
                 val bobbins = bobbinService.getByBatchId(batchId)

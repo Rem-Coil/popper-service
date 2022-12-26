@@ -12,7 +12,7 @@ import java.time.DateTimeException
 
 suspend inline fun <reified T : Any> ApplicationCall.safetyReceive(onCorrectResult: (T) -> Unit) {
     try {
-        receiveOrNull<T>()
+        kotlin.runCatching { receiveNullable<T>() }.getOrNull()
             ?.let(onCorrectResult)
             ?: respond(HttpStatusCode.BadRequest)
 
