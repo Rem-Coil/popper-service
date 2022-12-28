@@ -5,8 +5,8 @@ info:
   version: 0.2.0
 
 servers:
-  - url: 'http://213.226.126.220:8080'
   - url: 'http://0.0.0.0:8080'
+  - url: 'http://213.226.126.220:8080'
   - url: 'https://webpanel.remcoil.space/'
 paths:
 
@@ -498,11 +498,11 @@ paths:
         - full action
       responses:
         '200':
-          description: Full list of actions
+          description: List of flat full actions
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ListOfFullActions'
+                $ref: '#/components/schemas/ListOfFlatFullActions'
 
   /action/full/task/{task_id}:
     get:
@@ -516,11 +516,11 @@ paths:
             type: integer
       responses:
         '200':
-          description: Full list of one task actions
+          description: Task full action
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ListOfFullActions'
+                $ref: '#/components/schemas/TaskFullAction'
 
   /action/full/batch/{batch_id}:
     get:
@@ -534,11 +534,11 @@ paths:
             type: number
       responses:
         '200':
-          description: Full list of one batch actions
+          description: Batch full action
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ListOfFullActions'
+                $ref: '#/components/schemas/BatchFullAction'
 
   /action/full/bobbin/{bobbin_id}:
     get:
@@ -552,11 +552,11 @@ paths:
             type: number
       responses:
         '200':
-          description: Full list of one bobbin actions
+          description: Bobbin full action
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ListOfFullActions'
+                $ref: '#/components/schemas/BobbinFullAction'
 
   /action/full/{id}:
     get:
@@ -569,14 +569,12 @@ paths:
           schema:
             type: number
       responses:
-        '204':
-          description: No content
         '200':
-          description: Full action
+          description: Flat full action
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/FullActions'
+                $ref: '#/components/schemas/FlatFullAction'
 
   /comment:
     get:
@@ -778,8 +776,63 @@ components:
       bearerFormat: JWT
 
   schemas:
+    TaskFullAction:
+      properties:
+        id:
+          type: number
+        task_name:
+          type: string
+        task_number:
+          type: string
+        batches:
+          type: array
+          items:
+            $ref: '#/components/schemas/BatchFullAction'
+
+    BatchFullAction:
+      properties:
+        id:
+          type: number
+        batch_number:
+          type: string
+        bobbins:
+          type: array
+          items:
+            $ref: '#/components/schemas/BobbinFullAction'
+
+    BobbinFullAction:
+      properties:
+        id:
+          type: number
+        bobbin_number:
+          type: string
+        is_active_bobbin:
+          type: boolean
+        actions:
+          type: array
+          items:
+            $ref: '#/components/schemas/FullAction'
 
     FullAction:
+      properties:
+        action_id:
+          type: number
+        action_type:
+          type: string
+        done_time:
+          type: string
+        successful:
+          type: boolean
+        operator_id:
+          type: integer
+        first_name:
+          type: string
+        second_name:
+          type: string
+        surname:
+          type: string
+
+    FlatFullAction:
       properties:
         task_id:
           type: integer
@@ -795,6 +848,8 @@ components:
           type: number
         bobbin_number:
           type: integer
+        is_active_bobbin:
+          type: boolean
         action_id:
           type: number
         action_type:
@@ -953,10 +1008,10 @@ components:
       items:
         $ref: '#/components/schemas/Action'
 
-    ListOfFullActions:
+    ListOfFlatFullActions:
       type: array
       items:
-        $ref: '#/components/schemas/FullAction'
+        $ref: '#/components/schemas/FlatFullAction'
 
     ListOfBobbins:
       type: array

@@ -66,10 +66,10 @@ class BatchService(
         val fullBatch =
             FullBatch(id = batch.id, batchNumber = batch.batchNumber, task_id = batch.taskId, quantity = quantity)
 
-        val bobbins = fullActionService.getFullByBatchId(batch.id).groupBy { it.bobbinId }
+        val batchFullAction = fullActionService.getFullByBatchId(batch.id) ?: return fullBatch
 
-        for (bobbin in bobbins) {
-            val actions = bobbin.value.groupBy { it.actionType }
+        for (bobbinFullAction in batchFullAction.bobbins) {
+            val actions = bobbinFullAction.actions.groupBy { it.actionType }
             for (action in actions) {
                 val lastAction = action.value.maxByOrNull { it.doneTime }
                 val inc = if (lastAction!!.successful) 1 else 0

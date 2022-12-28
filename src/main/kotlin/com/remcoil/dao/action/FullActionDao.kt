@@ -1,45 +1,45 @@
 package com.remcoil.dao.action
 
 import com.remcoil.data.database.FullActions
-import com.remcoil.data.model.action.full.FullAction
+import com.remcoil.data.model.action.full.FlatFullAction
 import com.remcoil.utils.safetySuspendTransactionAsync
 import kotlinx.datetime.toKotlinLocalDateTime
 import org.jetbrains.exposed.sql.*
 
 class FullActionDao(private val database: Database) {
 
-    suspend fun getAll(): List<FullAction> = safetySuspendTransactionAsync(database) {
+    suspend fun getAll(): List<FlatFullAction> = safetySuspendTransactionAsync(database) {
         FullActions
             .selectAll()
-            .map(::extractFullAction)
+            .map(::extractFlatFullAction)
     }
 
-    suspend fun getByTaskId(taskId: Int): List<FullAction> = safetySuspendTransactionAsync(database) {
+    suspend fun getByTaskId(taskId: Int): List<FlatFullAction> = safetySuspendTransactionAsync(database) {
         FullActions
             .select { FullActions.taskId eq taskId}
-            .map(::extractFullAction)
+            .map(::extractFlatFullAction)
     }
 
-    suspend fun getByBatchId(batchId: Long): List<FullAction> = safetySuspendTransactionAsync(database) {
+    suspend fun getByBatchId(batchId: Long): List<FlatFullAction> = safetySuspendTransactionAsync(database) {
         FullActions
-            .select { FullActions.batchId eq batchId and FullActions.active}
-            .map(::extractFullAction)
+            .select { FullActions.batchId eq batchId}
+            .map(::extractFlatFullAction)
     }
 
-    suspend fun getByBobbinId(bobbinId: Long): List<FullAction> = safetySuspendTransactionAsync(database) {
+    suspend fun getByBobbinId(bobbinId: Long): List<FlatFullAction> = safetySuspendTransactionAsync(database) {
         FullActions
             .select { FullActions.bobbinId eq bobbinId}
-            .map(::extractFullAction)
+            .map(::extractFlatFullAction)
     }
 
-    suspend fun getById(id: Long): FullAction? = safetySuspendTransactionAsync(database) {
+    suspend fun getById(id: Long): FlatFullAction? = safetySuspendTransactionAsync(database) {
         FullActions
             .select {FullActions.actionId eq id}
-            .map(::extractFullAction)
+            .map(::extractFlatFullAction)
             .firstOrNull()
     }
 
-    private fun extractFullAction(row: ResultRow): FullAction = FullAction(
+    private fun extractFlatFullAction(row: ResultRow): FlatFullAction = FlatFullAction(
         row[FullActions.taskId],
         row[FullActions.taskName],
         row[FullActions.taskNumber],
@@ -47,6 +47,7 @@ class FullActionDao(private val database: Database) {
         row[FullActions.batchNumber],
         row[FullActions.bobbinId],
         row[FullActions.bobbinNumber],
+        row[FullActions.active],
         row[FullActions.actionId],
         row[FullActions.actionType],
         row[FullActions.doneTime].toKotlinLocalDateTime(),
