@@ -4,7 +4,6 @@ import com.remcoil.data.model.action.*
 import com.remcoil.service.action.ActionService
 import com.remcoil.service.action.FullActionService
 import com.remcoil.utils.exceptions.InActiveBobbinException
-import com.remcoil.utils.exceptions.WrongParamException
 import com.remcoil.utils.safetyReceive
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -33,6 +32,22 @@ fun Application.actionModule() {
                 call.respond(actions)
             }
 
+            put {
+                call.safetyReceive<Action> { action ->
+                    try {
+                        actionService.updateAction(action)
+                        call.respond(HttpStatusCode.OK)
+                    } catch (e: InActiveBobbinException) {
+                        call.respond(HttpStatusCode.BadRequest)
+                    }
+                }
+            }
+
+            delete("/{id}") {
+                actionService.deleteAction(call.parameters["id"]!!.toLong())
+                call.respond(HttpStatusCode.OK)
+            }
+
             authenticate("jwt-access") {
                 route("/batch") {
                     post {
@@ -48,11 +63,6 @@ fun Application.actionModule() {
                     }
                 }
 
-                delete("/{id}") {
-                    actionService.deleteAction(call.parameters["id"]!!.toLong())
-                    call.respond(HttpStatusCode.OK)
-                }
-
                 post {
                     call.safetyReceive<ActionDto> { actionDto ->
                         val principal = call.principal<JWTPrincipal>()
@@ -65,36 +75,6 @@ fun Application.actionModule() {
                                     )
                                 )
                             )
-                        } catch (e: InActiveBobbinException) {
-                            call.respond(HttpStatusCode.BadRequest)
-                        }
-                    }
-                }
-
-                patch("/{id}") {
-                    call.safetyReceive<Map<String, String>> { actionType ->
-                        try {
-                            actionService.updateType(call.parameters["id"]!!.toLong(), actionType["action_type"]!!)
-                            call.respond(HttpStatusCode.OK)
-                        } catch (e: WrongParamException) {
-                            call.respond(HttpStatusCode.BadRequest)
-                        } catch (e: InvalidBodyException) {
-                            call.respond(HttpStatusCode.BadRequest)
-                        }
-                    }
-                }
-
-                put {
-                    call.safetyReceive<ActionDto> { actionDto ->
-                        val principal = call.principal<JWTPrincipal>()
-                        try {
-                            actionService.updateAction(
-                                Action(
-                                    actionDto,
-                                    principal!!.payload.getClaim("id").asInt()
-                                )
-                            )
-                            call.respond(HttpStatusCode.OK)
                         } catch (e: InActiveBobbinException) {
                             call.respond(HttpStatusCode.BadRequest)
                         }

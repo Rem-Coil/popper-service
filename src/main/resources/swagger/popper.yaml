@@ -393,8 +393,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/Action'
     put:
-      security:
-        - bearerAuth: [ ]
       tags:
         - action
       requestBody:
@@ -402,7 +400,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ActionDto'
+              $ref: '#/components/schemas/Action'
       responses:
         '200':
           description: Action update
@@ -452,34 +450,7 @@ paths:
                 $ref: '#/components/schemas/ListOfActions'
 
   /action/{id}:
-    patch:
-      security:
-        - bearerAuth: [ ]
-      tags:
-        - action
-      parameters:
-        - in: path
-          name: id
-          required: true
-          schema:
-            type: number
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              properties:
-                action_type:
-                  type: string
-      responses:
-        '200':
-          description: Action patched
-        '400':
-          description: Wrong data
-
     delete:
-      security:
-        - bearerAuth: [ ]
       tags:
         - action
       parameters:
