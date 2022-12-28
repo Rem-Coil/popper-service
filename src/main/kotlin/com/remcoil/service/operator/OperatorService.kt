@@ -59,7 +59,7 @@ class OperatorService(private val operatorDao: OperatorDao, private val config: 
     }
 
     suspend fun updateOperator(operator: Operator) {
-        if (checkRole(operator) && !operatorDao.isNotExist(operator)) {
+        if (checkRole(operator) && operatorDao.isExist(operator.id)) {
             operatorDao.updateOperator(operator)
         } else {
             throw WrongParamException("Некорректные данные")

@@ -3,7 +3,7 @@ version: "3.6"
 services:
   popper:
     container_name: popper_main_service
-    image: rem-coil.registry.jetbrains.space/p/popper/popper/main-service:latest
+    image: pampero.registry.jetbrains.space/p/popper/popper/popper_server:latest
     environment:
       PORT: ${POPPER_INNER_PORT}
       JDBC_DATABASE_PASSWORD: ${POSTGRES_PASSWORD}
