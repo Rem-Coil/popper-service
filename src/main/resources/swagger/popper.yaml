@@ -6,8 +6,7 @@ info:
 
 servers:
   - url: 'http://0.0.0.0:8008'
-  - url: 'http://213.226.126.220:8080'
-  - url: 'https://webpanel.remcoil.space/'
+  - url: 'api.popper.remcoil.space'
 paths:
 
   /bobbin:
