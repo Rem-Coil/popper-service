@@ -18,7 +18,7 @@ fun Application.taskModule() {
     routing {
         route("/task") {
 
-            get("/bobbins/{task_id}") {
+            get("/{task_id}/bobbin") {
                 val bobbins = call.parameters["task_id"]?.let { id ->
                     id.toLongOrNull()?.let {
                         taskService.getBobbinsByTaskId(id.toInt())

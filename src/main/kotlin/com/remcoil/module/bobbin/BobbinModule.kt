@@ -17,7 +17,7 @@ fun Application.bobbinModule() {
 
     routing {
 
-        get("/batch/bobbins/{batch_id}") {
+        get("/batch/{batch_id}/bobbin") {
             val bobbins = call.parameters["batch_id"]?.let { id ->
                 id.toLongOrNull()?.let {
                     bobbinService.getByBatchId(id.toLong())

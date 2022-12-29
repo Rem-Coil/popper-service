@@ -95,7 +95,7 @@ paths:
         '400':
           description: Bad request
 
-  /batch/bobbins/{batch_id}:
+  /batch/{batch_id}/bobbin:
     get:
       tags:
         - bobbin
@@ -117,7 +117,7 @@ paths:
         '404':
           description: Not Found
 
-  /task/bobbins/{task_id}:
+  /task/{task_id}/bobbin:
     get:
       tags:
         - bobbin
