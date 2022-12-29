@@ -51,17 +51,17 @@ fun Application.batchModule() {
                 call.respond(HttpStatusCode.OK)
             }
 
-            route("/full") {
-                get {
-                    val batches = batchService.getAllFull()
-                    call.respond(batches)
-                }
 
-                get("/{id}") {
-                    val batch = batchService.getFullById(call.parameters["id"]!!.toLong())
-                    call.respond(batch)
-                }
+            get("/full") {
+                val batches = batchService.getAllFull()
+                call.respond(batches)
             }
+
+            get("/{id}/full") {
+                val batch = batchService.getFullById(call.parameters["id"]!!.toLong())
+                call.respond(batch)
+            }
+
 
             get("/styles.css") {
                 call.respondCss {
@@ -93,8 +93,8 @@ fun Application.batchModule() {
                 }
             }
 
-            get("/codes/{batch_id}") {
-                val batchId = call.parameters["batch_id"]!!.toLong()
+            get("/{id}/codes") {
+                val batchId = call.parameters["id"]!!.toLong()
                 val batch = batchService.getById(batchId)
                 if (batch == null) {
                     call.respondHtml { HttpStatusCode.NoContent }

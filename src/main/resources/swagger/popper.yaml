@@ -330,7 +330,7 @@ paths:
         '400':
           description: Batch not found
 
-  /batch/full/{id}:
+  /batch/{id}/full:
     get:
       tags:
         - batch
@@ -362,13 +362,13 @@ paths:
               schema:
                 $ref: '#/components/schemas/ListOfFullBatches'
 
-  /batch/codes/{batch_id}:
+  /batch/{id}/codes:
     get:
       tags:
         - batch
       parameters:
         - in: path
-          name: batch_id
+          name: id
           required: true
           schema:
             type: number
@@ -489,7 +489,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ListOfFlatFullActions'
 
-  /action/full/task/{task_id}:
+  /action/task/{task_id}/full:
     get:
       tags:
         - full action
@@ -507,7 +507,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/TaskFullAction'
 
-  /action/full/batch/{batch_id}:
+  /action/batch/{batch_id}/full:
     get:
       tags:
         - full action
@@ -525,7 +525,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/BatchFullAction'
 
-  /action/full/bobbin/{bobbin_id}:
+  /action/bobbin/{bobbin_id}/full:
     get:
       tags:
         - full action
@@ -543,7 +543,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/BobbinFullAction'
 
-  /action/full/{id}:
+  /action/{id}/full:
     get:
       tags:
         - full action

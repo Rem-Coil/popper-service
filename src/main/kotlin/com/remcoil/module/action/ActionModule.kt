@@ -82,32 +82,32 @@ fun Application.actionModule() {
                 }
             }
 
-            route("/full") {
-                get {
-                    val actions = fullActionService.getAllFull()
-                    call.respond(actions)
-                }
 
-                get("/task/{task_id}") {
-                    val actions = fullActionService.getFullByTaskId(call.parameters["task_id"]!!.toInt())
-                    call.respond(actions ?: HttpStatusCode.NotFound)
-                }
-
-                get("/batch/{batch_id}") {
-                    val actions = fullActionService.getFullByBatchId(call.parameters["batch_id"]!!.toLong())
-                    call.respond(actions ?: HttpStatusCode.NotFound)
-                }
-
-                get("/bobbin/{bobbin_id}") {
-                    val actions = fullActionService.getFullByBobbinId(call.parameters["bobbin_id"]!!.toLong())
-                    call.respond(actions ?: HttpStatusCode.NotFound)
-                }
-
-                get("/{id}") {
-                    val action = fullActionService.getFullById(call.parameters["id"]!!.toLong())
-                    call.respond(action ?: HttpStatusCode.NotFound)
-                }
+            get("/full") {
+                val actions = fullActionService.getAllFull()
+                call.respond(actions)
             }
+
+            get("/task/{task_id}/full") {
+                val actions = fullActionService.getFullByTaskId(call.parameters["task_id"]!!.toInt())
+                call.respond(actions ?: HttpStatusCode.NotFound)
+            }
+
+            get("/batch/{batch_id}/full") {
+                val actions = fullActionService.getFullByBatchId(call.parameters["batch_id"]!!.toLong())
+                call.respond(actions ?: HttpStatusCode.NotFound)
+            }
+
+            get("/bobbin/{bobbin_id}/full") {
+                val actions = fullActionService.getFullByBobbinId(call.parameters["bobbin_id"]!!.toLong())
+                call.respond(actions ?: HttpStatusCode.NotFound)
+            }
+
+            get("/{id}/full") {
+                val action = fullActionService.getFullById(call.parameters["id"]!!.toLong())
+                call.respond(action ?: HttpStatusCode.NotFound)
+            }
+
         }
     }
 }
