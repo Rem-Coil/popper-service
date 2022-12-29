@@ -52,6 +52,7 @@ class FullActionDao(private val database: Database) {
         row[FullActions.actionType],
         row[FullActions.doneTime].toKotlinLocalDateTime(),
         row[FullActions.successful],
+        row[FullActions.comment],
         row[FullActions.operatorId],
         row[FullActions.firstName],
         row[FullActions.secondName],

@@ -16,6 +16,7 @@ object FullActions:  Table("full_action") {
     val actionType = varchar("action_type", 50)
     val doneTime = datetime("done_time")
     val successful = bool("successful")
+    val comment = text("comment")
     val operatorId = integer("operator_id")
     val firstName = varchar("first_name", 32)
     val secondName = varchar("second_name", 32)

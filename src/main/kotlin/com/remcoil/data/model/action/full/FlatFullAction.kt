@@ -31,6 +31,7 @@ data class FlatFullAction(
     @Serializable(with = LocalDateTimeSerializer::class)
     val doneTime: LocalDateTime,
     val successful: Boolean,
+    val comment: String?,
     @SerialName("operator_id")
     val operatorId: Int,
     @SerialName("first_name")
