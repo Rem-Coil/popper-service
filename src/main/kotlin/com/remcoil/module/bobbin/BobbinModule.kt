@@ -2,6 +2,7 @@ package com.remcoil.module.bobbin
 
 import com.remcoil.data.model.bobbin.Bobbin
 import com.remcoil.service.bobbin.BobbinService
+import com.remcoil.utils.exceptions.BobbinDoesNotExistException
 import com.remcoil.utils.safetyReceive
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -15,6 +16,16 @@ fun Application.bobbinModule() {
     val bobbinService: BobbinService by closestDI().instance()
 
     routing {
+
+        get("/batch/bobbins/{batch_id}") {
+            val bobbins = call.parameters["batch_id"]?.let { id ->
+                id.toLongOrNull()?.let {
+                    bobbinService.getByBatchId(id.toLong())
+                }
+            }
+            call.respond(bobbins ?: HttpStatusCode.BadRequest)
+        }
+
         route("/bobbin") {
             get {
                 val bobbins = bobbinService.getAll()
@@ -22,13 +33,16 @@ fun Application.bobbinModule() {
             }
 
             get("/{id}") {
-                val bobbin = bobbinService.getById(call.parameters["id"]!!.toLong())
-                call.respond(bobbin ?: HttpStatusCode.BadRequest)
-            }
-
-            get("/batch/{batch_id}") {
-                val bobbins = bobbinService.getByBatchId(call.parameters["batch_id"]!!.toLong())
-                call.respond(bobbins)
+                try {
+                    val bobbin = call.parameters["id"]?.let { id ->
+                        id.toLongOrNull()?.let {
+                            bobbinService.getById(id.toLong())
+                        }
+                    }
+                    call.respond(bobbin ?: HttpStatusCode.BadRequest)
+                } catch (e: BobbinDoesNotExistException) {
+                    call.respond(HttpStatusCode.NotFound, e.message.toString())
+                }
             }
 
             post {
@@ -39,13 +53,37 @@ fun Application.bobbinModule() {
             }
 
             delete("/{id}") {
-                bobbinService.deactivateById(call.parameters["id"]!!.toLong())
-                call.respond(HttpStatusCode.OK)
+                try {
+                    val result = call.parameters["id"]?.let { id ->
+                        id.toLongOrNull()?.let {
+                            bobbinService.deactivateById(id.toLong())
+                        }
+                    }
+                    call.respond(
+                        if (result == null) {
+                            HttpStatusCode.BadRequest
+                        } else {
+                            HttpStatusCode.OK
+                        }
+                    )
+                } catch (e: BobbinDoesNotExistException) {
+                    call.respond(HttpStatusCode.NotFound, e.message.toString())
+                }
             }
 
-            delete("delete/{id}") {
-                bobbinService.trueDeleteById(call.parameters["id"]!!.toLong())
-                call.respond(HttpStatusCode.OK)
+            delete("{id}/delete") {
+                val result = call.parameters["id"]?.let { id ->
+                    id.toLongOrNull()?.let {
+                        bobbinService.trueDeleteById(id.toLong())
+                    }
+                }
+                call.respond(
+                    if (result == null) {
+                        HttpStatusCode.BadRequest
+                    } else {
+                        HttpStatusCode.OK
+                    }
+                )
             }
         }
     }

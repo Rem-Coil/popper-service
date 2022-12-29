@@ -37,6 +37,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Bobbin'
+        '400':
+          description: Bad Request
 
   /bobbin/{id}:
     get:
@@ -55,8 +57,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Bobbin'
-        '400':
+        '404':
           description: Bobbin not found
+        '400':
+          description: Bad request
 
     delete:
       tags:
@@ -70,8 +74,12 @@ paths:
       responses:
         '200':
           description: Bobbin marked as defected
+        '404':
+          description: Bobbin not found
+        '400':
+          description: Bad request
 
-  /bobbin/delete/{id}:
+  /bobbin/{id}/delete:
     delete:
       tags:
         - bobbin
@@ -84,8 +92,10 @@ paths:
       responses:
         '200':
           description: Bobbin deleted
+        '400':
+          description: Bad request
 
-  /bobbin/batch/{batch_id}:
+  /batch/bobbins/{batch_id}:
     get:
       tags:
         - bobbin
@@ -102,6 +112,32 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ListOfBobbins'
+        '400':
+          description: Bad request
+        '404':
+          description: Not Found
+
+  /task/bobbins/{task_id}:
+    get:
+      tags:
+        - bobbin
+      parameters:
+        - in: path
+          name: task_id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: List of bobbins of one task
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListOfBobbins'
+        '400':
+          description: Bad Request
+        '404':
+          description: Not Found
 
   /task:
     get:
@@ -179,24 +215,6 @@ paths:
       responses:
         '200':
           description: Task deleted successfully
-
-  /task/bobbins/{task_id}:
-    get:
-      tags:
-        - bobbin
-      parameters:
-        - in: path
-          name: task_id
-          required: true
-          schema:
-            type: integer
-      responses:
-        '200':
-          description: List of bobbins of one task
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ListOfBobbins'
 
   /task/full:
     get:
@@ -384,8 +402,6 @@ paths:
       responses:
         '400':
           description: Bad request
-        '403':
-          description: Action already exists
         '200':
           description: Action created
           content:
@@ -422,8 +438,6 @@ paths:
       responses:
         '400':
           description: Bad request
-        '403':
-          description: Action already exists
         '200':
           description: Action created
           content:

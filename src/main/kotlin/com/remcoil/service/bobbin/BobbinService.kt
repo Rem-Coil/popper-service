@@ -3,6 +3,7 @@ package com.remcoil.service.bobbin
 import com.remcoil.dao.bobbin.BobbinDao
 import com.remcoil.data.model.batch.Batch
 import com.remcoil.data.model.bobbin.Bobbin
+import com.remcoil.utils.exceptions.BobbinDoesNotExistException
 import com.remcoil.utils.logger
 
 class BobbinService(private val bobbinDao: BobbinDao) {
@@ -13,10 +14,10 @@ class BobbinService(private val bobbinDao: BobbinDao) {
         return bobbins
     }
 
-    suspend fun getById(id: Long): Bobbin? {
+    suspend fun getById(id: Long): Bobbin {
         val bobbin = bobbinDao.getById(id)
         logger.info("Отдали катушку - $id")
-        return bobbin
+        return bobbin ?: throw BobbinDoesNotExistException("Катушки с id = $id не существует")
     }
 
     suspend fun getByBatchId(batchId: Long): List<Bobbin> {
@@ -44,17 +45,19 @@ class BobbinService(private val bobbinDao: BobbinDao) {
 
     suspend fun deactivateById(bobbinId: Long) {
         val bobbin = getById(bobbinId)
-        if (bobbin != null) {
-            bobbinDao.deactivateById(bobbinId, bobbin.bobbinNumber)
-            logger.info("Забраковали катушка с id = $bobbinId")
-            bobbin.active = true
-            createBobbin(bobbin)
-        }
+        bobbinDao.deactivateById(bobbinId, bobbin.bobbinNumber)
+        logger.info("Забраковали катушка с id = $bobbinId")
+        bobbin.active = true
+        createBobbin(bobbin)
     }
 
     suspend fun isActive(bobbinId: Long) : Boolean {
-        val bobbin = getById(bobbinId)
-        return bobbin != null && bobbin.active
+        return try {
+            val bobbin = getById(bobbinId)
+            bobbin.active
+        } catch (e: BobbinDoesNotExistException) {
+            false
+        }
     }
 
     suspend fun updateBobbin(bobbin: Bobbin) {

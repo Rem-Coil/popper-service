@@ -18,8 +18,12 @@ fun Application.taskModule() {
         route("/task") {
 
             get("/bobbins/{task_id}") {
-                val bobbins = taskService.getBobbinsByTaskId(call.parameters["task_id"]!!.toInt())
-                call.respond(bobbins)
+                val bobbins = call.parameters["task_id"]?.let { id ->
+                    id.toLongOrNull()?.let {
+                        taskService.getBobbinsByTaskId(id.toInt())
+                    }
+                }
+                call.respond(bobbins ?: HttpStatusCode.BadRequest)
             }
 
             get {
