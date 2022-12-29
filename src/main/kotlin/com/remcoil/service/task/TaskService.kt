@@ -7,6 +7,7 @@ import com.remcoil.data.model.task.Task
 import com.remcoil.data.model.task.TaskIdentity
 import com.remcoil.service.batch.BatchService
 import com.remcoil.service.bobbin.BobbinService
+import com.remcoil.utils.exceptions.EntryDoesNotExistException
 import com.remcoil.utils.logger
 
 class TaskService(
@@ -21,15 +22,15 @@ class TaskService(
         return tasks
     }
 
-    suspend fun getById(taskId: Int): Task? {
+    suspend fun getById(taskId: Int): Task {
         val task = taskDao.getById(taskId)
         logger.info("Вернули данные от ТЗ - $taskId")
-        return task
+        return task ?: throw EntryDoesNotExistException("ТЗ с id = $taskId не существует")
     }
 
     suspend fun getFullById(taskId: Int): FullTask {
         val task = getById(taskId)
-        return toFullTask(task!!)
+        return toFullTask(task)
     }
 
     suspend fun getAllFull(): List<FullTask> {
@@ -62,7 +63,7 @@ class TaskService(
     }
 
     suspend fun updateTask(task: Task) {
-        val oldTask = getById(task.id) ?: return
+        val oldTask = getById(task.id)
         taskDao.updateTask(task)
         logger.info("Обновили ТЗ")
         if (oldTask != task) {

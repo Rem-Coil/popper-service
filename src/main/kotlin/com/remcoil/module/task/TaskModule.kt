@@ -3,6 +3,7 @@ package com.remcoil.module.task
 import com.remcoil.data.model.task.Task
 import com.remcoil.data.model.task.TaskIdentity
 import com.remcoil.service.task.TaskService
+import com.remcoil.utils.exceptions.EntryDoesNotExistException
 import com.remcoil.utils.safetyReceive
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -32,8 +33,16 @@ fun Application.taskModule() {
             }
 
             get("/{id}") {
-                val task = taskService.getById(call.parameters["id"]!!.toInt())
-                call.respond(task ?: HttpStatusCode.BadRequest)
+                try {
+                    val task = call.parameters["id"]?.let { id ->
+                        id.toLongOrNull()?.let {
+                            taskService.getById(id.toInt())
+                        }
+                    }
+                    call.respond(task ?: HttpStatusCode.BadRequest)
+                } catch (e: EntryDoesNotExistException) {
+                    call.respond(HttpStatusCode.NotFound, e.message.toString())
+                }
             }
 
             post {
@@ -50,21 +59,39 @@ fun Application.taskModule() {
             }
 
             delete("/{id}") {
-                taskService.deleteTask(call.parameters["id"]!!.toInt())
-                call.respond(HttpStatusCode.OK)
+                val result = call.parameters["id"]?.let { id ->
+                    id.toLongOrNull()?.let {
+                        taskService.deleteTask(id.toInt())
+                    }
+                }
+                call.respond(
+                    if (result == null) {
+                        HttpStatusCode.BadRequest
+                    } else {
+                        HttpStatusCode.OK
+                    }
+                )
             }
 
-            route("/full") {
-                get {
-                    val tasks = taskService.getAllFull()
-                    call.respond(tasks)
-                }
 
-                get("/{id}") {
-                    val task = taskService.getFullById(call.parameters["id"]!!.toInt())
-                    call.respond(task)
+            get("/full") {
+                val tasks = taskService.getAllFull()
+                call.respond(tasks)
+            }
+
+            get("/{id}/full") {
+                try {
+                    val task = call.parameters["id"]?.let { id ->
+                        id.toLongOrNull()?.let {
+                            taskService.getFullById(id.toInt())
+                        }
+                    }
+                    call.respond(task ?: HttpStatusCode.BadRequest)
+                } catch (e: EntryDoesNotExistException) {
+                    call.respond(HttpStatusCode.NotFound, e.message.toString())
                 }
             }
+
         }
     }
 }

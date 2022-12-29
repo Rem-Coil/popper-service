@@ -2,7 +2,7 @@ package com.remcoil.module.bobbin
 
 import com.remcoil.data.model.bobbin.Bobbin
 import com.remcoil.service.bobbin.BobbinService
-import com.remcoil.utils.exceptions.BobbinDoesNotExistException
+import com.remcoil.utils.exceptions.EntryDoesNotExistException
 import com.remcoil.utils.safetyReceive
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -40,7 +40,7 @@ fun Application.bobbinModule() {
                         }
                     }
                     call.respond(bobbin ?: HttpStatusCode.BadRequest)
-                } catch (e: BobbinDoesNotExistException) {
+                } catch (e: EntryDoesNotExistException) {
                     call.respond(HttpStatusCode.NotFound, e.message.toString())
                 }
             }
@@ -66,7 +66,7 @@ fun Application.bobbinModule() {
                             HttpStatusCode.OK
                         }
                     )
-                } catch (e: BobbinDoesNotExistException) {
+                } catch (e: EntryDoesNotExistException) {
                     call.respond(HttpStatusCode.NotFound, e.message.toString())
                 }
             }

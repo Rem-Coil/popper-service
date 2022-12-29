@@ -3,7 +3,7 @@ package com.remcoil.service.bobbin
 import com.remcoil.dao.bobbin.BobbinDao
 import com.remcoil.data.model.batch.Batch
 import com.remcoil.data.model.bobbin.Bobbin
-import com.remcoil.utils.exceptions.BobbinDoesNotExistException
+import com.remcoil.utils.exceptions.EntryDoesNotExistException
 import com.remcoil.utils.logger
 
 class BobbinService(private val bobbinDao: BobbinDao) {
@@ -17,7 +17,7 @@ class BobbinService(private val bobbinDao: BobbinDao) {
     suspend fun getById(id: Long): Bobbin {
         val bobbin = bobbinDao.getById(id)
         logger.info("Отдали катушку - $id")
-        return bobbin ?: throw BobbinDoesNotExistException("Катушки с id = $id не существует")
+        return bobbin ?: throw EntryDoesNotExistException("Катушки с id = $id не существует")
     }
 
     suspend fun getByBatchId(batchId: Long): List<Bobbin> {
@@ -55,7 +55,7 @@ class BobbinService(private val bobbinDao: BobbinDao) {
         return try {
             val bobbin = getById(bobbinId)
             bobbin.active
-        } catch (e: BobbinDoesNotExistException) {
+        } catch (e: EntryDoesNotExistException) {
             false
         }
     }
