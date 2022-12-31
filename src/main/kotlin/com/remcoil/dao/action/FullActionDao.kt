@@ -56,6 +56,7 @@ class FullActionDao(private val database: Database) {
         row[FullActions.operatorId],
         row[FullActions.firstName],
         row[FullActions.secondName],
-        row[FullActions.surname]
+        row[FullActions.surname],
+        row[FullActions.role]
     )
 }

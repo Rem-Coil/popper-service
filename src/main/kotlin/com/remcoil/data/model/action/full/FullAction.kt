@@ -23,7 +23,8 @@ data class FullAction(
     val firstname: String,
     @SerialName("second_name")
     val secondName: String,
-    val surname: String
+    val surname: String,
+    val role: String
 ) {
     companion object {
         fun toFullAction(actions: List<FlatFullAction>): List<FullAction> {
@@ -36,7 +37,8 @@ data class FullAction(
                 operatorId = flatFullAction.operatorId,
                 firstname = flatFullAction.firstname,
                 secondName = flatFullAction.secondName,
-                surname = flatFullAction.surname
+                surname = flatFullAction.surname,
+                role = flatFullAction.role
             ) }.toList()
         }
     }

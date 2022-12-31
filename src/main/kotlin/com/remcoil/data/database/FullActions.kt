@@ -21,4 +21,5 @@ object FullActions:  Table("full_action") {
     val firstName = varchar("first_name", 32)
     val secondName = varchar("second_name", 32)
     val surname = varchar("surname", 32)
+    val role = varchar("role", 32)
 }

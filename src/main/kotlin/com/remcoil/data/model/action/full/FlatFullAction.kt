@@ -38,5 +38,6 @@ data class FlatFullAction(
     val firstname: String,
     @SerialName("second_name")
     val secondName: String,
-    val surname: String
+    val surname: String,
+    val role: String
 )

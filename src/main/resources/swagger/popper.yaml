@@ -827,6 +827,8 @@ components:
           type: string
         surname:
           type: string
+        role:
+          type: string
 
     FlatFullAction:
       properties:
@@ -863,6 +865,8 @@ components:
         second_name:
           type: string
         surname:
+          type: string
+        role:
           type: string
 
     Action:
