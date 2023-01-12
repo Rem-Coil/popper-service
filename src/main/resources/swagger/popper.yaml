@@ -809,7 +809,7 @@ components:
 
     FullAction:
       properties:
-        action_id:
+        id:
           type: number
         action_type:
           type: string
