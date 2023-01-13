@@ -79,7 +79,8 @@ class OperatorService(private val operatorDao: OperatorDao, private val config: 
 
     private fun checkRole(operator: Operator): Boolean {
         if (operator.role == OperatorRole.OPERATOR.type ||
-            operator.role == OperatorRole.QUALITY_ENGINEER.type
+            operator.role == OperatorRole.QUALITY_ENGINEER.type ||
+            operator.role == OperatorRole.ADMIN.type
         ) {
             return true
         }
