@@ -126,9 +126,6 @@ fun Application.batchModule() {
                                             val bobbin = bobbinsIterator.next()
                                             td {
                                                 p {
-                                                    +"Катушка"
-                                                }
-                                                p {
                                                     +bobbin.bobbinNumber
                                                 }
                                                 img(src = "https://api.qrserver.com/v1/create-qr-code/?data=bobbin:${bobbin.id}")
@@ -174,9 +171,6 @@ fun Application.batchModule() {
                                 for (i in 1..5) {
                                     td {
                                         p {
-                                            +"Катушка"
-                                        }
-                                        p {
                                             +"Номер катушки"
                                         }
                                         img(src = "https://api.qrserver.com/v1/create-qr-code/?size=${250}x${250}&data=bobbin:${i}")
@@ -190,9 +184,6 @@ fun Application.batchModule() {
                             tr {
                                 for (i in 1..6) {
                                     td {
-                                        p {
-                                            +"Катушка"
-                                        }
                                         p {
                                             +"Номер катушки"
                                         }
@@ -208,9 +199,6 @@ fun Application.batchModule() {
                                 for (i in 1..7) {
                                     td {
                                         p {
-                                            +"Катушка"
-                                        }
-                                        p {
                                             +"Номер катушки"
                                         }
                                         img(src = "https://api.qrserver.com/v1/create-qr-code/?size=${173}x${173}&data=bobbin:${i}")
@@ -224,9 +212,6 @@ fun Application.batchModule() {
                             tr {
                                 for (i in 1..8) {
                                     td {
-                                        p {
-                                            +"Катушка"
-                                        }
                                         p {
                                             +"Номер катушки"
                                         }
@@ -242,9 +227,6 @@ fun Application.batchModule() {
                                 for (i in 1..9) {
                                     td {
                                         p {
-                                            +"Катушка"
-                                        }
-                                        p {
                                             +"Номер катушки"
                                         }
                                         img(src = "https://api.qrserver.com/v1/create-qr-code/?size=${(130)}x${130}&data=bobbin:${i}")
@@ -259,9 +241,6 @@ fun Application.batchModule() {
                                 for (i in 1..10) {
                                     td {
                                         p {
-                                            +"Катушка"
-                                        }
-                                        p {
                                             +"Номер катушки"
                                         }
                                         img(src = "https://api.qrserver.com/v1/create-qr-code/?size=${115}x${115}&data=bobbin:${i}")
@@ -275,9 +254,6 @@ fun Application.batchModule() {
                             tr {
                                 for (i in 1..11) {
                                     td {
-                                        p {
-                                            +"Катушка"
-                                        }
                                         p {
                                             +"Номер катушки"
                                         }
