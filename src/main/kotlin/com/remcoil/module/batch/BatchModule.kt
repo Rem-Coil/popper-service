@@ -141,6 +141,55 @@ fun Application.batchModule() {
                     }
                 }
             }
+            get("/{id}/codes/{codes_in_row}") {
+                val batchId = call.parameters["id"]!!.toLong()
+                val codesInRow = call.parameters["codes_in_row"]!!.toInt()
+                val batch = batchService.getById(batchId)
+                if (batch == null) {
+                    call.respondHtml { HttpStatusCode.NoContent }
+                    return@get
+                }
+                val bobbins = bobbinService.getByBatchId(batchId)
+                val bobbinsIterator = bobbins.iterator()
+                call.respondHtml {
+                    head {
+                        link(rel = "stylesheet", href = "/batch/styles.css", type = "text/css")
+                    }
+                    body {
+                        table {
+                            tr {
+                                td {
+                                    p {
+                                        +"Партия"
+                                    }
+                                    p {
+                                        +batch.batchNumber
+                                    }
+                                    img(src = "https://api.qrserver.com/v1/create-qr-code/?data=batch:${batch.id}")
+                                }
+                            }
+                            while (bobbinsIterator.hasNext()) {
+                                tr {
+                                    for (i in 1..codesInRow) {
+                                        if (bobbinsIterator.hasNext()) {
+                                            val bobbin = bobbinsIterator.next()
+                                            td {
+                                                p {
+                                                    +"Катушка"
+                                                }
+                                                p {
+                                                    +bobbin.bobbinNumber
+                                                }
+                                                img(src = "https://api.qrserver.com/v1/create-qr-code/?data=bobbin:${bobbin.id}")
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 }
