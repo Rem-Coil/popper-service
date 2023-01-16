@@ -72,9 +72,8 @@ fun Application.batchModule() {
                         margin(0.px, LinearDimension.auto)
                     }
                     td {
-                        width = 200.px
                         textAlign = TextAlign.center
-                        padding(20.px, 20.px)
+                        padding(15.px, 15.px)
                         fontSize = 12.pt
                     }
                     h3 {
@@ -83,12 +82,8 @@ fun Application.batchModule() {
                     p {
                         margin(0.px)
                     }
-                    tr {
-                        height = 150.px
-                    }
                     img {
                         marginTop = 10.px
-                        height = 150.px
                     }
                 }
             }
@@ -116,19 +111,19 @@ fun Application.batchModule() {
                                     p {
                                         +batch.batchNumber
                                     }
-                                    img(src = "https://api.qrserver.com/v1/create-qr-code/?data=batch:${batch.id}")
+                                    img(src = "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=batch:${batch.id}")
                                 }
                             }
                             while (bobbinsIterator.hasNext()) {
                                 tr {
-                                    for (i in 1..5) {
+                                    for (i in 1..8) {
                                         if (bobbinsIterator.hasNext()) {
                                             val bobbin = bobbinsIterator.next()
                                             td {
                                                 p {
                                                     +bobbin.bobbinNumber
                                                 }
-                                                img(src = "https://api.qrserver.com/v1/create-qr-code/?data=bobbin:${bobbin.id}")
+                                                img(src = "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=bobbin:${bobbin.id}")
                                             }
                                         }
                                     }
