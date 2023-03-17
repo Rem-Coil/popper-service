@@ -6,7 +6,7 @@ info:
 
 servers:
   - url: 'http://0.0.0.0:8008'
-  - url: 'https://api.popper.remcoil.space'
+  - url: 'https://api.remcoil.webtm.ru'
 paths:
 
   /bobbin:
