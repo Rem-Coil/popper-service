@@ -3,8 +3,9 @@ package com.remcoil.module.action
 import com.remcoil.data.model.action.*
 import com.remcoil.service.action.ActionService
 import com.remcoil.service.action.FullActionService
-import com.remcoil.utils.exceptions.InActiveBobbinException
+import com.remcoil.utils.exceptions.InActiveProductException
 import com.remcoil.utils.safetyReceive
+import com.remcoil.utils.safetyRespond
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
@@ -22,14 +23,18 @@ fun Application.actionModule() {
     routing {
         route("/action") {
             get() {
-                val actions = actionService.getAll()
+                val actions = actionService.getAllActions()
                 call.respond(actions)
             }
 
 
-            get("/bobbin/{bobbin_id}") {
-                val actions = actionService.getByBobbinId(call.parameters["bobbin_id"]!!.toLong())
-                call.respond(actions)
+            get("/product/{product_id}") {
+                val actions = call.parameters["product_id"]?.let {productId ->
+                    productId.toLongOrNull()?.let {
+                        actionService.getByProductId(productId.toLong())
+                    }
+                }
+                call.safetyRespond(actions, HttpStatusCode.BadRequest)
             }
 
             put {
@@ -37,14 +42,14 @@ fun Application.actionModule() {
                     try {
                         actionService.updateAction(action)
                         call.respond(HttpStatusCode.OK)
-                    } catch (e: InActiveBobbinException) {
+                    } catch (e: InActiveProductException) {
                         call.respond(HttpStatusCode.BadRequest)
                     }
                 }
             }
 
             delete("/{id}") {
-                actionService.deleteAction(call.parameters["id"]!!.toLong())
+                actionService.deleteActionById(call.parameters["id"]!!.toLong())
                 call.respond(HttpStatusCode.OK)
             }
 
@@ -56,7 +61,7 @@ fun Application.actionModule() {
                             call.respond(
                                 actionService.createBatchActions(
                                     batchAction,
-                                    principal!!.payload.getClaim("id").asInt()
+                                    principal!!.payload.getClaim("id").asLong()
                                 )
                             )
                         }
@@ -64,18 +69,18 @@ fun Application.actionModule() {
                 }
 
                 post {
-                    call.safetyReceive<ActionDto> { actionDto ->
+                    call.safetyReceive<ActionRequest> { actionRequest ->
                         val principal = call.principal<JWTPrincipal>()
                         try {
                             call.respond(
                                 actionService.createAction(
                                     Action(
-                                        actionDto,
-                                        principal!!.payload.getClaim("id").asInt()
+                                        actionRequest,
+                                        principal!!.payload.getClaim("id").asLong()
                                     )
                                 )
                             )
-                        } catch (e: InActiveBobbinException) {
+                        } catch (e: InActiveProductException) {
                             call.respond(HttpStatusCode.BadRequest)
                         }
                     }
@@ -88,25 +93,25 @@ fun Application.actionModule() {
                 call.respond(actions)
             }
 
-            get("/task/{task_id}/full") {
-                val actions = fullActionService.getFullByTaskId(call.parameters["task_id"]!!.toInt())
-                call.respond(actions ?: HttpStatusCode.NotFound)
-            }
-
-            get("/batch/{batch_id}/full") {
-                val actions = fullActionService.getFullByBatchId(call.parameters["batch_id"]!!.toLong())
-                call.respond(actions ?: HttpStatusCode.NotFound)
-            }
-
-            get("/bobbin/{bobbin_id}/full") {
-                val actions = fullActionService.getFullByBobbinId(call.parameters["bobbin_id"]!!.toLong())
-                call.respond(actions ?: HttpStatusCode.NotFound)
-            }
-
-            get("/{id}/full") {
-                val action = fullActionService.getFullById(call.parameters["id"]!!.toLong())
-                call.respond(action ?: HttpStatusCode.NotFound)
-            }
+//            get("/task/{task_id}/full") {
+//                val actions = fullActionService.getFullByTaskId(call.parameters["task_id"]!!.toInt())
+//                call.respond(actions ?: HttpStatusCode.NotFound)
+//            }
+//
+//            get("/batch/{batch_id}/full") {
+//                val actions = fullActionService.getFullByBatchId(call.parameters["batch_id"]!!.toLong())
+//                call.respond(actions ?: HttpStatusCode.NotFound)
+//            }
+//
+//            get("/bobbin/{bobbin_id}/full") {
+//                val actions = fullActionService.getFullByBobbinId(call.parameters["bobbin_id"]!!.toLong())
+//                call.respond(actions ?: HttpStatusCode.NotFound)
+//            }
+//
+//            get("/{id}/full") {
+//                val action = fullActionService.getFullById(call.parameters["id"]!!.toLong())
+//                call.respond(action ?: HttpStatusCode.NotFound)
+//            }
 
         }
     }

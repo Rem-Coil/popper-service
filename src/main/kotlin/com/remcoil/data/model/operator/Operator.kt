@@ -5,7 +5,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class Operator(
-    val id: Int,
+    val id: Long,
     @SerialName("first_name")
     val firstName: String,
     @SerialName("second_name")

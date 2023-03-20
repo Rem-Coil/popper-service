@@ -1,12 +1,13 @@
 package com.remcoil.data.model.batch
 
 import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
-@kotlinx.serialization.Serializable
+@Serializable
 data class Batch(
     val id: Long,
-    @SerialName("task_id")
-    val taskId: Int,
     @SerialName("batch_number")
-    var batchNumber: String
+    var batchNumber: String,
+    @SerialName("kit_id")
+    val kitId: Long
 )

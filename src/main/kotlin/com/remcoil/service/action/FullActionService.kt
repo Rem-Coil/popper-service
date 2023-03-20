@@ -12,28 +12,28 @@ class FullActionService(
         logger.info("Отдали все операции")
         return actions
     }
-
-    suspend fun getFullByTaskId(taskId: Int): TaskFullAction? {
-        val actions = fullActionDao.getByTaskId(taskId)
-        logger.info("Отдали все операции по ТЗ c id = $taskId")
-        return if (actions.isEmpty()) null else TaskFullAction.toTaskFullAction(actions)
-    }
-
-    suspend fun getFullByBatchId(batchId: Long): BatchFullAction? {
-        val actions = fullActionDao.getByBatchId(batchId)
-        logger.info("Отдали все операции по партии с id = $batchId")
-        return if (actions.isEmpty()) null else BatchFullAction.toBatchFullAction(actions)
-    }
-
-    suspend fun getFullByBobbinId(bobbinId: Long): BobbinFullAction? {
-        val actions = fullActionDao.getByBobbinId(bobbinId)
-        logger.info("Отдали все операции по катушке с id = $bobbinId")
-        return if (actions.isEmpty()) null else BobbinFullAction.toBobbinFullAction(actions)
-    }
-
-    suspend fun getFullById(id: Long): FlatFullAction? {
-        val action = fullActionDao.getById(id)
-        logger.info("Отдали операцию с id - $id")
-        return action
-    }
+//
+//    suspend fun getFullByTaskId(taskId: Int): TaskFullAction? {
+//        val actions = fullActionDao.getBySpecificationId(taskId)
+//        logger.info("Отдали все операции по ТЗ c id = $taskId")
+//        return if (actions.isEmpty()) null else TaskFullAction.toTaskFullAction(actions)
+//    }
+//
+//    suspend fun getFullByBatchId(batchId: Long): BatchFullAction? {
+//        val actions = fullActionDao.getByBatchId(batchId)
+//        logger.info("Отдали все операции по партии с id = $batchId")
+//        return if (actions.isEmpty()) null else BatchFullAction.toBatchFullAction(actions)
+//    }
+//
+//    suspend fun getFullByBobbinId(bobbinId: Long): BobbinFullAction? {
+//        val actions = fullActionDao.getByProductId(bobbinId)
+//        logger.info("Отдали все операции по катушке с id = $bobbinId")
+//        return if (actions.isEmpty()) null else BobbinFullAction.toBobbinFullAction(actions)
+//    }
+//
+//    suspend fun getFullById(id: Long): FlatFullAction? {
+//        val action = fullActionDao.getById(id)
+//        logger.info("Отдали операцию с id - $id")
+//        return action
+//    }
 }

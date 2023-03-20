@@ -1,9 +1,9 @@
 package com.remcoil.module.batch
 
-import com.remcoil.data.model.batch.BatchIdentity
 import com.remcoil.service.batch.BatchService
-import com.remcoil.service.bobbin.BobbinService
-import com.remcoil.utils.safetyReceive
+import com.remcoil.service.product.ProductService
+import com.remcoil.utils.exceptions.EntryDoesNotExistException
+import com.remcoil.utils.safetyRespond
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.html.*
@@ -11,40 +11,38 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import kotlinx.css.*
 import kotlinx.html.*
-import kotlinx.html.body
-import kotlinx.html.img
-import kotlinx.html.p
-import kotlinx.html.table
-import kotlinx.html.td
 import org.kodein.di.instance
 import org.kodein.di.ktor.closestDI
 
 fun Application.batchModule() {
     val batchService: BatchService by closestDI().instance()
-    val bobbinService: BobbinService by closestDI().instance()
+    val productService: ProductService by closestDI().instance()
 
     routing {
         route("/batch") {
             get {
-                val batches = batchService.getAll()
+                val batches = batchService.getAllBatches()
                 call.respond(batches)
             }
 
             get("/{id}") {
-                val batch = batchService.getById(call.parameters["id"]!!.toLong())
-                call.respond(batch ?: HttpStatusCode.BadRequest)
-            }
-
-            get("task/{task_id}") {
-                val batches = batchService.getByTaskId(call.parameters["task_id"]!!.toInt())
-                call.respond(batches)
-            }
-
-            post {
-                call.safetyReceive<BatchIdentity> { batchIdentity ->
-                    call.respond(batchService.createByIdentity(batchIdentity) ?: HttpStatusCode.BadRequest)
+                try {
+                    val batch = call.parameters["id"]?.let { id ->
+                        id.toLongOrNull()?.let {
+                            batchService.getBatchById(id.toLong())
+                        }
+                    }
+                    call.safetyRespond(batch, HttpStatusCode.BadRequest)
+                } catch (e: EntryDoesNotExistException) {
+                    call.respond(HttpStatusCode.NotFound, e.message.toString())
                 }
             }
+
+//            post {
+//                call.safetyReceive<Batch> { batchIdentity ->
+//                    call.respond(batchService.(batchIdentity) ?: HttpStatusCode.BadRequest)
+//                }
+//            }
 
             delete("/{id}") {
                 batchService.deleteBatchById(call.parameters["id"]!!.toLong())
@@ -52,15 +50,15 @@ fun Application.batchModule() {
             }
 
 
-            get("/full") {
-                val batches = batchService.getAllFull()
-                call.respond(batches)
-            }
-
-            get("/{id}/full") {
-                val batch = batchService.getFullById(call.parameters["id"]!!.toLong())
-                call.respond(batch)
-            }
+//            get("/full") {
+//                val batches = batchService.getAllFull()
+//                call.respond(batches)
+//            }
+//
+//            get("/{id}/full") {
+//                val batch = batchService.getFullById(call.parameters["id"]!!.toLong())
+//                call.respond(batch)
+//            }
 
 
             get("/styles.css") {
@@ -90,13 +88,10 @@ fun Application.batchModule() {
 
             get("/{id}/codes") {
                 val batchId = call.parameters["id"]!!.toLong()
-                val batch = batchService.getById(batchId)
-                if (batch == null) {
-                    call.respondHtml { HttpStatusCode.NoContent }
-                    return@get
-                }
-                val bobbins = bobbinService.getByBatchId(batchId)
-                val bobbinsIterator = bobbins.iterator()
+                val batch = batchService.getBatchById(batchId)
+
+                val products = productService.getProductsByBatchId(batchId)
+                val productIterator = products.iterator()
                 call.respondHtml {
                     head {
                         link(rel = "stylesheet", href = "/batch/styles.css", type = "text/css")
@@ -114,16 +109,16 @@ fun Application.batchModule() {
                                     img(src = "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=batch:${batch.id}")
                                 }
                             }
-                            while (bobbinsIterator.hasNext()) {
+                            while (productIterator.hasNext()) {
                                 tr {
                                     for (i in 1..8) {
-                                        if (bobbinsIterator.hasNext()) {
-                                            val bobbin = bobbinsIterator.next()
+                                        if (productIterator.hasNext()) {
+                                            val product = productIterator.next()
                                             td {
                                                 p {
-                                                    +bobbin.bobbinNumber
+                                                    +product.productNumber
                                                 }
-                                                img(src = "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=bobbin:${bobbin.id}")
+                                                img(src = "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=product:${product.id}")
                                             }
                                         }
                                     }

@@ -9,15 +9,15 @@ class CommentService(
     private val commentDao: CommentDao,
     private val actionService: ActionService
 ) {
-    suspend fun getCommentByActionId(actionId: Long): Comment? {
+    suspend fun getComment(actionId: Long): Comment? {
         val comment = commentDao.getByActionId(actionId)
         logger.info("Отдали комментарии для операции с id = $actionId")
         return comment
     }
 
     suspend fun createComment(comment: Comment): Comment? {
-        return if (actionService.isUnsuccessful(comment.actionId)) {
-            val createdComment = commentDao.createComment(comment)
+        return if (actionService.isActionUnsuccessful(comment.actionId)) {
+            val createdComment = commentDao.create(comment)
             logger.info("Сохранили комментарий для операции с id = ${comment.actionId}")
             createdComment
         } else {
@@ -32,12 +32,12 @@ class CommentService(
     }
 
     suspend fun updateComment(comment: Comment) {
-        commentDao.updateComment(comment)
+        commentDao.update(comment)
         logger.info("Обновили комментарий для операции с id = ${comment.actionId}")
     }
 
     suspend fun deleteComment(actionId: Long) {
-        commentDao.deleteComment(actionId)
+        commentDao.deleteByActionId(actionId)
         logger.info("Удалили комментарий для операции с id = $actionId")
     }
 }

@@ -3,75 +3,63 @@ package com.remcoil.service.action
 import com.remcoil.dao.action.ActionDao
 import com.remcoil.data.model.action.Action
 import com.remcoil.data.model.action.BatchAction
-import com.remcoil.service.bobbin.BobbinService
-import com.remcoil.utils.exceptions.InActiveBobbinException
-import com.remcoil.utils.exceptions.WrongParamException
+import com.remcoil.service.product.ProductService
+import com.remcoil.utils.exceptions.InActiveProductException
 import com.remcoil.utils.logger
 
 class ActionService(
     private val actionDao: ActionDao,
-    private val bobbinService: BobbinService
+    private val productService: ProductService
 ) {
-    suspend fun getAll(): List<Action> {
+    suspend fun getAllActions(): List<Action> {
         val actions = actionDao.getAll()
         logger.info("Отдали все операции")
         return actions
     }
 
-    suspend fun getByBobbinId(bobbinId: Long): List<Action> {
-        val actions = actionDao.getByBobbinId(bobbinId)
-        logger.info("Отдали все операции по катушке - $bobbinId")
+    suspend fun getByProductId(id: Long): List<Action> {
+        val actions = actionDao.getByProductId(id)
+        logger.info("Отдали все операции по изделию - $id")
         return actions
     }
 
-    suspend fun getById(actionId: Long): Action? {
-        val action = actionDao.getById(actionId)
-        logger.info("Отдали операцию с id=${actionId}")
+    suspend fun getActionById(id: Long): Action? {
+        val action = actionDao.getById(id)
+        logger.info("Отдали операцию с id=${id}")
         return action
     }
 
     suspend fun updateAction(action: Action) {
-        if (bobbinService.isActive(action.bobbinId)) {
-            actionDao.updateAction(action)
+        if (productService.productIsActive(action.productId)) {
+            actionDao.update(action)
             logger.info("Данные об операции с id=${action.id}")
         } else {
-            throw InActiveBobbinException("Катушка с id=${action.bobbinId} неактивна")
-        }
-    }
-
-    suspend fun updateType(actionId: Long, type: String) {
-        val action = getById(actionId) ?: throw WrongParamException("Операция не найдена")
-        if (bobbinService.isActive(action.bobbinId)) {
-            actionDao.updateType(actionId, type)
-            logger.info("Тип операции обновлен")
-        } else {
-            throw InActiveBobbinException("Катушка с id=${action.bobbinId} неактивна")
+            throw InActiveProductException("Изделие с id=${action.productId} неактивно")
         }
     }
 
     suspend fun createAction(action: Action): Action {
-        if (bobbinService.isActive(action.bobbinId)) {
-            val act = actionDao.createAction(action)
-            logger.info("Запись с id=${act.id} сохранена")
-            return act
+        if (productService.productIsActive(action.productId)) {
+            val createdAction = actionDao.create(action)
+            logger.info("Операция с id=${createdAction.id} сохранена")
+            return createdAction
         } else {
-            throw InActiveBobbinException("Катушка с id=${action.bobbinId} неактивна")
+            throw InActiveProductException("Изделие с id=${action.productId} неактивно")
         }
     }
 
-    suspend fun createBatchActions(batchAction: BatchAction, operatorId: Int): List<Action> {
-        val bobbinIdList = bobbinService.getByBatchId(batchAction.batchId)
+    suspend fun createBatchActions(batchAction: BatchAction, operatorId: Long): List<Action> {
+        val products = productService.getProductsByBatchId(batchAction.batchId)
             .filter { bobbin -> bobbin.active }
-            .map { bobbin -> bobbin.id }
 
         val actions = ArrayList<Action>()
-        for (bobbinId in bobbinIdList) {
+        for (product in products) {
             actions.add(
                 Action(
                     id = 0,
                     operatorId = operatorId,
-                    bobbinId = bobbinId,
-                    actionType = batchAction.actionType,
+                    productId = product.id,
+                    actionTypeId = batchAction.actionType,
                     doneTime = batchAction.doneTime,
                     successful = batchAction.successful
                 )
@@ -81,13 +69,13 @@ class ActionService(
         return actionDao.createBatchAction(actions)
     }
 
-    suspend fun deleteAction(actionId: Long) {
-        actionDao.deleteAction(actionId)
-        logger.info("Удалили данные об операции - $actionId")
+    suspend fun deleteActionById(id: Long) {
+        actionDao.deleteById(id)
+        logger.info("Удалили данные об операции - $id")
     }
 
-    suspend fun isUnsuccessful(actionId: Long): Boolean {
-        val action = getById(actionId)
+    suspend fun isActionUnsuccessful(actionId: Long): Boolean {
+        val action = getActionById(actionId)
         return action != null && !action.successful
     }
 }

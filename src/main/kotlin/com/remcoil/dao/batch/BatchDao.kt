@@ -21,34 +21,34 @@ class BatchDao(private val database: Database) {
             .firstOrNull()
     }
 
-    suspend fun getByTaskId(id: Int): List<Batch> = safetySuspendTransactionAsync(database) {
+    suspend fun getByKitId(id: Long): List<Batch> = safetySuspendTransactionAsync(database) {
         Batches
-            .select { Batches.taskId eq id }
+            .select { Batches.kitId eq id }
             .map(::extractBatch)
     }
 
-    suspend fun createBatch(batch: Batch) = safetySuspendTransactionAsync(database) {
+    suspend fun create(batch: Batch) = safetySuspendTransactionAsync(database) {
         val id = Batches.insertAndGetId {
-            it[taskId] = batch.taskId
+            it[kitId] = batch.kitId
             it[batchNumber] = batch.batchNumber
         }
         batch.copy(id = id.value)
     }
 
-    suspend fun deleteBatchById(id: Long) = safetySuspendTransactionAsync(database) {
+    suspend fun deleteById(id: Long) = safetySuspendTransactionAsync(database) {
         Batches.deleteWhere { Batches.id eq id }
     }
 
-    suspend fun updateBatch(batch: Batch) = safetySuspendTransactionAsync(database) {
-        Batches.update({Batches.id eq batch.id}) {
-            it[taskId] = batch.taskId
+    suspend fun update(batch: Batch) = safetySuspendTransactionAsync(database) {
+        Batches.update({ Batches.id eq batch.id }) {
+            it[kitId] = batch.kitId
             it[batchNumber] = batch.batchNumber
         }
     }
 
     private fun extractBatch(resultRow: ResultRow): Batch = Batch(
         resultRow[Batches.id].value,
-        resultRow[Batches.taskId].value,
-        resultRow[Batches.batchNumber]
+        resultRow[Batches.batchNumber],
+        resultRow[Batches.kitId].value
     )
 }

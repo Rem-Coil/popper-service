@@ -7,11 +7,13 @@ import com.remcoil.data.migrate
 import com.remcoil.di.*
 import com.remcoil.module.action.actionModule
 import com.remcoil.module.batch.batchModule
-import com.remcoil.module.bobbin.bobbinModule
+import com.remcoil.module.product.productModule
 import com.remcoil.module.comment.commentModule
+import com.remcoil.module.kit.kitModule
 import com.remcoil.module.operator.operatorModule
 import com.remcoil.module.site.siteModule
-import com.remcoil.module.task.taskModule
+import com.remcoil.module.specification.specificationActionModule
+import com.remcoil.module.specification.specificationModule
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import com.typesafe.config.ConfigFactory
@@ -34,11 +36,13 @@ fun main() {
         di {
             coreComponents(config)
             operatorComponents()
-            taskComponents()
+            specificationComponents()
             actionComponents()
             commentComponents()
-            bobbinComponents()
+            productComponents()
             batchComponents()
+            kitComponents()
+            specificationActionComponents()
         }
         install(Authentication) {
             jwt("jwt-access") {
@@ -58,10 +62,12 @@ fun main() {
             }
         }
         operatorModule()
-        taskModule()
+        specificationActionModule()
+        specificationModule()
         actionModule()
-        bobbinModule()
+        productModule()
         batchModule()
+        kitModule()
         commentModule()
         configureSerialization()
         siteModule(config)

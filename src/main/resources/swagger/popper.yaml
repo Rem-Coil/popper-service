@@ -2,47 +2,47 @@ openapi: 3.0.3
 info:
   title: Popper
   description: Backend spec for popper app
-  version: 0.2.0
+  version: 0.3.0
 
 servers:
   - url: 'http://0.0.0.0:8008'
   - url: 'https://api.remcoil.webtm.ru'
 paths:
 
-  /bobbin:
+  /product:
     get:
       tags:
-        - bobbin
+        - product
       responses:
         '200':
-          description: List of all bobbins
+          description: Список всех изделий
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ListOfBobbins'
+                $ref: '#/components/schemas/ListOfProducts'
     post:
       tags:
-        - bobbin
+        - product
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Bobbin'
+              $ref: '#/components/schemas/Product'
       responses:
         '200':
-          description: Task created
+          description: Изделие создано
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Bobbin'
+                $ref: '#/components/schemas/Product'
         '400':
           description: Bad Request
 
-  /bobbin/{id}:
+  /product/{id}:
     get:
       tags:
-        - bobbin
+        - product
       parameters:
         - in: path
           name: id
@@ -51,19 +51,19 @@ paths:
             type: number
       responses:
         '200':
-          description: Bobbin information
+          description: Данные об изделии
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Bobbin'
+                $ref: '#/components/schemas/Product'
         '404':
-          description: Bobbin not found
+          description: Изделие не найдено
         '400':
           description: Bad request
 
     delete:
       tags:
-        - bobbin
+        - product
       parameters:
         - in: path
           name: id
@@ -72,16 +72,16 @@ paths:
             type: number
       responses:
         '200':
-          description: Bobbin marked as defected
+          description: Изделие отмечено как бракованное
         '404':
-          description: Bobbin not found
+          description: Изделие не найдено
         '400':
           description: Bad request
 
-  /bobbin/{id}/delete:
+  /product/{id}/delete:
     delete:
       tags:
-        - bobbin
+        - product
       parameters:
         - in: path
           name: id
@@ -90,14 +90,14 @@ paths:
             type: number
       responses:
         '200':
-          description: Bobbin deleted
+          description: Изделие удалено
         '400':
           description: Bad request
 
-  /batch/{batch_id}/bobbin:
+  /batch/{batch_id}/product:
     get:
       tags:
-        - bobbin
+        - product
       parameters:
         - in: path
           name: batch_id
@@ -106,154 +106,112 @@ paths:
             type: number
       responses:
         '200':
-          description: List of bobbins of one batch
+          description: Список изделий одной партии
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ListOfBobbins'
+                $ref: '#/components/schemas/ListOfProducts'
         '400':
           description: Bad request
-        '404':
-          description: Not Found
 
-  /task/{task_id}/bobbin:
+  /kit/{kit_id}/product:
     get:
       tags:
-        - bobbin
+        - product
       parameters:
         - in: path
-          name: task_id
+          name: kit_id
           required: true
           schema:
-            type: integer
+            type: number
       responses:
         '200':
-          description: List of bobbins of one task
+          description: Список изделий одного набора
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ListOfBobbins'
+                $ref: '#/components/schemas/ListOfProducts'
         '400':
           description: Bad Request
-        '404':
-          description: Not Found
 
-  /task:
+  /specification:
     get:
       tags:
-        - task
+        - specification
       responses:
         '200':
-          description: List of tasks
+          description: Список ТЗ
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ListOfTasks'
+                $ref: '#/components/schemas/ListOfSpecifications'
 
     put:
       tags:
-        - task
+        - specification
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Task'
+              $ref: '#/components/schemas/Specification'
       responses:
         '200':
-          description: Task updated
+          description: ТЗ обновлено
         '400':
           description: Bad request
 
     post:
       tags:
-        - task
+        - specification
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/TaskIdentity'
+              $ref: '#/components/schemas/Specification'
       responses:
         '200':
-          description: Task created successfully
+          description: ТЗ создано
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Task'
+                $ref: '#/components/schemas/Specification'
 
-  /task/{id}:
+  /specification/{id}:
     get:
       tags:
-        - task
+        - specification
       parameters:
         - in: path
           name: id
           required: true
           schema:
-            type: integer
+            type: number
       responses:
         '200':
-          description: Task information
+          description: Информация о ТЗ
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Task'
-        '400':
-          description: Task not found
+                $ref: '#/components/schemas/Specification'
         '404':
           description: Not found
 
     delete:
       tags:
-        - task
+        - specification
       parameters:
         - in: path
           name: id
           required: true
           schema:
-            type: integer
+            type: number
       responses:
         '200':
-          description: Task deleted successfully
+          description: Информация о ТЗ удалена
         '400':
           description: Bad request
-        '404':
-          description: Not Found
-
-  /task/full:
-    get:
-      tags:
-        - task
-      responses:
-        '200':
-          description: List of full tasks
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ListOfFullTasks'
-
-  /task/{id}/full:
-    get:
-      tags:
-        - task
-      parameters:
-        - in: path
-          name: id
-          required: true
-          schema:
-            type: integer
-      responses:
-        '200':
-          description: Task full information
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ListOfFullTasks'
-        '400':
-          description: Bad request
-        '404':
-          description: Task Not found
 
 
   /batch:
@@ -262,29 +220,11 @@ paths:
         - batch
       responses:
         '200':
-          description: List of batches
+          description: Список партий
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ListOfBatch'
-    post:
-      tags:
-        - batch
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/BatchIdentity'
-      responses:
-        '400':
-          description: Bad request
-        '200':
-          description: Batch created
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Action'
+                $ref: '#/components/schemas/ListOfBatches'
 
   /batch/{id}:
     get:
@@ -298,13 +238,13 @@ paths:
             type: number
       responses:
         '200':
-          description: Batch information
+          description: Информация о партии
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Batch'
         '400':
-          description: Batch not found
+          description: Партия не найдена
 
     delete:
       tags:
@@ -317,59 +257,7 @@ paths:
             type: number
       responses:
         '200':
-          description: Batch deleted successfully
-
-  /batch/task/{task_id}:
-    get:
-      tags:
-        - batch
-      parameters:
-        - in: path
-          name: task_id
-          required: true
-          schema:
-            type: number
-      responses:
-        '200':
-          description: Batch information
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ListOfBatch'
-        '400':
-          description: Batch not found
-
-  /batch/{id}/full:
-    get:
-      tags:
-        - batch
-      parameters:
-        - in: path
-          name: id
-          required: true
-          schema:
-            type: number
-      responses:
-        '200':
-          description: Batch full information
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/FullBatch'
-        '400':
-          description: Batch not found
-
-  /batch/full:
-    get:
-      tags:
-        - batch
-      responses:
-        '200':
-          description: List of full batches
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ListOfFullBatches'
+          description: Информация о партии удалена
 
   /batch/{id}/codes:
     get:
@@ -383,7 +271,7 @@ paths:
             type: number
       responses:
         '200':
-          description: Bobbin's QR codes by batch
+          description: QR коды для изделий одной партии
 
   /action:
     get:
@@ -391,7 +279,7 @@ paths:
         - action
       responses:
         '200':
-          description: List of actions
+          description: Список операций
           content:
             application/json:
               schema:
@@ -407,12 +295,12 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ActionDto'
+              $ref: '#/components/schemas/ActionRequest'
       responses:
         '400':
           description: Bad request
         '200':
-          description: Action created
+          description: Операция создана
           content:
             application/json:
               schema:
@@ -448,25 +336,25 @@ paths:
         '400':
           description: Bad request
         '200':
-          description: Action created
+          description: Операции созданы
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ListOfActions'
 
-  /action/bobbin/{bobbin_id}:
+  /action/product/{product_id}:
     get:
       tags:
         - action
       parameters:
         - in: path
-          name: bobbin_id
+          name: product_id
           required: true
           schema:
             type: number
       responses:
         '200':
-          description: Full list of one bobbin actions
+          description: Список операций для одного изделия
           content:
             application/json:
               schema:
@@ -484,7 +372,7 @@ paths:
             type: number
       responses:
         '200':
-          description: Action deleted successfully
+          description: Информация об операции удалена
 
   /action/full:
     get:
@@ -492,83 +380,11 @@ paths:
         - full action
       responses:
         '200':
-          description: List of flat full actions
+          description: Вся информация об операциях
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ListOfFlatFullActions'
-
-  /action/task/{task_id}/full:
-    get:
-      tags:
-        - full action
-      parameters:
-        - in: path
-          name: task_id
-          required: true
-          schema:
-            type: integer
-      responses:
-        '200':
-          description: Task full action
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/TaskFullAction'
-
-  /action/batch/{batch_id}/full:
-    get:
-      tags:
-        - full action
-      parameters:
-        - in: path
-          name: batch_id
-          required: true
-          schema:
-            type: number
-      responses:
-        '200':
-          description: Batch full action
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/BatchFullAction'
-
-  /action/bobbin/{bobbin_id}/full:
-    get:
-      tags:
-        - full action
-      parameters:
-        - in: path
-          name: bobbin_id
-          required: true
-          schema:
-            type: number
-      responses:
-        '200':
-          description: Bobbin full action
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/BobbinFullAction'
-
-  /action/{id}/full:
-    get:
-      tags:
-        - full action
-      parameters:
-        - in: path
-          name: id
-          required: true
-          schema:
-            type: number
-      responses:
-        '200':
-          description: Flat full action
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/FlatFullAction'
 
   /comment:
     get:
@@ -576,7 +392,7 @@ paths:
         - comment
       responses:
         '200':
-          description: List of all comments
+          description: Список всех комментариев
           content:
             application/json:
               schema:
@@ -595,7 +411,7 @@ paths:
               $ref: '#/components/schemas/Comment'
       responses:
         '200':
-          description: Comment created
+          description: Комментарий сохранен
           content:
             application/json:
               schema:
@@ -614,7 +430,7 @@ paths:
               $ref: '#/components/schemas/Comment'
       responses:
         '200':
-          description: Comment update
+          description: Комментарий обновлен
 
 
   /comment/{action_id}:
@@ -631,11 +447,11 @@ paths:
         '204':
           description: No content
         '200':
-          description: Defect Comment
+          description: Комментарий
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/omment'
+                $ref: '#/components/schemas/Comment'
 
     delete:
       security:
@@ -650,7 +466,7 @@ paths:
             type: number
       responses:
         '200':
-          description: Comment deleted successfully
+          description: Комментарий удален
 
 
   /operator?active_only=true:
@@ -664,7 +480,7 @@ paths:
             type: boolean
       responses:
         '200':
-          description: List of operators
+          description: Список сотрудников
           content:
             application/json:
               schema:
@@ -679,7 +495,7 @@ paths:
           name: id
           required: true
           schema:
-            type: integer
+            type: number
         - in: query
           name: active
           required: true
@@ -687,9 +503,9 @@ paths:
             type: boolean
       responses:
         '200':
-          description: Operator state updated
+          description: Статус сотрудника обновлен
         '404':
-          description: Operator not found
+          description: Сотрудник не найден
 
 
   /operator/{id}:
@@ -704,7 +520,7 @@ paths:
             type: integer
       responses:
         '200':
-          description: Operator deleted successfully
+          description: Информация о сотруднике удалена
 
   /operator/sign_in:
     post:
@@ -718,9 +534,9 @@ paths:
               $ref: '#/components/schemas/Credentials'
       responses:
         '401':
-          description: Wrong password or phone
+          description: Некорректные данные
         '200':
-          description: A JSON array of user names
+          description: JWT token
           content:
             application/json:
               schema:
@@ -738,13 +554,13 @@ paths:
               $ref: '#/components/schemas/Operator'
       responses:
         '200':
-          description: A JSON array of user names
+          description: JWT token
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Token'
         '400':
-          description: Operator already exists
+          description: Информация о сотруднике уже существует
 
   /operator:
     put:
@@ -758,9 +574,171 @@ paths:
               $ref: '#/components/schemas/Operator'
       responses:
         '200':
-          description: Operator updated
+          description: Информация о сотруднике обновлена
         '400':
           description: Bad request
+
+  /kit:
+    get:
+      tags:
+        - kit
+      responses:
+        '200':
+          description: Список всех наборов
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListOfKits'
+
+    post:
+      security:
+        - bearerAuth: [ ]
+      tags:
+        - kit
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Kit'
+      responses:
+        '200':
+          description: Набор сохранен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Kit'
+
+    put:
+      security:
+        - bearerAuth: [ ]
+      tags:
+        - kit
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Kit'
+      responses:
+        '200':
+          description: Информация о наборе обновлена
+
+  /kit/{id}:
+    get:
+      tags:
+        - kit
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: number
+      responses:
+        '204':
+          description: No content
+        '200':
+          description: Информация о наборе
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Kit'
+
+    delete:
+      security:
+        - bearerAuth: [ ]
+      tags:
+        - kit
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: number
+      responses:
+        '200':
+          description: Информация о наборе удалена
+
+  /specification/action_type:
+    get:
+      tags:
+        - action_type
+      responses:
+        '200':
+          description: Список всех типов операций
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListOfSpecificationActions'
+
+    post:
+      security:
+        - bearerAuth: [ ]
+      tags:
+        - action_type
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SpecificationAction'
+      responses:
+        '200':
+          description: Тип операции сохранен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SpecificationAction'
+
+    put:
+      security:
+        - bearerAuth: [ ]
+      tags:
+        - action_type
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SpecificationAction'
+      responses:
+        '200':
+          description: Информация о типе операции обновлена
+
+  /specification/action_type/{id}:
+    get:
+      tags:
+        - action_type
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: number
+      responses:
+        '204':
+          description: No content
+        '200':
+          description: Информация о типе операции
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SpecificationAction'
+
+    delete:
+      security:
+        - bearerAuth: [ ]
+      tags:
+        - action_type
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: number
+      responses:
+        '200':
+          description: Информация о типе операции удалена
 
 components:
   securitySchemes:
@@ -770,96 +748,44 @@ components:
       bearerFormat: JWT
 
   schemas:
-    TaskFullAction:
-      properties:
-        id:
-          type: number
-        task_name:
-          type: string
-        task_number:
-          type: string
-        batches:
-          type: array
-          items:
-            $ref: '#/components/schemas/BatchFullAction'
-
-    BatchFullAction:
-      properties:
-        id:
-          type: number
-        batch_number:
-          type: string
-        bobbins:
-          type: array
-          items:
-            $ref: '#/components/schemas/BobbinFullAction'
-
-    BobbinFullAction:
-      properties:
-        id:
-          type: number
-        bobbin_number:
-          type: string
-        is_active_bobbin:
-          type: boolean
-        actions:
-          type: array
-          items:
-            $ref: '#/components/schemas/FullAction'
-
-    FullAction:
-      properties:
-        id:
-          type: number
-        action_type:
-          type: string
-        done_time:
-          type: string
-        successful:
-          type: boolean
-        comment:
-          type: string
-        operator_id:
-          type: integer
-        first_name:
-          type: string
-        second_name:
-          type: string
-        surname:
-          type: string
-        role:
-          type: string
-
     FlatFullAction:
       properties:
-        task_id:
-          type: integer
-        task_name:
+        specification_id:
+          type: number
+        specification_title:
           type: string
-        task_number:
+        product_type:
+          type: string
+        kit_id:
+          type: number
+        kit_number:
           type: string
         batch_id:
           type: number
         batch_number:
           type: string
-        bobbin_id:
+        product_id:
           type: number
-        bobbin_number:
-          type: integer
-        is_active_bobbin:
+        product_number:
+          type: string
+        active:
           type: boolean
         action_id:
           type: number
-        action_type:
-          type: string
         done_time:
           type: string
         successful:
           type: boolean
+        specification_action_id:
+          type: number
+        action_type:
+          type: string
+        sequence_number:
+          type: integer
         comment:
           type: string
         operator_id:
-          type: integer
+          type: number
         first_name:
           type: string
         second_name:
@@ -874,13 +800,15 @@ components:
         id:
           type: number
         operator_id:
-          type: integer
-        bobbin_id:
-          type: integer
-        action_type:
-          type: string
+          type: number
+        product_id:
+          type: number
+        action_type_id:
+          type: number
         done_time:
           type: string
+          format: YYYY-MM-DDTHH:MM:SS
+          example: "2022-12-25T14:30:01"
         successful:
           type: boolean
 
@@ -890,55 +818,46 @@ components:
           type: number
         batch_id:
           type: integer
-        action_type:
-          type: string
+        action_type_id:
+          type: number
         done_time:
           type: string
+          format: YYYY-MM-DDTHH:MM:SS
+          example: "2022-12-25T14:30:01"
         successful:
           type: boolean
 
-    ActionDto:
+    ActionRequest:
       properties:
         id:
           type: number
-        bobbin_id:
-          type: integer
-        action_type:
+        product_id:
+          type: number
+        action_type_id:
           type: string
         done_time:
           type: string
+          format: YYYY-MM-DDTHH:MM:SS
+          example: "2022-12-25T14:30:01"
         successful:
           type: boolean
+
+    Comment:
+      properties:
+        action_id:
+          type: number
+        comment:
+          type: string
 
     Token:
       properties:
         token:
           type: string
 
-    Task:
-      properties:
-        id:
-          type: integer
-        task_name:
-          type: string
-        task_number:
-          type: string
-
-    FullTask:
-      properties:
-        id:
-          type: integer
-        task_name:
-          type: string
-        task_number:
-          type: string
-        batches:
-          $ref: '#/components/schemas/ListOfFullBatches'
-
     Operator:
       properties:
         id:
-          type: integer
+          type: number
         first_name:
           type: string
         second_name:
@@ -954,56 +873,67 @@ components:
         role:
           type: string
 
-    Bobbin:
+    Credentials:
+      properties:
+        phone:
+          type: string
+        password:
+          type: string
+
+    Product:
       properties:
         id:
           type: number
-        batch_id:
-          type: number
-        bobbin_number:
-          type: integer
+        product_number:
+          type: string
         active:
           type: boolean
+        batch_id:
+          type: number
 
     Batch:
       properties:
         id:
           type: number
-        task_id:
-          type: integer
         batch_number:
           type: string
+        kit_id:
+          type: number
 
-    BatchIdentity:
-      properties:
-        task_id:
-          type: integer
-
-    FullBatch:
+    Kit:
       properties:
         id:
           type: number
-        task_id:
-          type: integer
-        batch_number:
+        kit_number:
           type: string
-        quantity:
+        batches_quantity:
           type: integer
-        winding:
+        batch_size:
           type: integer
-        output:
-          type: integer
-        isolation:
-          type: integer
-        molding:
-          type: integer
-        crimping:
-          type: integer
-        quality:
-          type: integer
-        testing:
+        specification_id:
+          type: number
+
+    Specification:
+      properties:
+        id:
+          type: number
+        specification_title:
+          type: string
+        product_type:
+          type: string
+        tested_percentage:
           type: integer
 
+    SpecificationAction:
+      properties:
+        id:
+          type: number
+        action_type:
+          type: string
+        sequence_number:
+          type: integer
+        specification_id:
+          type: number
 
     ListOfActions:
       type: array
@@ -1015,62 +945,37 @@ components:
       items:
         $ref: '#/components/schemas/FlatFullAction'
 
-    ListOfBobbins:
-      type: array
-      items:
-        $ref: '#/components/schemas/Bobbin'
-
     ListOfOperators:
       type: array
       items:
         $ref: '#/components/schemas/Operator'
 
-    ListOfTasks:
+    ListOfSpecifications:
       type: array
       items:
-        $ref: '#/components/schemas/Task'
+        $ref: '#/components/schemas/Specification'
 
-    ListOfFullTasks:
+    ListOfSpecificationActions:
       type: array
       items:
-        $ref: '#/components/schemas/FullTask'
+        $ref: '#/components/schemas/SpecificationAction'
 
-    ListOfBatch:
+    ListOfKits:
+      type: array
+      items:
+        $ref: '#/components/schemas/Kit'
+
+    ListOfBatches:
       type: array
       items:
         $ref: '#/components/schemas/Batch'
 
-    ListOfFullBatches:
+    ListOfProducts:
       type: array
       items:
-        $ref: '#/components/schemas/FullBatch'
+        $ref: '#/components/schemas/Product'
 
     ListOfComments:
       type: array
       items:
         $ref: '#/components/schemas/Comment'
-
-    TaskIdentity:
-      properties:
-        task_name:
-          type: string
-        task_number:
-          type: string
-        batch_number:
-          type: integer
-        batch_size:
-          type: integer
-
-    Credentials:
-      properties:
-        phone:
-          type: string
-        password:
-          type: string
-
-    Comment:
-      properties:
-        action_id:
-          type: number
-        comment:
-          type: string

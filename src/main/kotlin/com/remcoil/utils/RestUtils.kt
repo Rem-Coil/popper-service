@@ -1,6 +1,7 @@
 package com.remcoil.utils
 
 import com.remcoil.utils.exceptions.DatabaseException
+import com.remcoil.utils.exceptions.EntryDoesNotExistException
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
@@ -22,6 +23,16 @@ suspend inline fun <reified T : Any> ApplicationCall.safetyReceive(onCorrectResu
         respond(HttpStatusCode.BadRequest, e.message.toString())
     } catch (e: DateTimeException) {
         respond(HttpStatusCode.BadRequest, e.message.toString())
+    } catch (e: EntryDoesNotExistException) {
+        respond(HttpStatusCode.NotFound, e.message.toString())
+    }
+}
+
+suspend inline fun <reified T> ApplicationCall.safetyRespond(message: T, statusCode: HttpStatusCode) {
+    if (message == null) {
+        this.respond(statusCode)
+    } else {
+        this.respond(message)
     }
 }
 

@@ -3,6 +3,7 @@ package com.remcoil.module.comment
 import com.remcoil.data.model.comment.Comment
 import com.remcoil.service.comment.CommentService
 import com.remcoil.utils.safetyReceive
+import com.remcoil.utils.safetyRespond
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
@@ -21,14 +22,18 @@ fun Application.commentModule() {
                 call.respond(comments)
             }
             get("/{action_id}") {
-                val comment = commentService.getCommentByActionId(call.parameters["action_id"]!!.toLong())
-                call.respond(comment ?: HttpStatusCode.NoContent)
+                val comment = call.parameters["action_id"]?.let {actionId ->
+                    actionId.toLongOrNull()?.let {
+                        commentService.getComment(actionId.toLong())
+                    }
+                }
+                call.safetyRespond(comment, HttpStatusCode.NoContent)
             }
             authenticate("jwt-access") {
                 post {
                     call.safetyReceive<Comment> { comment ->
 //                        val principal = call.principal<JWTPrincipal>()
-                        call.respond(commentService.createComment(comment) ?: HttpStatusCode.BadRequest)
+                        call.safetyRespond(commentService.createComment(comment), HttpStatusCode.BadRequest)
                     }
                 }
                 put {

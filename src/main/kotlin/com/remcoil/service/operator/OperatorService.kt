@@ -16,7 +16,7 @@ import java.util.*
 class OperatorService(private val operatorDao: OperatorDao, private val config: JwtConfig) {
 
     suspend fun getActiveOperator(credentials: OperatorCredentials): String? {
-        val operator = operatorDao.getOperator(credentials.phone)
+        val operator = operatorDao.getByPhone(credentials.phone)
 
         if (operator != null && credentials.password == operator.password && operator.active) {
             logger.info("Вернули оператора - ${operator.firstName} ${operator.surname}")
@@ -27,14 +27,14 @@ class OperatorService(private val operatorDao: OperatorDao, private val config: 
     }
 
     suspend fun getAllOperators(onlyActive: Boolean): List<Operator> {
-        val operators = operatorDao.getAllOperators(onlyActive)
+        val operators = operatorDao.getAll(onlyActive)
         logger.info("Отдали всех операторов")
         return operators
     }
 
     suspend fun createOperator(operator: Operator): String? {
         val op = if (operatorDao.isNotExist(operator) && checkRole(operator)) generateToken(
-            operatorDao.createOperator(operator)
+            operatorDao.create(operator)
         ) else null
         if (op == null) {
             logger.info("Некорректные данные")
@@ -44,7 +44,7 @@ class OperatorService(private val operatorDao: OperatorDao, private val config: 
         return op
     }
 
-    suspend fun setOperatorState(id: Int, active: Boolean) {
+    suspend fun setOperatorState(id: Long, active: Boolean) {
         if (operatorDao.isExist(id)) {
             operatorDao.setActive(id, active)
         } else {
@@ -53,14 +53,14 @@ class OperatorService(private val operatorDao: OperatorDao, private val config: 
         logger.info("Оператор заархивирован")
     }
 
-    suspend fun deleteOperator(id: Int) {
-        operatorDao.deleteOperator(id)
+    suspend fun deleteOperator(id: Long) {
+        operatorDao.deleteById(id)
         logger.info("Данные об операторе удалены")
     }
 
     suspend fun updateOperator(operator: Operator) {
         if (checkRole(operator) && operatorDao.isExist(operator.id)) {
-            operatorDao.updateOperator(operator)
+            operatorDao.update(operator)
         } else {
             throw WrongParamException("Некорректные данные")
         }

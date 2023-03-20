@@ -60,7 +60,7 @@ fun Application.operatorModule() {
             put("state/{id}") {
                 try {
                     service.setOperatorState(
-                        call.parameters["id"]!!.toInt(),
+                        call.parameters["id"]!!.toLong(),
                         call.request.queryParameters["active"].toBoolean()
                     )
                     call.respond(HttpStatusCode.OK)
@@ -70,7 +70,7 @@ fun Application.operatorModule() {
             }
 
             delete("/{id}") {
-                service.deleteOperator(call.parameters["id"]!!.toInt())
+                service.deleteOperator(call.parameters["id"]!!.toLong())
                 call.respond(HttpStatusCode.OK)
             }
         }

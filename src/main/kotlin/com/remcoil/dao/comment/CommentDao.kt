@@ -1,6 +1,6 @@
 package com.remcoil.dao.comment
 
-import com.remcoil.data.database.DefectComments
+import com.remcoil.data.database.Comments
 import com.remcoil.data.model.comment.Comment
 import com.remcoil.utils.safetySuspendTransactionAsync
 import org.jetbrains.exposed.sql.*
@@ -10,41 +10,38 @@ import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 class CommentDao(private val database: Database) {
 
     suspend fun getAll(): List<Comment> = safetySuspendTransactionAsync(database) {
-        DefectComments
+        Comments
             .selectAll()
-            .map(::extractDefectsComment)
+            .map(::extractComment)
     }
 
-    suspend fun getByActionId(actionId: Long) = safetySuspendTransactionAsync(database) {
-        DefectComments
-            .select {DefectComments.actionId eq actionId}
-            .map(::extractDefectsComment)
+    suspend fun getByActionId(id: Long) = safetySuspendTransactionAsync(database) {
+        Comments
+            .select { Comments.actionId eq id }
+            .map(::extractComment)
             .firstOrNull()
     }
 
-    suspend fun createComment(comment: Comment) = safetySuspendTransactionAsync(database) {
-        val insert = DefectComments
-            .insert {
-                it[actionId] = comment.actionId
-                it[DefectComments.comment] = comment.comment
-            }
-        comment.copy(actionId = insert[DefectComments.actionId].value)
+    suspend fun create(comment: Comment) = safetySuspendTransactionAsync(database) {
+        val insert = Comments.insert {
+            it[actionId] = comment.actionId
+            it[Comments.comment] = comment.comment
+        }
+        comment.copy(actionId = insert[Comments.actionId].value)
     }
 
-    suspend fun deleteComment(actionId: Long) = safetySuspendTransactionAsync(database) {
-        DefectComments
-            .deleteWhere { DefectComments.actionId eq actionId }
+    suspend fun deleteByActionId(id: Long) = safetySuspendTransactionAsync(database) {
+        Comments.deleteWhere { actionId eq id }
     }
 
-    suspend fun updateComment(comment: Comment) = safetySuspendTransactionAsync(database) {
-        DefectComments
-            .update({DefectComments.actionId eq comment.actionId}) {
-                it[DefectComments.comment] = comment.comment
-            }
+    suspend fun update(comment: Comment) = safetySuspendTransactionAsync(database) {
+        Comments.update({ Comments.actionId eq comment.actionId }) {
+            it[Comments.comment] = comment.comment
+        }
     }
 
-    private fun extractDefectsComment(row: ResultRow): Comment = Comment(
-        row[DefectComments.actionId].value,
-        row[DefectComments.comment]
+    private fun extractComment(row: ResultRow): Comment = Comment(
+        row[Comments.actionId].value,
+        row[Comments.comment]
     )
 }

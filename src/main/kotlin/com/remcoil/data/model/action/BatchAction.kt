@@ -10,8 +10,8 @@ data class BatchAction(
     val id: Long,
     @SerialName("batch_id")
     val batchId: Long,
-    @SerialName("action_type")
-    val actionType: String,
+    @SerialName("action_type_id")
+    val actionType: Long,
     @SerialName("done_time")
     @Serializable(with = LocalDateTimeSerializer::class)
     val doneTime: LocalDateTime,

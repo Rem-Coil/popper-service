@@ -7,20 +7,20 @@ import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 
 class OperatorDao(private val database: Database) {
-    suspend fun getOperator(phone: String): Operator? = safetySuspendTransactionAsync(database) {
+    suspend fun getByPhone(phone: String): Operator? = safetySuspendTransactionAsync(database) {
         Operators
             .select { (Operators.phone eq phone) and (Operators.active eq true)}
             .map (::extractOperator)
             .firstOrNull()
     }
 
-    suspend fun getAllOperators(onlyActive: Boolean): List<Operator> = safetySuspendTransactionAsync(database) {
+    suspend fun getAll(onlyActive: Boolean): List<Operator> = safetySuspendTransactionAsync(database) {
         Operators
             .select { (Operators.active eq true) or (Operators.active eq onlyActive)}
             .map(::extractOperator)
     }
 
-    suspend fun getById(id: Int): Operator? = safetySuspendTransactionAsync(database) {
+    suspend fun getById(id: Long): Operator? = safetySuspendTransactionAsync(database) {
         Operators
             .select { Operators.id eq id }
             .map(::extractOperator)
@@ -34,14 +34,14 @@ class OperatorDao(private val database: Database) {
             .isEmpty()
     }
 
-    suspend fun isExist(id: Int): Boolean = safetySuspendTransactionAsync(database) {
+    suspend fun isExist(id: Long): Boolean = safetySuspendTransactionAsync(database) {
         Operators
             .select { Operators.id eq id }
             .map(::extractOperator)
             .isNotEmpty()
     }
 
-    suspend fun createOperator(operator: Operator): Operator = safetySuspendTransactionAsync(database) {
+    suspend fun create(operator: Operator): Operator = safetySuspendTransactionAsync(database) {
         val id = Operators.insertAndGetId {
             it[firstName] = operator.firstName
             it[secondName] = operator.secondName
@@ -54,13 +54,13 @@ class OperatorDao(private val database: Database) {
         operator.copy(id = id.value)
     }
 
-    suspend fun setActive(id: Int, active: Boolean) = safetySuspendTransactionAsync(database) {
+    suspend fun setActive(id: Long, active: Boolean) = safetySuspendTransactionAsync(database) {
         Operators.update({ Operators.id eq id }) {
             it[Operators.active] = active
         }
     }
 
-    suspend fun updateOperator(operator: Operator) = safetySuspendTransactionAsync(database) {
+    suspend fun update(operator: Operator) = safetySuspendTransactionAsync(database) {
         Operators.update({Operators.id eq operator.id}) {
             it[firstName] = operator.firstName
             it[secondName] = operator.secondName
@@ -72,7 +72,7 @@ class OperatorDao(private val database: Database) {
         }
     }
 
-    suspend fun deleteOperator(id: Int) = safetySuspendTransactionAsync(database) {
+    suspend fun deleteById(id: Long) = safetySuspendTransactionAsync(database) {
         Operators.deleteWhere { Operators.id eq id }
     }
 

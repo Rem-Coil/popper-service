@@ -5,13 +5,12 @@ val kotlinVersion: String by project
 val logbackVersion: String by project
 val exposedVersion: String by project
 val kodeinVersion: String by project
-
 val config4kVersion: String by project
 
 plugins {
-    kotlin("jvm") version "1.6.21" // or kotlin("multiplatform") or any other kotlin plugin
-    kotlin("plugin.serialization") version "1.6.21"
-    id("io.ktor.plugin") version "2.2.1"
+    kotlin("jvm") version "1.8.10"
+    kotlin("plugin.serialization") version "1.8.10"
+    id("io.ktor.plugin") version "2.2.4"
     application
 }
 
@@ -22,7 +21,7 @@ ktor {
 }
 
 group = "com.remcoil"
-version = "0.2.0"
+version = "0.3.0"
 
 application {
     mainClass.set("com.remcoil.ApplicationKt")
@@ -43,22 +42,18 @@ tasks.test {
 dependencies {
     implementation("io.ktor:ktor-server-cors:$ktorVersion")
     implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
-    implementation("io.ktor:ktor-server-content-negotiation-jvm:$ktorVersion")
+    implementation("io.ktor:ktor-server-content-negotiation:$ktorVersion")
     implementation("io.ktor:ktor-server-html-builder:$ktorVersion")
     implementation("io.ktor:ktor-server-auth:$ktorVersion")
     implementation("io.ktor:ktor-server-auth-jwt:$ktorVersion")
 
-
     implementation("org.jetbrains.kotlin-wrappers:kotlin-css:1.0.0-pre.301-kotlin-1.6.10")
-
 
     implementation("ch.qos.logback:logback-classic:$logbackVersion")
     implementation("io.ktor:ktor-server-core-jvm:$ktorVersion")
-    implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
     implementation("io.ktor:ktor-server-netty-jvm:$ktorVersion")
 
     testImplementation("org.jetbrains.kotlin:kotlin-test:$kotlinVersion")
-
 
     implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.4.0")
 
