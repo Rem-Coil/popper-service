@@ -2,24 +2,42 @@ openapi: 3.0.3
 info:
   title: Popper
   description: Backend spec for popper app
-  version: 0.0.1
+  version: 0.2.0
+
 servers:
-  - url: 'https://popper-service.herokuapp.com/'
-  - url: 'http://localhost:80'
-  - url: 'https://webpanel.remcoil.space/'
+  - url: 'http://0.0.0.0:8008'
+  - url: 'https://api.remcoil.webtm.ru'
 paths:
 
   /bobbin:
-   get:
-     tags:
-       - bobbin
-     responses:
-       '200':
-         description: List of all bobbins
-         content:
-           application/json:
-             schema:
-               $ref: '#/components/schemas/ListOfBobbins'
+    get:
+      tags:
+        - bobbin
+      responses:
+        '200':
+          description: List of all bobbins
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListOfBobbins'
+    post:
+      tags:
+        - bobbin
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Bobbin'
+      responses:
+        '200':
+          description: Task created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Bobbin'
+        '400':
+          description: Bad Request
 
   /bobbin/{id}:
     get:
@@ -30,7 +48,7 @@ paths:
           name: id
           required: true
           schema:
-            type: integer
+            type: number
       responses:
         '200':
           description: Bobbin information
@@ -38,16 +56,73 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Bobbin'
-        '400':
+        '404':
           description: Bobbin not found
+        '400':
+          description: Bad request
 
-  /bobbin/task/{id}:
-    get:
+    delete:
       tags:
         - bobbin
       parameters:
         - in: path
           name: id
+          required: true
+          schema:
+            type: number
+      responses:
+        '200':
+          description: Bobbin marked as defected
+        '404':
+          description: Bobbin not found
+        '400':
+          description: Bad request
+
+  /bobbin/{id}/delete:
+    delete:
+      tags:
+        - bobbin
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: number
+      responses:
+        '200':
+          description: Bobbin deleted
+        '400':
+          description: Bad request
+
+  /batch/{batch_id}/bobbin:
+    get:
+      tags:
+        - bobbin
+      parameters:
+        - in: path
+          name: batch_id
+          required: true
+          schema:
+            type: number
+      responses:
+        '200':
+          description: List of bobbins of one batch
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListOfBobbins'
+        '400':
+          description: Bad request
+        '404':
+          description: Not Found
+
+  /task/{task_id}/bobbin:
+    get:
+      tags:
+        - bobbin
+      parameters:
+        - in: path
+          name: task_id
           required: true
           schema:
             type: integer
@@ -58,6 +133,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ListOfBobbins'
+        '400':
+          description: Bad Request
+        '404':
+          description: Not Found
 
   /task:
     get:
@@ -70,6 +149,21 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ListOfTasks'
+
+    put:
+      tags:
+        - task
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Task'
+      responses:
+        '200':
+          description: Task updated
+        '400':
+          description: Bad request
 
     post:
       tags:
@@ -100,13 +194,15 @@ paths:
             type: integer
       responses:
         '200':
-          description: Task infromation
+          description: Task information
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Task'
         '400':
           description: Task not found
+        '404':
+          description: Not found
 
     delete:
       tags:
@@ -120,6 +216,174 @@ paths:
       responses:
         '200':
           description: Task deleted successfully
+        '400':
+          description: Bad request
+        '404':
+          description: Not Found
+
+  /task/full:
+    get:
+      tags:
+        - task
+      responses:
+        '200':
+          description: List of full tasks
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListOfFullTasks'
+
+  /task/{id}/full:
+    get:
+      tags:
+        - task
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Task full information
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListOfFullTasks'
+        '400':
+          description: Bad request
+        '404':
+          description: Task Not found
+
+
+  /batch:
+    get:
+      tags:
+        - batch
+      responses:
+        '200':
+          description: List of batches
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListOfBatch'
+    post:
+      tags:
+        - batch
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BatchIdentity'
+      responses:
+        '400':
+          description: Bad request
+        '200':
+          description: Batch created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Action'
+
+  /batch/{id}:
+    get:
+      tags:
+        - batch
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: number
+      responses:
+        '200':
+          description: Batch information
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Batch'
+        '400':
+          description: Batch not found
+
+    delete:
+      tags:
+        - batch
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: number
+      responses:
+        '200':
+          description: Batch deleted successfully
+
+  /batch/task/{task_id}:
+    get:
+      tags:
+        - batch
+      parameters:
+        - in: path
+          name: task_id
+          required: true
+          schema:
+            type: number
+      responses:
+        '200':
+          description: Batch information
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListOfBatch'
+        '400':
+          description: Batch not found
+
+  /batch/{id}/full:
+    get:
+      tags:
+        - batch
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: number
+      responses:
+        '200':
+          description: Batch full information
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FullBatch'
+        '400':
+          description: Batch not found
+
+  /batch/full:
+    get:
+      tags:
+        - batch
+      responses:
+        '200':
+          description: List of full batches
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListOfFullBatches'
+
+  /batch/{id}/codes:
+    get:
+      tags:
+        - batch
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: number
+      responses:
+        '200':
+          description: Bobbin's QR codes by batch
 
   /action:
     get:
@@ -134,6 +398,8 @@ paths:
                 $ref: '#/components/schemas/ListOfActions'
 
     post:
+      security:
+        - bearerAuth: [ ]
       tags:
         - action
       requestBody:
@@ -141,12 +407,10 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Action'
+              $ref: '#/components/schemas/ActionDto'
       responses:
         '400':
           description: Bad request
-        '403':
-          description: Action already exists
         '200':
           description: Action created
           content:
@@ -168,6 +432,28 @@ paths:
         '400':
           description: Bad request
 
+  /action/batch:
+    post:
+      security:
+        - bearerAuth: [ ]
+      tags:
+        - batch action
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BatchAction'
+      responses:
+        '400':
+          description: Bad request
+        '200':
+          description: Action created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListOfActions'
+
   /action/bobbin/{bobbin_id}:
     get:
       tags:
@@ -177,32 +463,14 @@ paths:
           name: bobbin_id
           required: true
           schema:
-            type: integer
+            type: number
       responses:
         '200':
           description: Full list of one bobbin actions
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ListOfFullActions'
-
-  /action/task/{task_id}:
-    get:
-      tags:
-        - action
-      parameters:
-        - in: path
-          name: task_id
-          required: true
-          schema:
-            type: integer
-      responses:
-        '200':
-          description: Full list of one task actions
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ListOfFullActions'
+                $ref: '#/components/schemas/ListOfActions'
 
   /action/{id}:
     delete:
@@ -213,10 +481,177 @@ paths:
           name: id
           required: true
           schema:
-            type: integer
+            type: number
       responses:
         '200':
           description: Action deleted successfully
+
+  /action/full:
+    get:
+      tags:
+        - full action
+      responses:
+        '200':
+          description: List of flat full actions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListOfFlatFullActions'
+
+  /action/task/{task_id}/full:
+    get:
+      tags:
+        - full action
+      parameters:
+        - in: path
+          name: task_id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Task full action
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskFullAction'
+
+  /action/batch/{batch_id}/full:
+    get:
+      tags:
+        - full action
+      parameters:
+        - in: path
+          name: batch_id
+          required: true
+          schema:
+            type: number
+      responses:
+        '200':
+          description: Batch full action
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BatchFullAction'
+
+  /action/bobbin/{bobbin_id}/full:
+    get:
+      tags:
+        - full action
+      parameters:
+        - in: path
+          name: bobbin_id
+          required: true
+          schema:
+            type: number
+      responses:
+        '200':
+          description: Bobbin full action
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BobbinFullAction'
+
+  /action/{id}/full:
+    get:
+      tags:
+        - full action
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: number
+      responses:
+        '200':
+          description: Flat full action
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlatFullAction'
+
+  /comment:
+    get:
+      tags:
+        - comment
+      responses:
+        '200':
+          description: List of all comments
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListOfComments'
+
+    post:
+      security:
+        - bearerAuth: [ ]
+      tags:
+        - comment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Comment'
+      responses:
+        '200':
+          description: Comment created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Comment'
+
+    put:
+      security:
+        - bearerAuth: [ ]
+      tags:
+        - comment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Comment'
+      responses:
+        '200':
+          description: Comment update
+
+
+  /comment/{action_id}:
+    get:
+      tags:
+        - comment
+      parameters:
+        - in: path
+          name: action_id
+          required: true
+          schema:
+            type: number
+      responses:
+        '204':
+          description: No content
+        '200':
+          description: Defect Comment
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/omment'
+
+    delete:
+      security:
+        - bearerAuth: [ ]
+      tags:
+        - comment
+      parameters:
+        - in: path
+          name: action_id
+          required: true
+          schema:
+            type: number
+      responses:
+        '200':
+          description: Comment deleted successfully
+
 
   /operator?active_only=true:
     get:
@@ -234,6 +669,28 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ListOfOperators'
+
+  /operator/state/{id}?active:
+    put:
+      tags:
+        - operator
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+        - in: query
+          name: active
+          required: true
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: Operator state updated
+        '404':
+          description: Operator not found
+
 
   /operator/{id}:
     delete:
@@ -289,14 +746,80 @@ paths:
         '400':
           description: Operator already exists
 
+  /operator:
+    put:
+      tags:
+        - operator
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Operator'
+      responses:
+        '200':
+          description: Operator updated
+        '400':
+          description: Bad request
+
 components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
   schemas:
+    TaskFullAction:
+      properties:
+        id:
+          type: number
+        task_name:
+          type: string
+        task_number:
+          type: string
+        batches:
+          type: array
+          items:
+            $ref: '#/components/schemas/BatchFullAction'
+
+    BatchFullAction:
+      properties:
+        id:
+          type: number
+        batch_number:
+          type: string
+        bobbins:
+          type: array
+          items:
+            $ref: '#/components/schemas/BobbinFullAction'
+
+    BobbinFullAction:
+      properties:
+        id:
+          type: number
+        bobbin_number:
+          type: string
+        is_active_bobbin:
+          type: boolean
+        actions:
+          type: array
+          items:
+            $ref: '#/components/schemas/FullAction'
 
     FullAction:
       properties:
-        bobbin_id:
-          type: integer
-        bobbin_number:
+        id:
+          type: number
+        action_type:
+          type: string
+        done_time:
+          type: string
+        successful:
+          type: boolean
+        comment:
+          type: string
+        operator_id:
           type: integer
         first_name:
           type: string
@@ -304,6 +827,56 @@ components:
           type: string
         surname:
           type: string
+        role:
+          type: string
+
+    FlatFullAction:
+      properties:
+        task_id:
+          type: integer
+        task_name:
+          type: string
+        task_number:
+          type: string
+        batch_id:
+          type: number
+        batch_number:
+          type: string
+        bobbin_id:
+          type: number
+        bobbin_number:
+          type: integer
+        is_active_bobbin:
+          type: boolean
+        action_id:
+          type: number
+        action_type:
+          type: string
+        done_time:
+          type: string
+        successful:
+          type: boolean
+        comment:
+          type: string
+        operator_id:
+          type: integer
+        first_name:
+          type: string
+        second_name:
+          type: string
+        surname:
+          type: string
+        role:
+          type: string
+
+    Action:
+      properties:
+        id:
+          type: number
+        operator_id:
+          type: integer
+        bobbin_id:
+          type: integer
         action_type:
           type: string
         done_time:
@@ -311,12 +884,23 @@ components:
         successful:
           type: boolean
 
-    Action:
+    BatchAction:
       properties:
         id:
+          type: number
+        batch_id:
           type: integer
-        operator_id:
-          type: integer
+        action_type:
+          type: string
+        done_time:
+          type: string
+        successful:
+          type: boolean
+
+    ActionDto:
+      properties:
+        id:
+          type: number
         bobbin_id:
           type: integer
         action_type:
@@ -339,22 +923,17 @@ components:
           type: string
         task_number:
           type: string
-        quantity:
+
+    FullTask:
+      properties:
+        id:
           type: integer
-        winding:
-          type: integer
-        output:
-          type: integer
-        isolation:
-          type: integer
-        molding:
-          type: integer
-        crimping:
-          type: integer
-        quality:
-          type: integer
-        testing:
-          type: integer
+        task_name:
+          type: string
+        task_number:
+          type: string
+        batches:
+          $ref: '#/components/schemas/ListOfFullBatches'
 
     Operator:
       properties:
@@ -372,25 +951,69 @@ components:
           type: string
         active:
           type: boolean
+        role:
+          type: string
 
     Bobbin:
       properties:
         id:
-          type: integer
-        task_id:
-          type: integer
+          type: number
+        batch_id:
+          type: number
         bobbin_number:
           type: integer
+        active:
+          type: boolean
+
+    Batch:
+      properties:
+        id:
+          type: number
+        task_id:
+          type: integer
+        batch_number:
+          type: string
+
+    BatchIdentity:
+      properties:
+        task_id:
+          type: integer
+
+    FullBatch:
+      properties:
+        id:
+          type: number
+        task_id:
+          type: integer
+        batch_number:
+          type: string
+        quantity:
+          type: integer
+        winding:
+          type: integer
+        output:
+          type: integer
+        isolation:
+          type: integer
+        molding:
+          type: integer
+        crimping:
+          type: integer
+        quality:
+          type: integer
+        testing:
+          type: integer
+
 
     ListOfActions:
       type: array
       items:
         $ref: '#/components/schemas/Action'
 
-    ListOfFullActions:
+    ListOfFlatFullActions:
       type: array
       items:
-        $ref: '#/components/schemas/FullAction'
+        $ref: '#/components/schemas/FlatFullAction'
 
     ListOfBobbins:
       type: array
@@ -407,13 +1030,35 @@ components:
       items:
         $ref: '#/components/schemas/Task'
 
+    ListOfFullTasks:
+      type: array
+      items:
+        $ref: '#/components/schemas/FullTask'
+
+    ListOfBatch:
+      type: array
+      items:
+        $ref: '#/components/schemas/Batch'
+
+    ListOfFullBatches:
+      type: array
+      items:
+        $ref: '#/components/schemas/FullBatch'
+
+    ListOfComments:
+      type: array
+      items:
+        $ref: '#/components/schemas/Comment'
+
     TaskIdentity:
       properties:
         task_name:
           type: string
         task_number:
           type: string
-        quantity:
+        batch_number:
+          type: integer
+        batch_size:
           type: integer
 
     Credentials:
@@ -421,4 +1066,11 @@ components:
         phone:
           type: string
         password:
+          type: string
+
+    Comment:
+      properties:
+        action_id:
+          type: number
+        comment:
           type: string

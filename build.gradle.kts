@@ -1,19 +1,28 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-val ktor_version: String by project
-val kotlin_version: String by project
-val logback_version: String by project
-val exposed_version: String by project
+val ktorVersion: String by project
+val kotlinVersion: String by project
+val logbackVersion: String by project
+val exposedVersion: String by project
+val kodeinVersion: String by project
+
 val config4kVersion: String by project
 
 plugins {
+    kotlin("jvm") version "1.6.21" // or kotlin("multiplatform") or any other kotlin plugin
+    kotlin("plugin.serialization") version "1.6.21"
+    id("io.ktor.plugin") version "2.2.1"
     application
-    kotlin("jvm") version "1.5.31"
-    id("org.jetbrains.kotlin.plugin.serialization") version "1.5.31"
+}
+
+ktor {
+    fatJar {
+        archiveFileName.set("fat_server.jar")
+    }
 }
 
 group = "com.remcoil"
-version = "0.1.0"
+version = "0.2.0"
 
 application {
     mainClass.set("com.remcoil.ApplicationKt")
@@ -32,40 +41,43 @@ tasks.test {
 }
 
 dependencies {
-    implementation("io.ktor:ktor-server-core:$ktor_version")
-    implementation("io.ktor:ktor-serialization:$ktor_version")
-    implementation("io.ktor:ktor-server-netty:$ktor_version")
-    implementation("io.ktor:ktor-html-builder:$ktor_version")
+    implementation("io.ktor:ktor-server-cors:$ktorVersion")
+    implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
+    implementation("io.ktor:ktor-server-content-negotiation-jvm:$ktorVersion")
+    implementation("io.ktor:ktor-server-html-builder:$ktorVersion")
+    implementation("io.ktor:ktor-server-auth:$ktorVersion")
+    implementation("io.ktor:ktor-server-auth-jwt:$ktorVersion")
+
+
     implementation("org.jetbrains.kotlin-wrappers:kotlin-css:1.0.0-pre.301-kotlin-1.6.10")
 
 
-    implementation("ch.qos.logback:logback-classic:$logback_version")
+    implementation("ch.qos.logback:logback-classic:$logbackVersion")
+    implementation("io.ktor:ktor-server-core-jvm:$ktorVersion")
+    implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
+    implementation("io.ktor:ktor-server-netty-jvm:$ktorVersion")
 
-    testImplementation("org.junit.jupiter:junit-jupiter:5.7.0")
-    testImplementation("io.ktor:ktor-server-tests:$ktor_version")
-    testImplementation ("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.0")
-    testImplementation("com.h2database:h2:1.4.199")
-    testImplementation("io.mockk:mockk:1.12.2")
+    testImplementation("org.jetbrains.kotlin:kotlin-test:$kotlinVersion")
 
-    implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.2.0")
 
-    implementation("org.jetbrains.exposed:exposed-core:$exposed_version")
-    implementation("org.jetbrains.exposed:exposed-dao:$exposed_version")
-    implementation("org.jetbrains.exposed:exposed-jdbc:$exposed_version")
-    implementation("org.jetbrains.exposed:exposed-java-time:$exposed_version")
+    implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.4.0")
 
-    implementation("org.flywaydb:flyway-core:8.4.2")
-    implementation("org.postgresql:postgresql:42.2.2")
-    implementation("com.zaxxer:HikariCP:4.0.3")
+    implementation("org.jetbrains.exposed:exposed-core:$exposedVersion")
+    implementation("org.jetbrains.exposed:exposed-dao:$exposedVersion")
+    implementation("org.jetbrains.exposed:exposed-jdbc:$exposedVersion")
+    implementation("org.jetbrains.exposed:exposed-java-time:$exposedVersion")
+
+    implementation("org.flywaydb:flyway-core:9.10.1")
+    implementation("org.postgresql:postgresql:42.5.1")
+    implementation("com.zaxxer:HikariCP:5.0.1")
 
 
     implementation("io.github.config4k:config4k:$config4kVersion")
 
-    implementation("org.kodein.di:kodein-di-framework-ktor-server-jvm:7.8.0")
+    implementation("org.kodein.di:kodein-di-framework-ktor-server-jvm:$kodeinVersion")
 
-    implementation("io.ktor:ktor-auth:$ktor_version")
-    implementation("io.ktor:ktor-auth-jwt:$ktor_version")
     implementation(kotlin("stdlib-jdk8"))
+    testImplementation("io.ktor:ktor-server-tests-jvm:$ktorVersion")
 }
 
 val compileKotlin: KotlinCompile by tasks
