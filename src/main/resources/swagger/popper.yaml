@@ -2,11 +2,11 @@ openapi: 3.0.3
 info:
   title: Popper
   description: Backend spec for popper app
-  version: 0.2.0
+  version: 0.3.0
 
 servers:
-  - url: 'http://0.0.0.0:8008'
   - url: 'https://api.remcoil.webtm.ru'
+  - url: 'http://0.0.0.0:8008'
 paths:
 
   /bobbin:
