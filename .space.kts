@@ -1,7 +1,7 @@
 import circlet.pipelines.script.ScriptApi
 import io.ktor.client.request.*
 
-job("Deploy on server") {
+job("Deploy on server (dev)") {
     parameters {
         text("webhook-url", value = "{{ project:popper-dev-webhook }}")
         text("major-version", value = "{{ project:popper-major-version }}")
@@ -25,8 +25,8 @@ job("Deploy on server") {
 
             val spaceRepo = "pampero.registry.jetbrains.space/p/popper/popper/popper_server"
             tags {
-                +"$spaceRepo:{{ major-version }}.${"$"}JB_SPACE_EXECUTION_NUMBER"
-                +"$spaceRepo:latest"
+                +"$spaceRepo:{{ major-version }}.0-dev-${"$"}JB_SPACE_EXECUTION_NUMBER"
+                +"$spaceRepo:dev"
             }
         }
 
@@ -53,8 +53,43 @@ job("Deploy on server") {
     }
 }
 
+job("Build server (prod)") {
+    parameters {
+        text("major-version", value = "{{ project:popper-major-version }}")
+    }
+
+    startOn {
+        gitPush {
+            branchFilter {
+                +Regex("main")
+            }
+        }
+    }
+
+    host(displayName = "Build and push docker image") {
+        kotlinScript(displayName = "Start deployment") { api ->
+            api.space().projects.automation.deployments.start(
+                project = api.projectIdentifier(),
+                targetIdentifier = TargetIdentifier.Key("popper"),
+                version = "${api.parameters["major-version"]}.0",
+                syncWithAutomationJob = true,
+            )
+        }
+
+        dockerBuildPush {
+            labels["vendor"] = "remcoil"
+
+            val spaceRepo = "pampero.registry.jetbrains.space/p/popper/popper/popper_server"
+            tags {
+                +"$spaceRepo:{{ major-version }}.0"
+                +"$spaceRepo:latest"
+            }
+        }
+    }
+}
+
 val ScriptApi.currentVersion: String
-    get() = "${parameters["major-version"]}.${executionNumber()}"
+    get() = "${parameters["major-version"]}.0-dev-${executionNumber()}"
 
 suspend fun ScriptApi.startDeployment() {
     space().projects.automation.deployments.start(
