@@ -47,8 +47,8 @@ data class FlatFullAction(
 
     val comment: String?,
 
-    @SerialName("operator_id")
-    val operatorId: Int,
+    @SerialName("employee_id")
+    val employeeId: Int,
     @SerialName("first_name")
     val firstname: String,
     @SerialName("second_name")

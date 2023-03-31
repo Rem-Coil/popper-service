@@ -5,8 +5,8 @@ import com.remcoil.dao.action.ActionDao
 import com.remcoil.dao.action.FullActionDao
 import com.remcoil.dao.batch.BatchDao
 import com.remcoil.dao.comment.CommentDao
+import com.remcoil.dao.employee.EmployeeDao
 import com.remcoil.dao.kit.KitDao
-import com.remcoil.dao.operator.OperatorDao
 import com.remcoil.dao.product.ProductDao
 import com.remcoil.dao.specification.SpecificationActionDao
 import com.remcoil.dao.specification.SpecificationDao
@@ -14,8 +14,8 @@ import com.remcoil.service.action.ActionService
 import com.remcoil.service.action.FullActionService
 import com.remcoil.service.batch.BatchService
 import com.remcoil.service.comment.CommentService
+import com.remcoil.service.employee.EmployeeService
 import com.remcoil.service.kit.KitService
-import com.remcoil.service.operator.OperatorService
 import com.remcoil.service.product.ProductService
 import com.remcoil.service.specification.SpecificationActionService
 import com.remcoil.service.specification.SpecificationService
@@ -47,14 +47,14 @@ private fun hikari(config: AppConfig): HikariDataSource {
     return HikariDataSource(hikariConfig)
 }
 
-fun DI.Builder.operatorComponents() {
-    bind<OperatorDao>() with singleton { OperatorDao(instance()) }
-    bind<OperatorService>() with singleton { OperatorService(instance(), instance<AppConfig>().jwt) }
+fun DI.Builder.employeeComponents() {
+    bind<EmployeeDao>() with singleton { EmployeeDao(instance()) }
+    bind<EmployeeService>() with singleton { EmployeeService(instance(), instance<AppConfig>().jwt) }
 }
 
 fun DI.Builder.specificationComponents() {
     bind<SpecificationDao>() with singleton { SpecificationDao(instance()) }
-    bind<SpecificationService>() with singleton { SpecificationService(instance(), instance()) }
+    bind<SpecificationService>() with singleton { SpecificationService(instance(), instance(), instance()) }
 }
 
 fun DI.Builder.kitComponents() {

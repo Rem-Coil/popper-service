@@ -31,7 +31,7 @@ class ActionDao(private val database: Database) {
 
     suspend fun update(action: Action) = safetySuspendTransactionAsync(database) {
         Actions.update({ Actions.id eq action.id }) {
-            it[operatorId] = action.operatorId
+            it[employeeId] = action.employeeId
             it[productId] = action.productId
             it[actionTypeId] = action.actionTypeId
             it[doneTime] = action.doneTime.toJavaLocalDateTime()
@@ -41,7 +41,7 @@ class ActionDao(private val database: Database) {
 
     suspend fun create(action: Action): Action = safetySuspendTransactionAsync(database) {
         val id = Actions.insertAndGetId {
-            it[operatorId] = action.operatorId
+            it[employeeId] = action.employeeId
             it[productId] = action.productId
             it[actionTypeId] = action.actionTypeId
             it[doneTime] = action.doneTime.toJavaLocalDateTime()
@@ -52,7 +52,7 @@ class ActionDao(private val database: Database) {
 
     suspend fun createBatchAction(actions: List<Action>) = safetySuspendTransactionAsync(database) {
         Actions.batchInsert(actions) { action: Action ->
-            this[Actions.operatorId] = action.operatorId
+            this[Actions.employeeId] = action.employeeId
             this[Actions.productId] = action.productId
             this[Actions.actionTypeId] = action.actionTypeId
             this[Actions.doneTime] = action.doneTime.toJavaLocalDateTime()
@@ -67,7 +67,7 @@ class ActionDao(private val database: Database) {
 
     private fun extractAction(row: ResultRow): Action = Action(
         row[Actions.id].value,
-        row[Actions.operatorId].value,
+        row[Actions.employeeId].value,
         row[Actions.productId].value,
         row[Actions.actionTypeId].value,
         row[Actions.doneTime].toKotlinLocalDateTime(),

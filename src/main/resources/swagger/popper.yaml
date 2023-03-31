@@ -144,7 +144,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ListOfSpecifications'
+                $ref: '#/components/schemas/ListOfSpecificationResponseDto'
 
     put:
       tags:
@@ -154,10 +154,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Specification'
+              $ref: '#/components/schemas/SpecificationRequestDto'
       responses:
         '200':
           description: ТЗ обновлено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListOfSpecificationResponseDto'
         '400':
           description: Bad request
 
@@ -169,14 +173,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Specification'
+              $ref: '#/components/schemas/SpecificationRequestDto'
       responses:
         '200':
           description: ТЗ создано
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Specification'
+                $ref: '#/components/schemas/SpecificationResponseDto'
 
   /specification/{id}:
     get:
@@ -194,7 +198,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Specification'
+                $ref: '#/components/schemas/SpecificationResponseDto'
         '404':
           description: Not found
 
@@ -469,10 +473,10 @@ paths:
           description: Комментарий удален
 
 
-  /operator?active_only=true:
+  /employee?active_only=true:
     get:
       tags:
-        - operator
+        - employee
       parameters:
         - in: query
           name: active_only
@@ -484,12 +488,12 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ListOfOperators'
+                $ref: '#/components/schemas/ListOfEmployees'
 
-  /operator/state/{id}?active:
+  /employee/state/{id}?active:
     put:
       tags:
-        - operator
+        - employee
       parameters:
         - in: path
           name: id
@@ -508,10 +512,10 @@ paths:
           description: Сотрудник не найден
 
 
-  /operator/{id}:
+  /employee/{id}:
     delete:
       tags:
-        - operator
+        - employee
       parameters:
         - in: path
           name: id
@@ -522,10 +526,10 @@ paths:
         '200':
           description: Информация о сотруднике удалена
 
-  /operator/sign_in:
+  /employee/sign_in:
     post:
       tags:
-        - operator
+        - employee
       requestBody:
         required: true
         content:
@@ -542,16 +546,16 @@ paths:
               schema:
                 $ref: '#/components/schemas/Token'
 
-  /operator/sign_up:
+  /employee/sign_up:
     post:
       tags:
-        - operator
+        - employee
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Operator'
+              $ref: '#/components/schemas/Employee'
       responses:
         '200':
           description: JWT token
@@ -562,16 +566,16 @@ paths:
         '400':
           description: Информация о сотруднике уже существует
 
-  /operator:
+  /employee:
     put:
       tags:
-        - operator
+        - employee
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Operator'
+              $ref: '#/components/schemas/Employee'
       responses:
         '200':
           description: Информация о сотруднике обновлена
@@ -784,7 +788,7 @@ components:
           type: integer
         comment:
           type: string
-        operator_id:
+        employee_id:
           type: number
         first_name:
           type: string
@@ -799,7 +803,7 @@ components:
       properties:
         id:
           type: number
-        operator_id:
+        employee_id:
           type: number
         product_id:
           type: number
@@ -834,7 +838,7 @@ components:
         product_id:
           type: number
         action_type_id:
-          type: string
+          type: number
         done_time:
           type: string
           format: YYYY-MM-DDTHH:MM:SS
@@ -854,7 +858,7 @@ components:
         token:
           type: string
 
-    Operator:
+    Employee:
       properties:
         id:
           type: number
@@ -924,6 +928,38 @@ components:
         tested_percentage:
           type: integer
 
+    SpecificationResponseDto:
+      properties:
+        id:
+          type: number
+        specification_title:
+          type: string
+        product_type:
+          type: string
+        tested_percentage:
+          type: integer
+        kit_quantity:
+          type: integer
+        action_set:
+          type: array
+          items:
+            $ref: '#/components/schemas/SpecificationAction'
+
+    SpecificationRequestDto:
+      properties:
+        id:
+          type: number
+        specification_title:
+          type: string
+        product_type:
+          type: string
+        tested_percentage:
+          type: integer
+        action_set:
+          type: array
+          items:
+            $ref: '#/components/schemas/SpecificationAction'
+
     SpecificationAction:
       properties:
         id:
@@ -945,10 +981,10 @@ components:
       items:
         $ref: '#/components/schemas/FlatFullAction'
 
-    ListOfOperators:
+    ListOfEmployees:
       type: array
       items:
-        $ref: '#/components/schemas/Operator'
+        $ref: '#/components/schemas/Employee'
 
     ListOfSpecifications:
       type: array
@@ -979,3 +1015,8 @@ components:
       type: array
       items:
         $ref: '#/components/schemas/Comment'
+
+    ListOfSpecificationResponseDto:
+      type: array
+      items:
+        $ref: '#/components/schemas/SpecificationResponseDto'

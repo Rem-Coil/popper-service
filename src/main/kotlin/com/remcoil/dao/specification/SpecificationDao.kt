@@ -1,23 +1,25 @@
 package com.remcoil.dao.specification
 
+import com.remcoil.data.database.ExtendedSpecifications
 import com.remcoil.data.database.Specifications
 import com.remcoil.data.model.specification.Specification
+import com.remcoil.data.model.specification.SpecificationResponseDto
 import com.remcoil.utils.safetySuspendTransactionAsync
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 
 class SpecificationDao(private val database: Database) {
 
-    suspend fun getAll(): List<Specification> = safetySuspendTransactionAsync(database) {
-        Specifications
+    suspend fun getAll(): List<SpecificationResponseDto> = safetySuspendTransactionAsync(database) {
+        ExtendedSpecifications
             .selectAll()
-            .map(::extractSpecification)
+            .map(::extractExtendedSpecification)
     }
 
-    suspend fun getById(id: Long): Specification? = safetySuspendTransactionAsync(database) {
-        Specifications
-            .select { Specifications.id eq id }
-            .map(::extractSpecification)
+    suspend fun getById(id: Long): SpecificationResponseDto? = safetySuspendTransactionAsync(database) {
+        ExtendedSpecifications
+            .select { ExtendedSpecifications.id eq id }
+            .map(::extractExtendedSpecification)
             .firstOrNull()
     }
 
@@ -42,10 +44,12 @@ class SpecificationDao(private val database: Database) {
         Specifications.deleteWhere { Specifications.id eq id }
     }
 
-    private fun extractSpecification(row: ResultRow): Specification = Specification(
-        row[Specifications.id].value,
-        row[Specifications.specificationTitle],
-        row[Specifications.productType],
-        row[Specifications.testedPercentage]
+    private fun extractExtendedSpecification(row: ResultRow): SpecificationResponseDto = SpecificationResponseDto(
+        row[ExtendedSpecifications.id],
+        row[ExtendedSpecifications.specificationTitle],
+        row[ExtendedSpecifications.productType],
+        row[ExtendedSpecifications.testedPercentage],
+        row[ExtendedSpecifications.kitQuantity],
+        setOf()
     )
 }

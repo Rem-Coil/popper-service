@@ -1,9 +1,9 @@
-package com.remcoil.data.model.operator
+package com.remcoil.data.model.employee
 
 import kotlinx.serialization.Serializable
 
 @Serializable
-class OperatorCredentials(
+class EmployeeCredentials(
     val phone: String,
     val password: String,
 )

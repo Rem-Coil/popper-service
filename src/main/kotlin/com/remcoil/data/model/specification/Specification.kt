@@ -12,4 +12,11 @@ data class Specification(
     val productType: String,
     @SerialName("tested_percentage")
     val testedPercentage: Int
-)
+) {
+    constructor(specificationRequestDto: SpecificationRequestDto) : this(
+        id = specificationRequestDto.id,
+        specificationTitle = specificationRequestDto.specificationTitle,
+        productType = specificationRequestDto.productType,
+        testedPercentage = specificationRequestDto.testedPercentage
+    )
+}

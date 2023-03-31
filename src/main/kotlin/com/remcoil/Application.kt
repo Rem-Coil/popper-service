@@ -7,21 +7,21 @@ import com.remcoil.data.migrate
 import com.remcoil.di.*
 import com.remcoil.module.action.actionModule
 import com.remcoil.module.batch.batchModule
-import com.remcoil.module.product.productModule
 import com.remcoil.module.comment.commentModule
+import com.remcoil.module.employee.employeeModule
 import com.remcoil.module.kit.kitModule
-import com.remcoil.module.operator.operatorModule
+import com.remcoil.module.product.productModule
 import com.remcoil.module.site.siteModule
 import com.remcoil.module.specification.specificationActionModule
 import com.remcoil.module.specification.specificationModule
-import io.ktor.server.engine.*
-import io.ktor.server.netty.*
 import com.typesafe.config.ConfigFactory
 import io.github.config4k.extract
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.auth.jwt.*
+import io.ktor.server.engine.*
+import io.ktor.server.netty.*
 import io.ktor.server.plugins.cors.routing.*
 import org.kodein.di.ktor.di
 
@@ -35,7 +35,7 @@ fun main() {
     embeddedServer(Netty, port = config.http.port, host = config.http.host) {
         di {
             coreComponents(config)
-            operatorComponents()
+            employeeComponents()
             specificationComponents()
             actionComponents()
             commentComponents()
@@ -61,7 +61,7 @@ fun main() {
                 }
             }
         }
-        operatorModule()
+        employeeModule()
         specificationActionModule()
         specificationModule()
         actionModule()

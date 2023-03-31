@@ -34,26 +34,6 @@ class KitService(
         return kits
     }
 
-//    suspend fun getFullById(taskId: Int): FullTask {
-//        val task = getKitById(taskId)
-//        return toFullTask(task)
-//    }
-//
-//    suspend fun getAllFull(): List<FullTask> {
-//        val tasks = getAll()
-//        val fullTasks = mutableListOf<FullTask>()
-//
-//        for (task in tasks) {
-//            fullTasks.add(toFullTask(task))
-//        }
-//        return fullTasks
-//    }
-//
-//    private suspend fun toFullTask(task: Specification): FullTask {
-//        val batches = batchService.getFullByTaskId(task.id)
-//        return FullTask(task.id, task.taskName, task.taskNumber, batches)
-//    }
-
     suspend fun deleteKitById(id: Long) {
         kitDao.deleteById(id)
         logger.info("Данные о ТЗ удалены")
@@ -70,7 +50,7 @@ class KitService(
 
     suspend fun updateKit(kit: Kit) {
         val oldKit = getKitById(kit.id)
-        kitDao.update(setKitNumber(kit))
+        kitDao.update(kit)
         if (oldKit.kitNumber != kit.kitNumber) {
             updateBatchesNumber(kit)
             logger.info("Обновили номер набора")

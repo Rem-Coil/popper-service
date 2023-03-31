@@ -38,11 +38,11 @@ class BatchService(
 
     suspend fun createByKit(kit: Kit, batchNumber: Int): Batch {
         val batch = createBatch(Batch(0, "${kit.kitNumber} / $batchNumber", kit.id))
-        createBobbins(kit, batch)
+        createProducts(kit, batch)
         return batch
     }
 
-    private suspend fun createBobbins(kit: Kit, batch: Batch) {
+    private suspend fun createProducts(kit: Kit, batch: Batch) {
         for (i in 1..kit.batchSize) {
             productService.createProduct(
                 Product(
@@ -58,10 +58,10 @@ class BatchService(
     suspend fun updateBatch(batch: Batch) {
         batchDao.update(batch)
         logger.info("Обновили партию с id = ${batch.id}")
-        updateBobbinNumber(batch)
+        updateProductNumber(batch)
     }
 
-    private suspend fun updateBobbinNumber(batch: Batch) {
+    private suspend fun updateProductNumber(batch: Batch) {
         val bobbins = productService.getProductsByBatchId(batch.id)
         for (bobbin in bobbins) {
             val numberTail = bobbin.productNumber.substringAfterLast(" / ")

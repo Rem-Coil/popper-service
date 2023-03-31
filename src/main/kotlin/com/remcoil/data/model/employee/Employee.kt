@@ -1,10 +1,10 @@
-package com.remcoil.data.model.operator
+package com.remcoil.data.model.employee
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class Operator(
+data class Employee(
     val id: Long,
     @SerialName("first_name")
     val firstName: String,

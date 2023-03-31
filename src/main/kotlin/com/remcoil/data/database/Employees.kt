@@ -2,7 +2,7 @@ package com.remcoil.data.database
 
 import org.jetbrains.exposed.dao.id.LongIdTable
 
-object Operators: LongIdTable("operators") {
+object Employees: LongIdTable("employees") {
     val firstName = varchar("first_name", 32)
     val secondName = varchar("second_name", 32)
     val surname = varchar("surname", 32)

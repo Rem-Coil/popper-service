@@ -1,7 +1,7 @@
 package com.remcoil.service.specification
 
 import com.remcoil.dao.specification.SpecificationActionDao
-import com.remcoil.data.model.specification.SpecificationAction
+import com.remcoil.data.model.specification.action.SpecificationAction
 import com.remcoil.utils.exceptions.EntryDoesNotExistException
 import com.remcoil.utils.logger
 

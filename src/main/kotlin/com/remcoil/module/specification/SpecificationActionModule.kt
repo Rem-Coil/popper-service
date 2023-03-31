@@ -1,6 +1,6 @@
 package com.remcoil.module.specification
 
-import com.remcoil.data.model.specification.SpecificationAction
+import com.remcoil.data.model.specification.action.SpecificationAction
 import com.remcoil.service.specification.SpecificationActionService
 import com.remcoil.utils.exceptions.EntryDoesNotExistException
 import com.remcoil.utils.safetyReceive

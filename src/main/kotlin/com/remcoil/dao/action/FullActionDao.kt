@@ -41,7 +41,7 @@ class FullActionDao(private val database: Database) {
         row[FullActions.actionType],
         row[FullActions.sequenceNumber],
         row[FullActions.comment],
-        row[FullActions.operatorId],
+        row[FullActions.employeeId],
         row[FullActions.firstName],
         row[FullActions.secondName],
         row[FullActions.surname],

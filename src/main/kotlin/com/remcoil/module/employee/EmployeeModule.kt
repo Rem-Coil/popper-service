@@ -1,8 +1,8 @@
-package com.remcoil.module.operator
+package com.remcoil.module.employee
 
-import com.remcoil.data.model.operator.Operator
-import com.remcoil.data.model.operator.OperatorCredentials
-import com.remcoil.service.operator.OperatorService
+import com.remcoil.data.model.employee.Employee
+import com.remcoil.data.model.employee.EmployeeCredentials
+import com.remcoil.service.employee.EmployeeService
 import com.remcoil.utils.exceptions.WrongParamException
 import com.remcoil.utils.safetyReceive
 import io.ktor.http.*
@@ -10,23 +10,23 @@ import io.ktor.server.application.*
 import io.ktor.server.plugins.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import org.kodein.di.*
+import org.kodein.di.instance
 import org.kodein.di.ktor.closestDI
 
-fun Application.operatorModule() {
-    val service: OperatorService by closestDI().instance()
+fun Application.employeeModule() {
+    val service: EmployeeService by closestDI().instance()
 
     routing {
-        route("/operator") {
+        route("/employee") {
 
             get {
-                val operators = service.getAllOperators(call.request.queryParameters["active_only"].toBoolean())
-                call.respond(operators)
+                val employees = service.getAllEmployees(call.request.queryParameters["active_only"].toBoolean())
+                call.respond(employees)
             }
 
             post("/sign_in") {
-                call.safetyReceive<OperatorCredentials> { operatorCredentials ->
-                    val token = service.getActiveOperator(operatorCredentials)
+                call.safetyReceive<EmployeeCredentials> { employeeCredentials ->
+                    val token = service.getActiveEmployee(employeeCredentials)
                     if (token == null) {
                         call.respond(HttpStatusCode.Unauthorized)
                     } else {
@@ -36,8 +36,8 @@ fun Application.operatorModule() {
             }
 
             post("/sign_up") {
-                call.safetyReceive<Operator> { operator ->
-                    val token = service.createOperator(operator)
+                call.safetyReceive<Employee> { employee ->
+                    val token = service.createEmployee(employee)
                     if (token != null) {
                         call.respond(hashMapOf("token" to token))
                     } else {
@@ -47,9 +47,9 @@ fun Application.operatorModule() {
             }
 
             put {
-                call.safetyReceive<Operator> { operator ->
+                call.safetyReceive<Employee> { employee ->
                     try {
-                        service.updateOperator(operator)
+                        service.updateEmployee(employee)
                         call.respond(HttpStatusCode.OK)
                     } catch (e: WrongParamException) {
                         call.respond(HttpStatusCode.BadRequest)
@@ -59,7 +59,7 @@ fun Application.operatorModule() {
 
             put("state/{id}") {
                 try {
-                    service.setOperatorState(
+                    service.setEmployeeState(
                         call.parameters["id"]!!.toLong(),
                         call.request.queryParameters["active"].toBoolean()
                     )
@@ -70,7 +70,7 @@ fun Application.operatorModule() {
             }
 
             delete("/{id}") {
-                service.deleteOperator(call.parameters["id"]!!.toLong())
+                service.deleteEmployee(call.parameters["id"]!!.toLong())
                 call.respond(HttpStatusCode.OK)
             }
         }

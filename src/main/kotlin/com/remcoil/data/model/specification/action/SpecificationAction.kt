@@ -1,4 +1,4 @@
-package com.remcoil.data.model.specification
+package com.remcoil.data.model.specification.action
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

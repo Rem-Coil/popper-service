@@ -57,7 +57,7 @@ class ActionService(
             actions.add(
                 Action(
                     id = 0,
-                    operatorId = operatorId,
+                    employeeId = operatorId,
                     productId = product.id,
                     actionTypeId = batchAction.actionType,
                     doneTime = batchAction.doneTime,

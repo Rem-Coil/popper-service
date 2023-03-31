@@ -1,4 +1,5 @@
 drop view if exists full_action;
+drop view if exists extended_specifications;
 drop table if exists defect_comment;
 drop table if exists action;
 drop table if exists bobbin;
@@ -6,15 +7,15 @@ drop table if exists batch;
 drop table if exists task;
 drop table if exists operator;
 
-create table specifications
+create table if not exists specifications
 (
-    id                   bigint generated always as identity primary key,
+    id                  bigint generated always as identity primary key,
     specification_title varchar(32) not null,
-    product_type         varchar(32) not null,
-    tested_percentage    integer     not null default 0
+    product_type        varchar(32) not null,
+    tested_percentage   integer     not null default 0
 );
 
-create table specification_actions
+create table if not exists specification_actions
 (
     id               bigint generated always as identity primary key,
     action_type      varchar(64) not null,
@@ -24,7 +25,7 @@ create table specification_actions
         references specifications (id) on delete cascade
 );
 
-create table kits
+create table if not exists kits
 (
     id               bigint generated always as identity primary key,
     kit_number       varchar(64) not null,
@@ -35,7 +36,7 @@ create table kits
         references specifications (id) on delete cascade
 );
 
-create table batches
+create table if not exists batches
 (
     id           bigint generated always as identity primary key,
     batch_number varchar(96) not null,
@@ -44,7 +45,7 @@ create table batches
         references kits (id) on delete cascade
 );
 
-create table products
+create table if not exists products
 (
     id             bigint generated always as identity primary key,
     product_number varchar(128) not null,
@@ -54,7 +55,7 @@ create table products
         references batches on delete CASCADE
 );
 
-create table operators
+create table if not exists employees
 (
     id          bigint generated always as identity primary key,
     first_name  varchar(32) not null,
@@ -66,26 +67,26 @@ create table operators
     role        varchar(32) not null default 'operator'
 );
 
-insert into operators (first_name, second_name, surname, phone, password, active, role)
-values ('RemCoil', '', 'Admin', 2006, 'admin', true, 'admin');
+insert into employees (first_name, second_name, surname, phone, password, active, role)
+values ('RemCoil', '', 'Admin', '2006', 'admin', true, 'admin');
 
-create table actions
+create table if not exists actions
 (
     id             bigint generated always as identity primary key,
-    operator_id    bigint not null,
+    employee_id    bigint not null,
     product_id     bigint not null,
     action_type_id bigint,
     done_time      timestamp,
     successful     boolean default true,
-    constraint fk_action_operator foreign key (operator_id)
-        references operators (id),
+    constraint employee foreign key (employee_id)
+        references employees (id),
     constraint fk_action_product foreign key (product_id)
         references products (id) on delete cascade,
     constraint fk_action_specification_action foreign key (action_type_id)
         references specification_actions (id) on delete cascade
 );
 
-create table comments
+create table if not exists comments
 (
     action_id bigint primary key
         constraint fk_comment_action references actions (id) on delete cascade,
@@ -116,11 +117,11 @@ select specifications.id        as specification_id,
 
        comments.comment,
 
-       operators.id             as operator_id,
-       operators.first_name,
-       operators.second_name,
-       operators.surname,
-       operators.role
+       employees.id             as employee_id,
+       employees.first_name,
+       employees.second_name,
+       employees.surname,
+       employees.role
 from specifications
          join kits on specifications.id = kits.specification_id
          join batches on kits.id = batches.kit_id
@@ -128,4 +129,14 @@ from specifications
          join actions on products.id = actions.product_id
          join specification_actions on specification_actions.id = actions.action_type_id
          left join comments on actions.id = comments.action_id
-         join operators on operators.id = actions.operator_id;
+         join employees on employees.id = actions.employee_id;
+
+create view extended_specifications as
+select specifications.id,
+       specifications.specification_title,
+       specifications.product_type,
+       specifications.tested_percentage,
+       count(k.id) as kit_quantity
+from specifications
+         left join kits k on specifications.id = k.specification_id
+group by specifications.id;

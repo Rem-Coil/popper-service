@@ -1,6 +1,6 @@
 package com.remcoil.module.specification
 
-import com.remcoil.data.model.specification.Specification
+import com.remcoil.data.model.specification.SpecificationRequestDto
 import com.remcoil.service.specification.SpecificationService
 import com.remcoil.utils.exceptions.EntryDoesNotExistException
 import com.remcoil.utils.safetyReceive
@@ -36,15 +36,14 @@ fun Application.specificationModule() {
             }
 
             post {
-                call.safetyReceive<Specification> { specification ->
+                call.safetyReceive<SpecificationRequestDto> { specification ->
                     call.respond(specificationService.createSpecification(specification))
                 }
             }
 
             put {
-                call.safetyReceive<Specification> { specification ->
-                    specificationService.updateSpecification(specification)
-                    call.respond(HttpStatusCode.OK)
+                call.safetyReceive<SpecificationRequestDto> { specification ->
+                    call.respond(specificationService.updateSpecification(specification))
                 }
             }
 
@@ -62,25 +61,6 @@ fun Application.specificationModule() {
                     }
                 )
             }
-
-
-//            get("/full") {
-//                val tasks = specificationService.getAllFull()
-//                call.respond(tasks)
-//            }
-//
-//            get("/{id}/full") {
-//                try {
-//                    val task = call.parameters["id"]?.let { id ->
-//                        id.toLongOrNull()?.let {
-//                            specificationService.getFullById(id.toInt())
-//                        }
-//                    }
-//                    call.respond(task ?: HttpStatusCode.BadRequest)
-//                } catch (e: EntryDoesNotExistException) {
-//                    call.respond(HttpStatusCode.NotFound, e.message.toString())
-//                }
-//            }
 
         }
     }

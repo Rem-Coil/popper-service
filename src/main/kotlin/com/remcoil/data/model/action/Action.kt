@@ -8,8 +8,8 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class Action(
     val id: Long,
-    @SerialName("operator_id")
-    val operatorId: Long,
+    @SerialName("employee_id")
+    val employeeId: Long,
     @SerialName("product_id")
     val productId: Long,
     @SerialName("action_type_id")
@@ -19,9 +19,9 @@ data class Action(
     val doneTime: LocalDateTime,
     var successful: Boolean = true
 ) {
-    constructor(actionRequest: ActionRequest, operatorId: Long) : this(
+    constructor(actionRequest: ActionRequest, employeeId: Long) : this(
         id = actionRequest.id,
-        operatorId = operatorId,
+        employeeId = employeeId,
         productId = actionRequest.productId,
         actionTypeId = actionRequest.actionTypeId,
         doneTime = actionRequest.doneTime,

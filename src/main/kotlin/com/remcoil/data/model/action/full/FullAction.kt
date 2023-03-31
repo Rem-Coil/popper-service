@@ -17,7 +17,7 @@ data class FullAction(
     val successful: Boolean,
     @SerialName("comment")
     val comment: String?,
-    @SerialName("operator_id")
+    @SerialName("employee_id")
     val operatorId: Int,
     @SerialName("first_name")
     val firstname: String,
@@ -34,7 +34,7 @@ data class FullAction(
                 doneTime = flatFullAction.doneTime,
                 successful = flatFullAction.successful,
                 comment = flatFullAction.comment,
-                operatorId = flatFullAction.operatorId,
+                operatorId = flatFullAction.employeeId,
                 firstname = flatFullAction.firstname,
                 secondName = flatFullAction.secondName,
                 surname = flatFullAction.surname,
