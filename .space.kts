@@ -4,7 +4,7 @@ import io.ktor.client.request.*
 job("Deploy on server (dev)") {
     parameters {
         text("webhook-url", value = "{{ project:popper-dev-webhook }}")
-        text("major-version", value = "{{ project:popper-major-version }}")
+        text("version", value = "{{ project:system-version }}")
     }
 
     startOn {
@@ -25,7 +25,7 @@ job("Deploy on server (dev)") {
 
             val spaceRepo = "pampero.registry.jetbrains.space/p/popper/popper/popper_server"
             tags {
-                +"$spaceRepo:{{ major-version }}.0-dev-${"$"}JB_SPACE_EXECUTION_NUMBER"
+                +"$spaceRepo:{{ version }}-dev-${"$"}JB_SPACE_EXECUTION_NUMBER"
                 +"$spaceRepo:dev"
             }
         }
@@ -38,15 +38,40 @@ job("Deploy on server (dev)") {
                     api.scheduleDeployment(
                         "Произошла проблема при деплое. Не указан вебхук (popper-dev-webhook). Произведите деплой вручную"
                     )
+
+                    api.sendNotification(
+                        """
+                            :warning: :warning: Произошла проблема при деплое бека. 
+                            Не указан вебхук (popper-dev-webhook). Произведите деплой вручную !!!
+                            Версия деплоя: **${api.currentVersion}**
+                        """.trimIndent()
+                    )
+
                     return@kotlinScript
                 }
 
                 io.ktor.client.HttpClient { expectSuccess = true }.post(url)
                 api.finishDeployment()
 
+                api.sendNotification(
+                    """
+                        :zap: :zap: Новая релизная версия бека выложена !
+                        Возможны ошибки при запросах, необходимо поправить если что-либо поменялось!
+                        Текущая версия: **${api.currentVersion}**
+                    """.trimIndent()
+                )
+
             } catch (e: Exception) {
                 api.scheduleDeployment(
                     "Произошла проблема при деплое. Проверьте корректность деплоя и повторите попытку вручную."
+                )
+
+                api.sendNotification(
+                    """
+                        :warning: :warning: Произошла проблема при деплое бека. 
+                        Проверьте корректность деплоя и повторите попытку вручную
+                        Версия деплоя: **${api.currentVersion}**
+                    """.trimIndent()
                 )
             }
         }
@@ -71,7 +96,7 @@ job("Build server (prod)") {
             api.space().projects.automation.deployments.start(
                 project = api.projectIdentifier(),
                 targetIdentifier = TargetIdentifier.Key("popper"),
-                version = "${api.parameters["major-version"]}.0",
+                version = api.parameters["version"],
                 syncWithAutomationJob = true,
             )
         }
@@ -81,15 +106,24 @@ job("Build server (prod)") {
 
             val spaceRepo = "pampero.registry.jetbrains.space/p/popper/popper/popper_server"
             tags {
-                +"$spaceRepo:{{ major-version }}.0"
+                +"$spaceRepo:{{ version }}"
                 +"$spaceRepo:latest"
             }
+        }
+
+        kotlinScript(displayName = "Send notification") { api ->
+            api.sendNotification(
+                """
+                    :zap: :zap: Новая релизная версия бека собрана !!!
+                    Текущая версия: **${api.currentVersion}**
+                """.trimIndent()
+            )
         }
     }
 }
 
 val ScriptApi.currentVersion: String
-    get() = "${parameters["major-version"]}.0-dev-${executionNumber()}"
+    get() = "${parameters["version"]}-dev-${executionNumber()}"
 
 suspend fun ScriptApi.startDeployment() {
     space().projects.automation.deployments.start(
@@ -122,5 +156,12 @@ suspend fun ScriptApi.finishDeployment() {
         project = projectIdentifier(),
         targetIdentifier = TargetIdentifier.Key("popper"),
         version = currentVersion
+    )
+}
+
+suspend fun ScriptApi.sendNotification(text: String) {
+    space().chats.messages.sendMessage(
+        channel = ChannelIdentifier.Channel(ChatChannel.FromName("Deployment Notifications")),
+        content = ChatMessage.Text(text)
     )
 }
