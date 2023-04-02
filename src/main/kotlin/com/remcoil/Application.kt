@@ -12,14 +12,15 @@ import com.remcoil.module.comment.commentModule
 import com.remcoil.module.operator.operatorModule
 import com.remcoil.module.site.siteModule
 import com.remcoil.module.task.taskModule
-import io.ktor.server.engine.*
-import io.ktor.server.netty.*
+import com.remcoil.module.v2.*
 import com.typesafe.config.ConfigFactory
 import io.github.config4k.extract
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.auth.jwt.*
+import io.ktor.server.engine.*
+import io.ktor.server.netty.*
 import io.ktor.server.plugins.cors.routing.*
 import org.kodein.di.ktor.di
 
@@ -39,6 +40,8 @@ fun main() {
             commentComponents()
             bobbinComponents()
             batchComponents()
+
+            v2Components()
         }
         install(Authentication) {
             jwt("jwt-access") {
@@ -65,6 +68,13 @@ fun main() {
         commentModule()
         configureSerialization()
         siteModule(config)
+
+        actionModuleV2()
+        productModuleV2()
+        batchModuleV2()
+        kitModuleV2()
+        specificationModuleV2()
+
         install(CORS) {
             allowMethod(HttpMethod.Get)
             allowMethod(HttpMethod.Post)
