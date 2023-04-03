@@ -5,7 +5,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class Batch(
-    val id: Long,
+    var id: Long = 0,
     @SerialName("batch_number")
     var batchNumber: String,
     @SerialName("kit_id")

@@ -28,9 +28,9 @@ suspend inline fun <reified T : Any> ApplicationCall.safetyReceive(onCorrectResu
     }
 }
 
-suspend inline fun <reified T> ApplicationCall.safetyRespond(message: T, statusCode: HttpStatusCode) {
+suspend inline fun <reified T> ApplicationCall.safetyRespond(message: T, onError: HttpStatusCode) {
     if (message == null) {
-        this.respond(statusCode)
+        this.respond(onError)
     } else {
         this.respond(message)
     }

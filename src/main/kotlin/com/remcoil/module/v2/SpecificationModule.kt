@@ -26,10 +26,10 @@ fun Application.specificationModuleV2() {
                 try {
                     val specification = call.parameters["id"]?.let { id ->
                         id.toLongOrNull()?.let {
-                            specificationService.getSpecificationById(id.toLong())
+                            specificationService.getSpecificationById(it)
                         }
                     }
-                    call.safetyRespond(specification, HttpStatusCode.BadRequest)
+                    call.safetyRespond(specification, onError = HttpStatusCode.BadRequest)
                 } catch (e: EntryDoesNotExistException) {
                     call.respond(HttpStatusCode.NotFound, e.message.toString())
                 }
@@ -50,16 +50,10 @@ fun Application.specificationModuleV2() {
             delete("/{id}") {
                 val result = call.parameters["id"]?.let { id ->
                     id.toLongOrNull()?.let {
-                        specificationService.deleteSpecificationById(id.toLong())
+                        specificationService.deleteSpecificationById(it)
                     }
                 }
-                call.respond(
-                    if (result == null) {
-                        HttpStatusCode.BadRequest
-                    } else {
-                        HttpStatusCode.OK
-                    }
-                )
+                call.safetyRespond(result, onError = HttpStatusCode.BadRequest)
             }
 
         }

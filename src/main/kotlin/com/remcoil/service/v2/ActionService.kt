@@ -22,12 +22,6 @@ class ActionService(
         return actions
     }
 
-    suspend fun getActionById(id: Long): Action? {
-        val action = actionDao.getById(id)
-        logger.info("Отдали операцию с id=${id}")
-        return action
-    }
-
     suspend fun updateAction(action: Action) {
         if (productService.productIsActive(action.productId)) {
             actionDao.update(action)
@@ -65,7 +59,7 @@ class ActionService(
             )
         }
 
-        return actionDao.createBatchAction(actions)
+        return actionDao.batchCreate(actions)
     }
 
     suspend fun deleteActionById(id: Long) {

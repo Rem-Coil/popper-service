@@ -98,26 +98,6 @@ paths:
         '400':
           description: Bad request
 
-  /v2/kit/{kit_id}/product:
-    get:
-      tags:
-        - product
-      parameters:
-        - in: path
-          name: kit_id
-          required: true
-          schema:
-            type: number
-      responses:
-        '200':
-          description: Список изделий одного набора
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ListOfProductsV2'
-        '400':
-          description: Bad Request
-
   /v2/specification:
     get:
       tags:

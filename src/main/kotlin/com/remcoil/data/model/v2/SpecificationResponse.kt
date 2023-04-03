@@ -12,7 +12,7 @@ data class SpecificationResponse(
     val productType: String,
     @SerialName("tested_percentage")
     val testedPercentage: Int,
-    @SerialName("kit_quantity)")
+    @SerialName("kit_quantity")
     val kitQuantity: Int
 ) {
     constructor(specification: Specification, kitQuantity: Int) : this(

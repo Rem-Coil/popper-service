@@ -16,12 +16,12 @@ fun Application.productModuleV2() {
     routing {
 
         get("/v2/batch/{batch_id}/product") {
-            val products = call.parameters["batch_id"]?.let { id ->
-                id.toLongOrNull()?.let {
-                    productService.getProductsByBatchId(id.toLong())
+            val products = call.parameters["batch_id"]?.let { batch_id ->
+                batch_id.toLongOrNull()?.let {
+                    productService.getProductsByBatchId(it)
                 }
             }
-            call.safetyRespond(products, HttpStatusCode.BadRequest)
+            call.safetyRespond(products, onError = HttpStatusCode.BadRequest)
         }
 
         route("/v2/product") {
@@ -34,10 +34,10 @@ fun Application.productModuleV2() {
                 try {
                     val result = call.parameters["id"]?.let { id ->
                         id.toLongOrNull()?.let {
-                            productService.deactivateProductById(id.toLong())
+                            productService.deactivateProductById(it)
                         }
                     }
-                    call.safetyRespond(result, HttpStatusCode.BadRequest)
+                    call.safetyRespond(result, onError = HttpStatusCode.BadRequest)
                 } catch (e: EntryDoesNotExistException) {
                     call.respond(HttpStatusCode.NotFound, e.message.toString())
                 }
@@ -46,10 +46,10 @@ fun Application.productModuleV2() {
             delete("{id}/delete") {
                 val result = call.parameters["id"]?.let { id ->
                     id.toLongOrNull()?.let {
-                        productService.deleteProductById(id.toLong())
+                        productService.deleteProductById(it)
                     }
                 }
-                call.safetyRespond(result, HttpStatusCode.BadRequest)
+                call.safetyRespond(result, onError = HttpStatusCode.BadRequest)
             }
         }
     }

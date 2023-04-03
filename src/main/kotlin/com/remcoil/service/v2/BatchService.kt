@@ -3,7 +3,6 @@ package com.remcoil.service.v2
 import com.remcoil.dao.v2.BatchDao
 import com.remcoil.data.model.v2.Batch
 import com.remcoil.data.model.v2.Kit
-import com.remcoil.data.model.v2.Product
 import com.remcoil.utils.exceptions.EntryDoesNotExistException
 import com.remcoil.utils.logger
 
@@ -29,32 +28,50 @@ class BatchService(
         return batches
     }
 
-    private suspend fun createBatch(batch: Batch): Batch {
-        val createdBatch = batchDao.create(batch)
-        logger.info("Создали партию с id ${createdBatch.id}")
-        return createdBatch
-    }
-
-    suspend fun createByKit(kit: Kit, batchNumber: Int): Batch {
-        val batch = createBatch(Batch(0, batchNumber.toString(), kit.id))
-        createProducts(kit, batch)
-        return batch
-    }
-
-    private suspend fun createProducts(kit: Kit, batch: Batch) {
-        for (i in 1..kit.batchSize) {
-            productService.createProduct(
-                Product(
-                    id = 0,
-                    productNumber = "$i",
-                    active = true,
-                    batchId = batch.id
-                )
-            )
+    suspend fun createByKit(kit: Kit, startNumber: Int) {
+        val batches = mutableListOf<Batch>()
+        for (i in startNumber..kit.batchesQuantity) {
+            batches.add(Batch(batchNumber = i.toString(), kitId = kit.id))
         }
+        val createdBatches = batchDao.batchCreate(batches)
+        productService.createByKitAndBatches(kit, createdBatches)
     }
 
-    suspend fun deleteBatchById(id: Long) {
-        batchDao.deleteById(id)
+    suspend fun updateBatchSize(oldKit: Kit, kit: Kit) {
+        if (oldKit.batchSize == kit.batchSize) {
+            return
+        }
+        val batches = batchDao.getByKitId(kit.id)
+        for (batch in batches) {
+            if (oldKit.batchSize > kit.batchSize) {
+                productService.reduceProductsQuantity(
+                    batch.id,
+                    excessNumber = oldKit.batchSize - kit.batchSize
+                )
+            } else {
+                productService.increaseProductsQuantity(
+                    batch.id,
+                    requiredNumber = kit.batchSize - oldKit.batchSize
+                )
+            }
+        }
+        logger.info("Обновили размер партий")
+    }
+
+    suspend fun updateBatchesQuantity(oldKit: Kit, kit: Kit) {
+        if (oldKit.batchesQuantity == kit.batchesQuantity) {
+            return
+        }
+        if (oldKit.batchesQuantity > kit.batchesQuantity) {
+            val batches = batchDao.getByKitId(kit.id)
+            for (i in 1..oldKit.batchesQuantity - kit.batchesQuantity) {
+                batchDao.deleteById(batches[batches.size - i].id)
+            }
+        } else {
+            for (i in 1..kit.batchesQuantity - oldKit.batchesQuantity) {
+                createByKit(kit, oldKit.batchesQuantity + i)
+            }
+        }
+        logger.info("Обновили число партий")
     }
 }

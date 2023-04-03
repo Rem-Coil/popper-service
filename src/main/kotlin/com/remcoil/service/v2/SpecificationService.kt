@@ -17,7 +17,8 @@ class SpecificationService(
     }
 
     suspend fun getSpecificationById(id: Long): SpecificationResponse {
-        val specification = specificationDao.getById(id) ?: throw EntryDoesNotExistException("ТЗ с id = $id не существует")
+        val specification =
+            specificationDao.getById(id) ?: throw EntryDoesNotExistException("ТЗ с id = $id не существует")
         logger.info("Вернули данные от ТЗ - $id")
         return specification
     }
@@ -36,6 +37,7 @@ class SpecificationService(
     suspend fun updateSpecification(specification: Specification): SpecificationResponse {
         specificationDao.update(specification)
         logger.info("Обновили ТЗ")
-        return getSpecificationById(specification.id)
+        return specificationDao.getById(specification.id)
+            ?: throw EntryDoesNotExistException("ТЗ с id = ${specification.id} не существует")
     }
 }

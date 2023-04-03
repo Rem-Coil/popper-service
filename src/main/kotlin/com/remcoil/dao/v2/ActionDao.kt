@@ -50,7 +50,7 @@ class ActionDao(private val database: Database) {
         action.copy(id = id.value)
     }
 
-    suspend fun createBatchAction(actions: List<Action>) = safetySuspendTransactionAsync(database) {
+    suspend fun batchCreate(actions: List<Action>) = safetySuspendTransactionAsync(database) {
         Actions.batchInsert(actions) { action: Action ->
             this[Actions.employeeId] = action.employeeId.toInt()
             this[Actions.productId] = action.productId

@@ -5,10 +5,19 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class Product(
-    val id: Long,
+    var id: Long = 0,
     @SerialName("product_number")
     var productNumber: String,
-    var active: Boolean,
+    var active: Boolean = true,
     @SerialName("batch_id")
     val batchId: Long
-)
+) {
+    fun deactivated(): Product {
+        return this.copy(
+            id = id,
+            productNumber = "$productNumber defective",
+            active = false,
+            batchId = batchId
+        )
+    }
+}

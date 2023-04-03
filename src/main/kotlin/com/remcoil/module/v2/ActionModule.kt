@@ -28,12 +28,12 @@ fun Application.actionModuleV2() {
 
 
             get("/product/{product_id}") {
-                val actions = call.parameters["product_id"]?.let {productId ->
-                    productId.toLongOrNull()?.let {
-                        actionService.getByProductId(productId.toLong())
+                val actions = call.parameters["product_id"]?.let { product_id ->
+                    product_id.toLongOrNull()?.let {
+                        actionService.getByProductId(it)
                     }
                 }
-                call.safetyRespond(actions, HttpStatusCode.BadRequest)
+                call.safetyRespond(actions, onError = HttpStatusCode.BadRequest)
             }
 
             put {

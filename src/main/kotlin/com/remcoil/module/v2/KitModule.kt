@@ -19,12 +19,12 @@ fun Application.kitModuleV2() {
 
     routing {
         get("/v2/specification/{specification_id}/kit") {
-            val kits = call.parameters["specification_id"]?.let {id ->
-                id.toLongOrNull()?.let {
-                    kitService.getKitsBySpecificationId(id.toLong())
+            val kits = call.parameters["specification_id"]?.let { specification_id ->
+                specification_id.toLongOrNull()?.let {
+                    kitService.getKitsBySpecificationId(it)
                 }
             }
-            call.safetyRespond(kits, HttpStatusCode.BadRequest)
+            call.safetyRespond(kits, onError = HttpStatusCode.BadRequest)
         }
 
         route("/v2/kit") {
@@ -33,22 +33,13 @@ fun Application.kitModuleV2() {
                 call.respond(kits)
             }
 
-            get("/{kit_id}/product") {
-                val products = call.parameters["kit_id"]?.let { id ->
-                    id.toLongOrNull()?.let {
-                        kitService.getProductsByKitId(id.toLong())
-                    }
-                }
-                call.safetyRespond(products, HttpStatusCode.BadRequest)
-            }
-
             get("/{kit_id}/batches") {
                 val batches = call.parameters["kit_id"]?.let { kitId ->
                     kitId.toLongOrNull()?.let {
-                        batchService.getBatchesByKitId(kitId.toLong())
+                        batchService.getBatchesByKitId(it)
                     }
                 }
-                call.safetyRespond(batches, HttpStatusCode.BadRequest)
+                call.safetyRespond(batches, onError = HttpStatusCode.BadRequest)
             }
 
 
@@ -56,10 +47,10 @@ fun Application.kitModuleV2() {
                 try {
                     val kit = call.parameters["id"]?.let { id ->
                         id.toLongOrNull()?.let {
-                            kitService.getKitById(id.toLong())
+                            kitService.getKitById(it)
                         }
                     }
-                    call.safetyRespond(kit, HttpStatusCode.BadRequest)
+                    call.safetyRespond(kit, onError = HttpStatusCode.BadRequest)
                 } catch (e: EntryDoesNotExistException) {
                     call.respond(HttpStatusCode.NotFound, e.message.toString())
                 }
@@ -81,16 +72,10 @@ fun Application.kitModuleV2() {
             delete("/{id}") {
                 val result = call.parameters["id"]?.let { id ->
                     id.toLongOrNull()?.let {
-                        kitService.deleteKitById(id.toLong())
+                        kitService.deleteKitById(it)
                     }
                 }
-                call.respond(
-                    if (result == null) {
-                        HttpStatusCode.BadRequest
-                    } else {
-                        HttpStatusCode.OK
-                    }
-                )
+                call.safetyRespond(result, onError = HttpStatusCode.BadRequest)
             }
 
         }

@@ -1,7 +1,6 @@
 package com.remcoil.dao.v2
 
 import com.remcoil.data.database.v2.Batches
-import com.remcoil.data.database.v2.view.ExtendedBatches
 import com.remcoil.data.model.v2.Batch
 import com.remcoil.utils.safetySuspendTransactionAsync
 import org.jetbrains.exposed.sql.*
@@ -10,21 +9,21 @@ import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 
 class BatchDao(private val database: Database) {
     suspend fun getAll() = safetySuspendTransactionAsync(database) {
-        ExtendedBatches
+        Batches
             .selectAll()
             .map(::extractBatch)
     }
 
     suspend fun getById(id: Long): Batch? = safetySuspendTransactionAsync(database) {
-        ExtendedBatches
-            .select { ExtendedBatches.id eq id }
+        Batches
+            .select { Batches.id eq id }
             .map(::extractBatch)
             .firstOrNull()
     }
 
     suspend fun getByKitId(id: Long): List<Batch> = safetySuspendTransactionAsync(database) {
-        ExtendedBatches
-            .select { ExtendedBatches.kitId eq id }
+        Batches
+            .select { Batches.kitId eq id }
             .map(::extractBatch)
     }
 
@@ -34,6 +33,14 @@ class BatchDao(private val database: Database) {
             it[batchNumber] = batch.batchNumber
         }
         batch.copy(id = id.value)
+    }
+
+    suspend fun batchCreate(batches: List<Batch>) = safetySuspendTransactionAsync(database) {
+        Batches.batchInsert(batches) { batch: Batch ->
+            this[Batches.kitId] = batch.kitId
+            this[Batches.batchNumber] = batch.batchNumber
+        }
+            .map(::extractBatch)
     }
 
     suspend fun deleteById(id: Long) = safetySuspendTransactionAsync(database) {
@@ -48,8 +55,8 @@ class BatchDao(private val database: Database) {
     }
 
     private fun extractBatch(resultRow: ResultRow): Batch = Batch(
-        resultRow[ExtendedBatches.id],
-        resultRow[ExtendedBatches.batchNumber],
-        resultRow[ExtendedBatches.kitId]
+        resultRow[Batches.id].value,
+        resultRow[Batches.batchNumber],
+        resultRow[Batches.kitId].value
     )
 }

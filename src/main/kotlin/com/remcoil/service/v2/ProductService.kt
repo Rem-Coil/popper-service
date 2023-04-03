@@ -2,11 +2,14 @@ package com.remcoil.service.v2
 
 import com.remcoil.dao.v2.ProductDao
 import com.remcoil.data.model.v2.Batch
+import com.remcoil.data.model.v2.Kit
 import com.remcoil.data.model.v2.Product
 import com.remcoil.utils.exceptions.EntryDoesNotExistException
 import com.remcoil.utils.logger
 
-class ProductService(private val productDao: ProductDao) {
+class ProductService(
+    private val productDao: ProductDao
+) {
 
     suspend fun getAllProducts(): List<Product> {
         val products = productDao.getAll()
@@ -14,21 +17,9 @@ class ProductService(private val productDao: ProductDao) {
         return products
     }
 
-    private suspend fun getProductById(id: Long): Product {
-        val product = productDao.getById(id)
-        logger.info("Отдали изделие - $id")
-        return product ?: throw EntryDoesNotExistException("Изделия с id = $id не существует")
-    }
-
     suspend fun getProductsByBatchId(id: Long): List<Product> {
         val products = productDao.getByBatchId(id)
         logger.info("Отдали изделия партии - $id")
-        return products
-    }
-
-    suspend fun getProductsByBatches(batches: List<Batch>): List<Product> {
-        val products = productDao.getByBatchesId(batches.map { batch -> batch.id })
-        logger.info("Отдали изделия для партий $batches")
         return products
     }
 
@@ -38,25 +29,59 @@ class ProductService(private val productDao: ProductDao) {
         return createdProduct
     }
 
+    suspend fun createByKitAndBatches(kit: Kit, batches: List<Batch>) {
+        val products = mutableListOf<Product>()
+        for (batch in batches) {
+            for (i in 1..kit.batchSize) {
+                products.add(Product(batchId = batch.id, productNumber = i.toString()))
+            }
+        }
+        productDao.batchCreate(products)
+    }
+
     suspend fun deleteProductById(id: Long) {
         productDao.deleteById(id)
         logger.info("Удалили изделие с id = $id")
     }
 
+    suspend fun reduceProductsQuantity(batchId: Long, excessNumber: Int) {
+        val products = productDao.getByBatchId(batchId).filter { it.active }
+        val productsToDelete = mutableListOf<Long>()
+        for (i in 1..excessNumber) {
+            productsToDelete.add(products[products.size - i].id)
+        }
+        productDao.deleteByIdList(productsToDelete)
+    }
+
+    suspend fun increaseProductsQuantity(batchId: Long, requiredNumber: Int) {
+        val products = mutableListOf<Product>()
+        val startNumber = getLastNumberByBatchId(batchId)
+        for (i in 1..requiredNumber) {
+            products.add(
+                Product(
+                    productNumber = "${startNumber + i}",
+                    batchId = batchId
+                )
+            )
+        }
+        productDao.batchCreate(products)
+    }
+
+    private suspend fun getLastNumberByBatchId(batchId: Long): Int {
+        return productDao.getByBatchId(batchId)
+            .filter { it.active }
+            .maxOf { it.productNumber.toInt() }
+    }
+
     suspend fun deactivateProductById(id: Long) {
-        val product = productDao.getPureById(id) ?: throw EntryDoesNotExistException("Изделия с id = $id не существует")
-        productDao.deactivateById(id, product.productNumber)
+        val product = productDao.getById(id) ?: throw EntryDoesNotExistException("Изделия с id = $id не существует")
+        productDao.update(product.deactivated())
         logger.info("Забраковали изделие с id = $id")
-        product.active = true
         createProduct(product)
     }
 
     suspend fun productIsActive(productId: Long): Boolean {
-        return try {
-            val product = getProductById(productId)
-            product.active
-        } catch (e: EntryDoesNotExistException) {
-            false
-        }
+        val product = productDao.getById(productId) ?: return false
+        return product.active
     }
 }
