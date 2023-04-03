@@ -11,7 +11,7 @@ val config4kVersion: String by project
 plugins {
     kotlin("jvm") version "1.6.21" // or kotlin("multiplatform") or any other kotlin plugin
     kotlin("plugin.serialization") version "1.6.21"
-    id("io.ktor.plugin") version "2.2.1"
+    id("io.ktor.plugin") version "2.2.4"
     application
 }
 

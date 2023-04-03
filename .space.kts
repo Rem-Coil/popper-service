@@ -1,40 +1,167 @@
-/**
-* JetBrains Space Automation
-* This Kotlin-script file lets you automate build activities
-* For more info, see https://www.jetbrains.com/help/space/automation.html
-*/
+import circlet.pipelines.script.ScriptApi
+import io.ktor.client.request.*
 
-job("Build and run tests") {
-    
+job("Deploy on server (dev)") {
+    parameters {
+        text("webhook-url", value = "{{ project:popper-dev-webhook }}")
+        text("version", value = "{{ project:system-version }}")
+    }
+
     startOn {
         gitPush {
             branchFilter {
-                +"release"
+                +Regex("release")
             }
         }
     }
-    
-    container(displayName = "Gradle build", image = "openjdk:11") {
-        shellScript {
-            content = """
-            		./gradlew test
-                    ./gradlew installDist
-                    cp -r build $mountDir/share
-                """
-        }
-    }
-    
-    docker {
-        beforeBuildScript {
-            content = "cp -r $mountDir/share build"
-        }
-        build {
-            context = "docker"
-            file = "./docker/Dockerfile"
+
+    host(displayName = "Build and push docker image") {
+        kotlinScript(displayName = "Start deployment") { api ->
+            api.startDeployment()
         }
 
-        push("rem-coil.registry.jetbrains.space/p/popper/popper/main-service") {
-            tags("0.0.\$JB_SPACE_EXECUTION_NUMBER", "latest")
+        dockerBuildPush {
+            labels["vendor"] = "remcoil"
+
+            val spaceRepo = "pampero.registry.jetbrains.space/p/popper/popper/popper_server"
+            tags {
+                +"$spaceRepo:{{ version }}-dev-${"$"}JB_SPACE_EXECUTION_NUMBER"
+                +"$spaceRepo:dev"
+            }
+        }
+
+        kotlinScript(displayName = "Deploy on server") { api ->
+            try {
+                val url = api.parameters["webhook-url"]
+
+                if (url == null) {
+                    api.scheduleDeployment(
+                        "Произошла проблема при деплое. Не указан вебхук (popper-dev-webhook). Произведите деплой вручную"
+                    )
+
+                    api.sendNotification(
+                        """
+                            :warning: :warning: Произошла проблема при деплое бека. 
+                            Не указан вебхук (popper-dev-webhook). Произведите деплой вручную !!!
+                            Версия деплоя: **${api.currentVersion}**
+                        """.trimIndent()
+                    )
+
+                    return@kotlinScript
+                }
+
+                io.ktor.client.HttpClient { expectSuccess = true }.post(url)
+                api.finishDeployment()
+
+                api.sendNotification(
+                    """
+                        :zap: :zap: Новая релизная версия бека выложена !
+                        Возможны ошибки при запросах, необходимо поправить если что-либо поменялось!
+                        Текущая версия: **${api.currentVersion}**
+                    """.trimIndent()
+                )
+
+            } catch (e: Exception) {
+                api.scheduleDeployment(
+                    "Произошла проблема при деплое. Проверьте корректность деплоя и повторите попытку вручную."
+                )
+
+                api.sendNotification(
+                    """
+                        :warning: :warning: Произошла проблема при деплое бека. 
+                        Проверьте корректность деплоя и повторите попытку вручную
+                        Версия деплоя: **${api.currentVersion}**
+                    """.trimIndent()
+                )
+            }
         }
     }
+}
+
+job("Build server (prod)") {
+    parameters {
+        text("major-version", value = "{{ project:popper-major-version }}")
+    }
+
+    startOn {
+        gitPush {
+            branchFilter {
+                +Regex("main")
+            }
+        }
+    }
+
+    host(displayName = "Build and push docker image") {
+        kotlinScript(displayName = "Start deployment") { api ->
+            api.space().projects.automation.deployments.start(
+                project = api.projectIdentifier(),
+                targetIdentifier = TargetIdentifier.Key("popper"),
+                version = api.parameters["version"],
+                syncWithAutomationJob = true,
+            )
+        }
+
+        dockerBuildPush {
+            labels["vendor"] = "remcoil"
+
+            val spaceRepo = "pampero.registry.jetbrains.space/p/popper/popper/popper_server"
+            tags {
+                +"$spaceRepo:{{ version }}"
+                +"$spaceRepo:latest"
+            }
+        }
+
+        kotlinScript(displayName = "Send notification") { api ->
+            api.sendNotification(
+                """
+                    :zap: :zap: Новая релизная версия бека собрана !!!
+                    Текущая версия: **${api.currentVersion}**
+                """.trimIndent()
+            )
+        }
+    }
+}
+
+val ScriptApi.currentVersion: String
+    get() = "${parameters["version"]}-dev-${executionNumber()}"
+
+suspend fun ScriptApi.startDeployment() {
+    space().projects.automation.deployments.start(
+        project = projectIdentifier(),
+        targetIdentifier = TargetIdentifier.Key("popper"),
+        version = currentVersion,
+        syncWithAutomationJob = false,
+    )
+}
+
+suspend fun ScriptApi.scheduleDeployment(reason: String) {
+    val target = TargetIdentifier.Key("popper")
+
+    space().projects.automation.deployments.delete(
+        project = projectIdentifier(),
+        targetIdentifier = target,
+        deploymentIdentifier = DeploymentIdentifier.Version(currentVersion)
+    )
+
+    space().projects.automation.deployments.schedule(
+        project = projectIdentifier(),
+        targetIdentifier = target,
+        version = currentVersion,
+        description = reason
+    )
+}
+
+suspend fun ScriptApi.finishDeployment() {
+    space().projects.automation.deployments.finish(
+        project = projectIdentifier(),
+        targetIdentifier = TargetIdentifier.Key("popper"),
+        version = currentVersion
+    )
+}
+
+suspend fun ScriptApi.sendNotification(text: String) {
+    space().chats.messages.sendMessage(
+        channel = ChannelIdentifier.Channel(ChatChannel.FromName("Deployment Notifications")),
+        content = ChatMessage.Text(text)
+    )
 }
