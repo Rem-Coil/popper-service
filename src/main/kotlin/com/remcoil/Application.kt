@@ -27,7 +27,7 @@ fun main() {
         bobbinModule()
         batchModule()
         commentModule()
-        siteModule(config)
+        siteModule()
 
         actionModuleV2()
         productModuleV2()

@@ -1,21 +1,28 @@
 package com.remcoil.module.site
 
-import com.remcoil.config.AppConfig
 import io.ktor.server.application.*
 import io.ktor.server.http.content.*
 import io.ktor.server.routing.*
 
-
-fun Application.siteModule(config: AppConfig) {
+fun Application.siteModule() {
     routing {
         static("/swagger") {
-            resources(resourcePackage = config.swagger.resourcePackage)
-            defaultResource(resource = config.swagger.resource, resourcePackage = config.swagger.resourcePackage)
+            static("/v1") {
+                resources(resourcePackage = "swagger.v1")
+                defaultResource(resource = "index.html", resourcePackage = "swagger.v1")
+            }
+
+            static("/v2") {
+                resources(resourcePackage = "swagger.v2")
+                defaultResource(resource = "index.html", resourcePackage = "swagger.v2")
+            }
+
+            resources(resourcePackage = "swagger")
         }
 
         static {
-            resources(resourcePackage = config.web.resourcePackage)
-            defaultResource(resource = config.web.resource, resourcePackage = config.web.resourcePackage)
+            resources(resourcePackage = "web")
+            defaultResource(resource = "index.html", resourcePackage = "web")
         }
     }
 }
