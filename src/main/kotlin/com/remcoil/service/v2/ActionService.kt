@@ -23,22 +23,22 @@ class ActionService(
     }
 
     suspend fun updateAction(action: Action) {
-        if (productService.productIsActive(action.productId)) {
-            actionDao.update(action)
-            logger.info("Данные об операции с id=${action.id}")
-        } else {
+        if (!productService.productIsActive(action.productId)) {
             throw InActiveProductException("Изделие с id=${action.productId} неактивно")
         }
+
+        actionDao.update(action)
+        logger.info("Данные об операции с id=${action.id}")
     }
 
     suspend fun createAction(action: Action): Action {
-        if (productService.productIsActive(action.productId)) {
-            val createdAction = actionDao.create(action)
-            logger.info("Операция с id=${createdAction.id} сохранена")
-            return createdAction
-        } else {
+        if (!productService.productIsActive(action.productId)) {
             throw InActiveProductException("Изделие с id=${action.productId} неактивно")
         }
+
+        val createdAction = actionDao.create(action)
+        logger.info("Операция с id=${createdAction.id} сохранена")
+        return createdAction
     }
 
     suspend fun createBatchActions(batchAction: BatchAction, operatorId: Long): List<Action> {
@@ -49,12 +49,9 @@ class ActionService(
         for (product in products) {
             actions.add(
                 Action(
-                    id = 0,
                     employeeId = operatorId,
                     productId = product.id,
-                    actionType = batchAction.actionType,
-                    doneTime = batchAction.doneTime,
-                    successful = batchAction.successful
+                    action = batchAction,
                 )
             )
         }

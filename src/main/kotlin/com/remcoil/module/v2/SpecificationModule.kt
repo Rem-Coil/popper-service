@@ -4,7 +4,7 @@ import com.remcoil.data.model.v2.Specification
 import com.remcoil.service.v2.SpecificationService
 import com.remcoil.utils.exceptions.EntryDoesNotExistException
 import com.remcoil.utils.safetyReceive
-import com.remcoil.utils.safetyRespond
+import com.remcoil.utils.respondNullable
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.response.*
@@ -29,7 +29,7 @@ fun Application.specificationModuleV2() {
                             specificationService.getSpecificationById(it)
                         }
                     }
-                    call.safetyRespond(specification, onError = HttpStatusCode.BadRequest)
+                    call.respondNullable(specification, onNull = HttpStatusCode.BadRequest)
                 } catch (e: EntryDoesNotExistException) {
                     call.respond(HttpStatusCode.NotFound, e.message.toString())
                 }
@@ -53,7 +53,7 @@ fun Application.specificationModuleV2() {
                         specificationService.deleteSpecificationById(it)
                     }
                 }
-                call.safetyRespond(result, onError = HttpStatusCode.BadRequest)
+                call.respondNullable(result, onNull = HttpStatusCode.BadRequest)
             }
 
         }

@@ -28,11 +28,12 @@ suspend inline fun <reified T : Any> ApplicationCall.safetyReceive(onCorrectResu
     }
 }
 
-suspend inline fun <reified T> ApplicationCall.safetyRespond(message: T, onError: HttpStatusCode) {
+suspend inline fun <reified T> ApplicationCall.respondNullable(message: T?, onNull: HttpStatusCode) {
     if (message == null) {
-        this.respond(onError)
+        this.respond(onNull)
     } else {
         this.respond(message)
     }
 }
+
 val Any.logger: Logger get() = LoggerFactory.getLogger(this::class.java)

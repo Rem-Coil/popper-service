@@ -7,7 +7,7 @@ import kotlinx.serialization.Serializable
 data class Kit(
     val id: Long,
     @SerialName("kit_number")
-    var kitNumber: String,
+    val kitNumber: String,
     @SerialName("batches_quantity")
     val batchesQuantity: Int,
     @SerialName("batch_size")

@@ -5,6 +5,7 @@ import com.remcoil.data.model.v2.Batch
 import com.remcoil.data.model.v2.Kit
 import com.remcoil.utils.exceptions.EntryDoesNotExistException
 import com.remcoil.utils.logger
+import kotlin.math.min
 
 class BatchService(
     private val batchDao: BatchDao,
@@ -31,47 +32,55 @@ class BatchService(
     suspend fun createByKit(kit: Kit, startNumber: Int) {
         val batches = mutableListOf<Batch>()
         for (i in startNumber..kit.batchesQuantity) {
-            batches.add(Batch(batchNumber = i.toString(), kitId = kit.id))
+            batches.add(Batch(batchNumber = i, kitId = kit.id))
         }
         val createdBatches = batchDao.batchCreate(batches)
         productService.createByKitAndBatches(kit, createdBatches)
     }
 
-    suspend fun updateBatchSize(oldKit: Kit, kit: Kit) {
-        if (oldKit.batchSize == kit.batchSize) {
+    suspend fun updateBatchSize(old: Kit, kit: Kit) {
+        if (old.batchSize == kit.batchSize) {
             return
         }
-        val batches = batchDao.getByKitId(kit.id)
+
+        // Get old batches
+        val batches = batchDao
+            .getByKitId(kit.id)
+            .take(min(old.batchesQuantity, kit.batchesQuantity))
+
         for (batch in batches) {
-            if (oldKit.batchSize > kit.batchSize) {
+            if (old.batchSize > kit.batchSize) {
                 productService.reduceProductsQuantity(
                     batch.id,
-                    excessNumber = oldKit.batchSize - kit.batchSize
+                    excessNumber = old.batchSize - kit.batchSize
                 )
             } else {
                 productService.increaseProductsQuantity(
                     batch.id,
-                    requiredNumber = kit.batchSize - oldKit.batchSize
+                    requiredNumber = kit.batchSize - old.batchSize
                 )
             }
         }
+
         logger.info("Обновили размер партий")
     }
 
-    suspend fun updateBatchesQuantity(oldKit: Kit, kit: Kit) {
-        if (oldKit.batchesQuantity == kit.batchesQuantity) {
+    suspend fun updateBatchesQuantity(old: Kit, kit: Kit) {
+        if (old.batchesQuantity == kit.batchesQuantity) {
             return
         }
-        if (oldKit.batchesQuantity > kit.batchesQuantity) {
+
+        if (old.batchesQuantity > kit.batchesQuantity) {
             val batches = batchDao.getByKitId(kit.id)
-            for (i in 1..oldKit.batchesQuantity - kit.batchesQuantity) {
+            for (i in 1..old.batchesQuantity - kit.batchesQuantity) {
                 batchDao.deleteById(batches[batches.size - i].id)
             }
         } else {
-            for (i in 1..kit.batchesQuantity - oldKit.batchesQuantity) {
-                createByKit(kit, oldKit.batchesQuantity + i)
+            for (i in 1..kit.batchesQuantity - old.batchesQuantity) {
+                createByKit(kit, old.batchesQuantity + i)
             }
         }
+
         logger.info("Обновили число партий")
     }
 }

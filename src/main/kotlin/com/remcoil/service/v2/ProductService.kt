@@ -33,15 +33,10 @@ class ProductService(
         val products = mutableListOf<Product>()
         for (batch in batches) {
             for (i in 1..kit.batchSize) {
-                products.add(Product(batchId = batch.id, productNumber = i.toString()))
+                products.add(Product(batchId = batch.id, productNumber = i))
             }
         }
         productDao.batchCreate(products)
-    }
-
-    suspend fun deleteProductById(id: Long) {
-        productDao.deleteById(id)
-        logger.info("Удалили изделие с id = $id")
     }
 
     suspend fun reduceProductsQuantity(batchId: Long, excessNumber: Int) {
@@ -59,7 +54,7 @@ class ProductService(
         for (i in 1..requiredNumber) {
             products.add(
                 Product(
-                    productNumber = "${startNumber + i}",
+                    productNumber = startNumber + i,
                     batchId = batchId
                 )
             )
@@ -70,7 +65,7 @@ class ProductService(
     private suspend fun getLastNumberByBatchId(batchId: Long): Int {
         return productDao.getByBatchId(batchId)
             .filter { it.active }
-            .maxOf { it.productNumber.toInt() }
+            .maxOf { it.productNumber }
     }
 
     suspend fun deactivateProductById(id: Long) {

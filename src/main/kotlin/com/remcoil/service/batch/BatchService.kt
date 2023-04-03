@@ -64,7 +64,7 @@ class BatchService(
     private suspend fun toFullBatch(batch: Batch): FullBatch {
         val quantity = bobbinService.getByBatchId(batch.id).count { bobbin -> bobbin.active }
         val fullBatch =
-            FullBatch(id = batch.id, batchNumber = batch.batchNumber, task_id = batch.taskId, quantity = quantity)
+            FullBatch(id = batch.id, batchNumber = batch.batchNumber, taskId = batch.taskId, quantity = quantity)
 
         val batchFullAction = fullActionService.getFullByBatchId(batch.id) ?: return fullBatch
 

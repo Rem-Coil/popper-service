@@ -2,14 +2,12 @@ openapi: 3.0.3
 info:
   title: Popper
   description: Backend spec for popper app
-  version: 0.2.0
+  version: 0.3.0
 
 servers:
-  - url: 'http://0.0.0.0:8008'
+  - url: 'http://localhost:8008'
   - url: 'https://api.remcoil.webtm.ru'
 paths:
-
-# NEW
 
   /v2/product:
     get:
@@ -45,7 +43,8 @@ paths:
         '400':
           description: Bad request
 
-    delete:
+  /v2/product/{id}/deactivate:
+    patch:
       tags:
         - product
       parameters:
@@ -59,22 +58,6 @@ paths:
           description: Изделие отмечено как бракованное
         '404':
           description: Изделие не найдено
-        '400':
-          description: Bad request
-
-  /v2/product/{id}/delete:
-    delete:
-      tags:
-        - product
-      parameters:
-        - in: path
-          name: id
-          required: true
-          schema:
-            type: number
-      responses:
-        '200':
-          description: Изделие удалено
         '400':
           description: Bad request
 
@@ -352,26 +335,6 @@ paths:
         '200':
           description: Информация о наборе обновлена
 
-  /v2/specification/{specification_id}/kit:
-    get:
-      tags:
-        - kit
-      parameters:
-        - in: path
-          name: specification_id
-          required: true
-          schema:
-            type: number
-      responses:
-        '400':
-          description: Bad request
-        '200':
-          description: Информация о наборе
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ListOfKitsV2'
-
   /v2/kit/{id}:
     get:
       tags:
@@ -405,7 +368,7 @@ paths:
         '200':
           description: Информация о наборе удалена
 
-# OLD
+  # OLD
 
   /bobbin:
     get:
@@ -1474,7 +1437,7 @@ components:
           type: string
 
 
-# NEW
+    # NEW
 
     ActionV2:
       properties:

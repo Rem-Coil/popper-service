@@ -15,5 +15,5 @@ data class ActionRequest(
     @SerialName("done_time")
     @Serializable(with = LocalDateTimeSerializer::class)
     val doneTime: LocalDateTime,
-    var successful: Boolean = true
+    val successful: Boolean = true
 )

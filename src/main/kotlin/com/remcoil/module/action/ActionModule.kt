@@ -21,7 +21,7 @@ fun Application.actionModule() {
 
     routing {
         route("/action") {
-            get() {
+            get {
                 val actions = actionService.getAll()
                 call.respond(actions)
             }

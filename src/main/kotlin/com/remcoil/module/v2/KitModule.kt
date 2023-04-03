@@ -5,7 +5,7 @@ import com.remcoil.service.v2.BatchService
 import com.remcoil.service.v2.KitService
 import com.remcoil.utils.exceptions.EntryDoesNotExistException
 import com.remcoil.utils.safetyReceive
-import com.remcoil.utils.safetyRespond
+import com.remcoil.utils.respondNullable
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.response.*
@@ -18,28 +18,19 @@ fun Application.kitModuleV2() {
     val batchService: BatchService by closestDI().instance()
 
     routing {
-        get("/v2/specification/{specification_id}/kit") {
-            val kits = call.parameters["specification_id"]?.let { specification_id ->
-                specification_id.toLongOrNull()?.let {
-                    kitService.getKitsBySpecificationId(it)
-                }
-            }
-            call.safetyRespond(kits, onError = HttpStatusCode.BadRequest)
-        }
-
         route("/v2/kit") {
             get {
                 val kits = kitService.getAllKits()
                 call.respond(kits)
             }
 
-            get("/{kit_id}/batches") {
-                val batches = call.parameters["kit_id"]?.let { kitId ->
+            get("/{id}/batches") {
+                val batches = call.parameters["id"]?.let { kitId ->
                     kitId.toLongOrNull()?.let {
                         batchService.getBatchesByKitId(it)
                     }
                 }
-                call.safetyRespond(batches, onError = HttpStatusCode.BadRequest)
+                call.respondNullable(batches, onNull = HttpStatusCode.BadRequest)
             }
 
 
@@ -50,7 +41,7 @@ fun Application.kitModuleV2() {
                             kitService.getKitById(it)
                         }
                     }
-                    call.safetyRespond(kit, onError = HttpStatusCode.BadRequest)
+                    call.respondNullable(kit, onNull = HttpStatusCode.BadRequest)
                 } catch (e: EntryDoesNotExistException) {
                     call.respond(HttpStatusCode.NotFound, e.message.toString())
                 }
@@ -75,7 +66,7 @@ fun Application.kitModuleV2() {
                         kitService.deleteKitById(it)
                     }
                 }
-                call.safetyRespond(result, onError = HttpStatusCode.BadRequest)
+                call.respondNullable(result, onNull = HttpStatusCode.BadRequest)
             }
 
         }

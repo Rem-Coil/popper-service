@@ -20,12 +20,6 @@ class KitDao(private val database: Database) {
             .map(::extractKit)
     }
 
-    suspend fun getBySpecificationId(id: Long): List<Kit> = safetySuspendTransactionAsync(database) {
-        Kits
-            .select { Kits.specificationId eq id }
-            .map(::extractKit)
-    }
-
     suspend fun create(kit: Kit): Kit = safetySuspendTransactionAsync(database) {
         val id = Kits.insertAndGetId {
             it[kitNumber] = kit.kitNumber

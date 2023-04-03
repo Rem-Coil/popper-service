@@ -6,7 +6,7 @@ import com.remcoil.data.model.v2.ActionRequest
 import com.remcoil.service.v2.ActionService
 import com.remcoil.utils.exceptions.InActiveProductException
 import com.remcoil.utils.safetyReceive
-import com.remcoil.utils.safetyRespond
+import com.remcoil.utils.respondNullable
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
@@ -21,19 +21,19 @@ fun Application.actionModuleV2() {
 
     routing {
         route("/v2/action") {
-            get() {
+            get {
                 val actions = actionService.getAllActions()
                 call.respond(actions)
             }
 
 
-            get("/product/{product_id}") {
-                val actions = call.parameters["product_id"]?.let { product_id ->
-                    product_id.toLongOrNull()?.let {
+            get("/product/{id}") {
+                val actions = call.parameters["id"]?.let { productId ->
+                    productId.toLongOrNull()?.let {
                         actionService.getByProductId(it)
                     }
                 }
-                call.safetyRespond(actions, onError = HttpStatusCode.BadRequest)
+                call.respondNullable(actions, onNull = HttpStatusCode.BadRequest)
             }
 
             put {

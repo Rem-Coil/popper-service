@@ -1,5 +1,6 @@
 package com.remcoil.data.model.v2
 
+import com.remcoil.data.model.action.BatchAction
 import com.remcoil.utils.LocalDateTimeSerializer
 import kotlinx.datetime.LocalDateTime
 import kotlinx.serialization.SerialName
@@ -17,7 +18,7 @@ data class Action(
     @SerialName("done_time")
     @Serializable(with = LocalDateTimeSerializer::class)
     val doneTime: LocalDateTime,
-    var successful: Boolean = true
+    val successful: Boolean = true
 ) {
     constructor(actionRequest: ActionRequest, employeeId: Long) : this(
         id = actionRequest.id,
@@ -26,5 +27,14 @@ data class Action(
         actionType = actionRequest.actionType,
         doneTime = actionRequest.doneTime,
         successful = actionRequest.successful
+    )
+
+    constructor(employeeId: Long, productId: Long, action: BatchAction) : this(
+        id = 0,
+        employeeId = employeeId,
+        productId = productId,
+        actionType = action.actionType,
+        doneTime = action.doneTime,
+        successful = action.successful
     )
 }
