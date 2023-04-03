@@ -80,7 +80,7 @@ job("Deploy on server (dev)") {
 
 job("Build server (prod)") {
     parameters {
-        text("major-version", value = "{{ project:popper-major-version }}")
+      	text("version", value = "{{ project:system-version }}")
     }
 
     startOn {
