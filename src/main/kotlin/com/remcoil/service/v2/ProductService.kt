@@ -23,7 +23,7 @@ class ProductService(
         return products
     }
 
-    suspend fun createProduct(product: Product): Product {
+    private suspend fun createProduct(product: Product): Product {
         val createdProduct = productDao.create(product)
         logger.info("Добавили изделие с id = ${createdProduct.id}")
         return createdProduct
@@ -81,7 +81,6 @@ class ProductService(
     }
 
     suspend fun productIsActive(productId: Long): Boolean {
-        val product = productDao.getById(productId) ?: return false
-        return product.active
+        return productDao.getById(productId)?.active ?: false
     }
 }
