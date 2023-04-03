@@ -1,21 +1,26 @@
 package com.remcoil.utils
 
 import com.remcoil.utils.exceptions.DatabaseException
-import io.ktor.application.*
 import io.ktor.http.*
-import io.ktor.request.*
-import io.ktor.response.*
+import io.ktor.server.application.*
+import io.ktor.server.request.*
+import io.ktor.server.response.*
+import kotlinx.serialization.SerializationException
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import java.sql.SQLException
+import java.time.DateTimeException
 
 suspend inline fun <reified T : Any> ApplicationCall.safetyReceive(onCorrectResult: (T) -> Unit) {
     try {
-        receiveOrNull<T>()
+        kotlin.runCatching { receiveNullable<T>() }.getOrNull()
             ?.let(onCorrectResult)
             ?: respond(HttpStatusCode.BadRequest)
 
     } catch (e: DatabaseException) {
+        respond(HttpStatusCode.BadRequest, e.message.toString())
+    } catch (e: SerializationException) {
+        respond(HttpStatusCode.BadRequest, e.message.toString())
+    } catch (e: DateTimeException) {
         respond(HttpStatusCode.BadRequest, e.message.toString())
     }
 }

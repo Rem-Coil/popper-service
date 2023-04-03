@@ -1,0 +1,1 @@
+alter table defects_comment rename to defect_comment;

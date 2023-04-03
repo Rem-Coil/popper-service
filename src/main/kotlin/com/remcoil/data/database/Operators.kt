@@ -9,4 +9,5 @@ object Operators: IntIdTable("operator") {
     val phone = varchar("phone", 16)
     val password = varchar("password", 32)
     val active = bool("active")
+    val role = varchar("role", 32)
 }
