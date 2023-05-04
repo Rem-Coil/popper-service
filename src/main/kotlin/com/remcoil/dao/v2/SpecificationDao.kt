@@ -49,6 +49,7 @@ class SpecificationDao(private val database: Database) {
         row[ExtendedSpecifications.specificationTitle],
         row[ExtendedSpecifications.productType],
         row[ExtendedSpecifications.testedPercentage],
-        row[ExtendedSpecifications.kitQuantity]
+        row[ExtendedSpecifications.kitQuantity],
+        listOf()
     )
 }

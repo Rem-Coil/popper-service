@@ -34,6 +34,8 @@ fun main() {
         batchModuleV2()
         kitModuleV2()
         specificationModuleV2()
+        controlActionModuleV2()
+        operationTypeModuleV2()
 
     }.start(wait = true)
 }

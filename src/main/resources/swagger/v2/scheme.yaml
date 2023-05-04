@@ -5,7 +5,7 @@ info:
   version: 0.3.0
 
 servers:
-  - url: 'http://localhost:8008'
+  - url: 'http://0.0.0.0:8008'
   - url: 'https://api.remcoil.webtm.ru'
 paths:
 
@@ -101,7 +101,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SpecificationV2'
+              $ref: '#/components/schemas/SpecificationPutRequestV2'
       responses:
         '200':
           description: ТЗ обновлено
@@ -120,7 +120,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SpecificationV2'
+              $ref: '#/components/schemas/SpecificationPostRequestV2'
       responses:
         '200':
           description: ТЗ создано
@@ -244,13 +244,13 @@ paths:
       security:
         - bearerAuth: [ ]
       tags:
-        - batch action
+        - batch_action
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/BatchActionV2'
+              $ref: '#/components/schemas/BatchActionRequestV2'
       responses:
         '400':
           description: Bad request
@@ -292,6 +292,131 @@ paths:
       responses:
         '200':
           description: Информация об операции удалена
+
+  /v2/control_action:
+    get:
+      tags:
+        - control_action
+      responses:
+        '200':
+          description: Список операций контроля
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListOfControlActionsV2'
+
+    post:
+      security:
+        - bearerAuth: [ ]
+      tags:
+        - control_action
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ControlActionRequestV2'
+      responses:
+        '400':
+          description: Bad request
+        '200':
+          description: Операция создана
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlActionV2'
+    put:
+      tags:
+        - control_action
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ControlActionV2'
+      responses:
+        '200':
+          description: Action update
+        '400':
+          description: Bad request
+
+  /v2/control_action/{id}:
+    delete:
+      tags:
+        - control_action
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: number
+      responses:
+        '200':
+          description: Информация об операции удалена
+
+  /v2/operation_type:
+    post:
+      tags:
+        - operation_type
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OperationTypeV2'
+      responses:
+        '200':
+          description: Тип сохранен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OperationTypeV2'
+
+    put:
+      tags:
+        - operation_type
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OperationTypeV2'
+      responses:
+        '200':
+          description: Информация о типе обновлена
+
+  /v2/operation_type/specification/{id}:
+    get:
+      tags:
+        - operation_type
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: number
+      responses:
+        '200':
+          description: Информация о типах операций ТЗ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListOfOperationTypesV2'
+
+  /v2/operation_type/{id}:
+    delete:
+      tags:
+        - operation_type
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: number
+      responses:
+        '200':
+          description: Информация о типе удалена
+
 
   /v2/kit:
     get:
@@ -380,48 +505,47 @@ components:
       properties:
         id:
           type: number
+        done_time:
+          type: string
+          format: YYYY-MM-DDTHH:MM:SS
+          example: "2022-12-25T14:30:01"
+        repair:
+          type: boolean
+          default: false
+        operation_type:
+          type: number
         employee_id:
           type: number
         product_id:
           type: number
-        action_type:
-          type: string
+
+    BatchActionRequestV2:
+      properties:
         done_time:
           type: string
           format: YYYY-MM-DDTHH:MM:SS
           example: "2022-12-25T14:30:01"
-        successful:
+        repair:
           type: boolean
-
-    BatchActionV2:
-      properties:
-        id:
+          default: false
+        operation_type:
           type: number
         batch_id:
-          type: integer
-        action_type:
-          type: string
-        done_time:
-          type: string
-          format: YYYY-MM-DDTHH:MM:SS
-          example: "2022-12-25T14:30:01"
-        successful:
-          type: boolean
+          type: number
 
     ActionRequestV2:
       properties:
-        id:
-          type: number
-        product_id:
-          type: number
-        action_type:
-          type: string
         done_time:
           type: string
           format: YYYY-MM-DDTHH:MM:SS
           example: "2022-12-25T14:30:01"
-        successful:
+        repair:
           type: boolean
+          default: false
+        operation_type:
+          type: number
+        product_id:
+          type: number
 
     ProductV2:
       properties:
@@ -456,7 +580,7 @@ components:
         specification_id:
           type: number
 
-    SpecificationV2:
+    SpecificationPostRequestV2:
       properties:
         id:
           type: number
@@ -466,6 +590,25 @@ components:
           type: string
         tested_percentage:
           type: integer
+        operation_types:
+          type: array
+          items:
+            $ref: '#/components/schemas/OperationTypeRequestV2'
+
+    SpecificationPutRequestV2:
+      properties:
+        id:
+          type: number
+        specification_title:
+          type: string
+        product_type:
+          type: string
+        tested_percentage:
+          type: integer
+        operation_types:
+          type: array
+          items:
+            $ref: '#/components/schemas/OperationTypeV2'
 
     SpecificationResponseV2:
       properties:
@@ -479,12 +622,81 @@ components:
           type: integer
         kit_quantity:
           type: integer
+        operation_types:
+          type: array
+          items:
+            $ref: '#/components/schemas/OperationTypeV2'
+
+    OperationTypeV2:
+      properties:
+        id:
+          type: number
+        type:
+          type: string
+        sequence_number:
+          type: integer
+        specification_id:
+          type: number
+
+    OperationTypeRequestV2:
+      properties:
+        type:
+          type: string
+        sequence_number:
+          type: integer
+
+    ControlActionRequestV2:
+      properties:
+        done_time:
+          type: string
+          format: YYYY-MM-DDTHH:MM:SS
+          example: "2022-12-25T14:30:01"
+        successful:
+          type: boolean
+        control_type:
+          type: string
+        comment:
+          type: string
+        operation_type:
+          type: number
+        product_id:
+          type: number
+
+    ControlActionV2:
+      properties:
+        id:
+          type: number
+        done_time:
+          type: string
+          format: YYYY-MM-DDTHH:MM:SS
+          example: "2022-12-25T14:30:01"
+        successful:
+          type: boolean
+        control_type:
+          type: string
+        comment:
+          type: string
+        operation_type:
+          type: number
+        employee_id:
+          type: number
+        product_id:
+          type: number
 
     ListOfActionsV2:
       type: array
       items:
         $ref: '#/components/schemas/ActionV2'
 
+    ListOfControlActionsV2:
+      type: array
+      items:
+        $ref: '#/components/schemas/ControlActionV2'
+
+    ListOfOperationTypesV2:
+      type: array
+      items:
+        $ref: '#/components/schemas/OperationTypeV2'
 
     ListOfSpecificationResponsesV2:
       type: array

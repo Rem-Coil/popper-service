@@ -31,32 +31,32 @@ class ActionDao(private val database: Database) {
 
     suspend fun update(action: Action) = safetySuspendTransactionAsync(database) {
         Actions.update({ Actions.id eq action.id }) {
+            it[doneTime] = action.doneTime.toJavaLocalDateTime()
+            it[repair] = action.repair
+            it[operationType] = action.operationType
             it[employeeId] = action.employeeId.toInt()
             it[productId] = action.productId
-            it[actionType] = action.actionType
-            it[doneTime] = action.doneTime.toJavaLocalDateTime()
-            it[successful] = action.successful
         }
     }
 
     suspend fun create(action: Action): Action = safetySuspendTransactionAsync(database) {
         val id = Actions.insertAndGetId {
+            it[doneTime] = action.doneTime.toJavaLocalDateTime()
+            it[repair] = action.repair
+            it[operationType] = action.operationType
             it[employeeId] = action.employeeId.toInt()
             it[productId] = action.productId
-            it[actionType] = action.actionType
-            it[doneTime] = action.doneTime.toJavaLocalDateTime()
-            it[successful] = action.successful
         }
         action.copy(id = id.value)
     }
 
     suspend fun batchCreate(actions: List<Action>) = safetySuspendTransactionAsync(database) {
         Actions.batchInsert(actions) { action: Action ->
+            this[Actions.doneTime] = action.doneTime.toJavaLocalDateTime()
+            this[Actions.repair] = action.repair
+            this[Actions.operationType] = action.operationType
             this[Actions.employeeId] = action.employeeId.toInt()
             this[Actions.productId] = action.productId
-            this[Actions.actionType] = action.actionType
-            this[Actions.doneTime] = action.doneTime.toJavaLocalDateTime()
-            this[Actions.successful] = action.successful
         }
             .map(::extractAction)
     }
@@ -67,10 +67,10 @@ class ActionDao(private val database: Database) {
 
     private fun extractAction(row: ResultRow): Action = Action(
         row[Actions.id].value,
-        row[Actions.employeeId].value.toLong(),
-        row[Actions.productId].value,
-        row[Actions.actionType],
         row[Actions.doneTime].toKotlinLocalDateTime(),
-        row[Actions.successful]
+        row[Actions.repair],
+        row[Actions.operationType].value,
+        row[Actions.employeeId].value.toLong(),
+        row[Actions.productId].value
     )
 }

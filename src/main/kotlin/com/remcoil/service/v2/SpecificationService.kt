@@ -1,25 +1,32 @@
 package com.remcoil.service.v2
 
 import com.remcoil.dao.v2.SpecificationDao
-import com.remcoil.data.model.v2.Specification
+import com.remcoil.data.model.v2.SpecificationPostRequest
+import com.remcoil.data.model.v2.SpecificationPutRequest
 import com.remcoil.data.model.v2.SpecificationResponse
 import com.remcoil.utils.exceptions.EntryDoesNotExistException
 import com.remcoil.utils.logger
 
 class SpecificationService(
     private val specificationDao: SpecificationDao,
+    private val operationTypeService: OperationTypeService
 ) {
 
     suspend fun getAllSpecifications(): List<SpecificationResponse> {
         val specifications = specificationDao.getAll()
-        logger.info("Вернули все ТЗ")
+        logger.info("Получили все ТЗ")
+        for (specificationResponse in specifications) {
+            specificationResponse.operationTypes =
+                operationTypeService.getOperationTypesBySpecificationId(specificationResponse.id)
+        }
         return specifications
     }
 
     suspend fun getSpecificationById(id: Long): SpecificationResponse {
         val specification =
             specificationDao.getById(id) ?: throw EntryDoesNotExistException("ТЗ с id = $id не существует")
-        logger.info("Вернули данные от ТЗ - $id")
+        logger.info("Получили данные от ТЗ - $id")
+        specification.operationTypes = operationTypeService.getOperationTypesBySpecificationId(specification.id)
         return specification
     }
 
@@ -28,16 +35,25 @@ class SpecificationService(
         logger.info("Данные о ТЗ удалены")
     }
 
-    suspend fun createSpecification(specification: Specification): SpecificationResponse {
-        val createdSpecification = specificationDao.create(specification)
+    suspend fun createSpecification(specificationRequest: SpecificationPostRequest): SpecificationResponse {
+        val createdSpecification = specificationDao.create(specificationRequest.getSpecification())
         logger.info("Создано ТЗ - ${createdSpecification.specificationTitle}")
-        return SpecificationResponse(createdSpecification, 0)
+        val createdOperationTypes =
+            operationTypeService.createBatchOperationTypes(specificationRequest.operationTypes.map {
+                it.toOperationType(
+                    createdSpecification.id
+                )
+            })
+        return SpecificationResponse(createdSpecification, 0, createdOperationTypes)
     }
 
-    suspend fun updateSpecification(specification: Specification): SpecificationResponse {
-        specificationDao.update(specification)
+    suspend fun updateSpecification(specificationPutRequest: SpecificationPutRequest) {
+        val oldSpecification = getSpecificationById(specificationPutRequest.id)
+        specificationDao.update(specificationPutRequest.getSpecification())
         logger.info("Обновили ТЗ")
-        return specificationDao.getById(specification.id)
-            ?: throw EntryDoesNotExistException("ТЗ с id = ${specification.id} не существует")
+        operationTypeService.updateBatchOperationTypes(
+            specificationPutRequest.operationTypes,
+            oldSpecification.operationTypes
+        )
     }
 }

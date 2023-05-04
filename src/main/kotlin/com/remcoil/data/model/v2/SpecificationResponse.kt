@@ -13,13 +13,16 @@ data class SpecificationResponse(
     @SerialName("tested_percentage")
     val testedPercentage: Int,
     @SerialName("kit_quantity")
-    val kitQuantity: Int
+    val kitQuantity: Int,
+    @SerialName("operation_types")
+    var operationTypes: List<OperationType>
 ) {
-    constructor(specification: Specification, kitQuantity: Int) : this(
-        id = specification.id,
-        specificationTitle = specification.specificationTitle,
-        productType = specification.productType,
-        testedPercentage = specification.testedPercentage,
-        kitQuantity = kitQuantity
+    constructor(specification: Specification, kitQuantity: Int, operationTypes: List<OperationType>) : this(
+        specification.id,
+        specification.specificationTitle,
+        specification.productType,
+        specification.testedPercentage,
+        kitQuantity,
+        operationTypes
     )
 }

@@ -1,12 +1,12 @@
 package com.remcoil.module.v2
 
-import com.remcoil.data.model.action.BatchAction
 import com.remcoil.data.model.v2.Action
 import com.remcoil.data.model.v2.ActionRequest
+import com.remcoil.data.model.v2.BatchActionRequest
 import com.remcoil.service.v2.ActionService
 import com.remcoil.utils.exceptions.InActiveProductException
-import com.remcoil.utils.safetyReceive
 import com.remcoil.utils.respondNullable
+import com.remcoil.utils.safetyReceive
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
@@ -55,11 +55,11 @@ fun Application.actionModuleV2() {
             authenticate("jwt-access") {
                 route("/batch") {
                     post {
-                        call.safetyReceive<BatchAction> { batchAction ->
+                        call.safetyReceive<BatchActionRequest> { batchActionRequest ->
                             val principal = call.principal<JWTPrincipal>()
                             call.respond(
                                 actionService.createBatchActions(
-                                    batchAction,
+                                    batchActionRequest,
                                     principal!!.payload.getClaim("id").asLong()
                                 )
                             )
@@ -73,8 +73,7 @@ fun Application.actionModuleV2() {
                         try {
                             call.respond(
                                 actionService.createAction(
-                                    Action(
-                                        actionRequest,
+                                    actionRequest.toAction(
                                         principal!!.payload.getClaim("id").asLong()
                                     )
                                 )

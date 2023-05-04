@@ -1,10 +1,11 @@
 package com.remcoil.module.v2
 
-import com.remcoil.data.model.v2.Specification
+import com.remcoil.data.model.v2.SpecificationPostRequest
+import com.remcoil.data.model.v2.SpecificationPutRequest
 import com.remcoil.service.v2.SpecificationService
 import com.remcoil.utils.exceptions.EntryDoesNotExistException
-import com.remcoil.utils.safetyReceive
 import com.remcoil.utils.respondNullable
+import com.remcoil.utils.safetyReceive
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.response.*
@@ -36,14 +37,14 @@ fun Application.specificationModuleV2() {
             }
 
             post {
-                call.safetyReceive<Specification> { specification ->
-                    call.respond(specificationService.createSpecification(specification))
+                call.safetyReceive<SpecificationPostRequest> { specificationRequest ->
+                    call.respond(specificationService.createSpecification(specificationRequest))
                 }
             }
 
             put {
-                call.safetyReceive<Specification> { specification ->
-                    call.respond(specificationService.updateSpecification(specification))
+                call.safetyReceive<SpecificationPutRequest> { specificationRequest ->
+                    call.respond(specificationService.updateSpecification(specificationRequest))
                 }
             }
 

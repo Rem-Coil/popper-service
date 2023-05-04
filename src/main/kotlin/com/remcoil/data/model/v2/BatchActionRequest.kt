@@ -6,22 +6,22 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class ActionRequest(
+data class BatchActionRequest(
     @SerialName("done_time")
     @Serializable(with = LocalDateTimeSerializer::class)
     val doneTime: LocalDateTime,
     val repair: Boolean,
     @SerialName("operation_type")
     val operationType: Long,
-    @SerialName("product_id")
-    val productId: Long
+    @SerialName("batch_id")
+    val batchId: Long
 ) {
-    fun toAction(employeeId: Long) = Action(
+    fun toAction(employeeId: Long, productId: Long) = Action(
         id = 0,
-        doneTime = this.doneTime,
-        repair = this.repair,
-        operationType = this.operationType,
-        employeeId = employeeId,
-        productId = this.productId
+        doneTime,
+        repair,
+        operationType,
+        employeeId,
+        productId
     )
 }

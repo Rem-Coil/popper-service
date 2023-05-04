@@ -8,6 +8,8 @@ import com.remcoil.dao.bobbin.BobbinDao
 import com.remcoil.dao.comment.CommentDao
 import com.remcoil.dao.operator.OperatorDao
 import com.remcoil.dao.task.TaskDao
+import com.remcoil.dao.v2.ControlActionDao
+import com.remcoil.dao.v2.OperationTypeDao
 import com.remcoil.service.action.ActionService
 import com.remcoil.service.action.FullActionService
 import com.remcoil.service.batch.BatchService
@@ -15,6 +17,8 @@ import com.remcoil.service.bobbin.BobbinService
 import com.remcoil.service.comment.CommentService
 import com.remcoil.service.operator.OperatorService
 import com.remcoil.service.task.TaskService
+import com.remcoil.service.v2.ControlActionService
+import com.remcoil.service.v2.OperationTypeService
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import org.jetbrains.exposed.sql.Database
@@ -81,10 +85,15 @@ fun DI.Builder.v2Components() {
     bind<com.remcoil.dao.v2.KitDao>() with singleton { com.remcoil.dao.v2.KitDao(instance()) }
     bind<com.remcoil.dao.v2.SpecificationDao>() with singleton { com.remcoil.dao.v2.SpecificationDao(instance()) }
     bind<com.remcoil.dao.v2.ProductDao>() with singleton { com.remcoil.dao.v2.ProductDao(instance()) }
+    bind<ControlActionDao>() with singleton { ControlActionDao(instance()) }
+    bind<OperationTypeDao>() with singleton { OperationTypeDao(instance()) }
+
 
     bind<com.remcoil.service.v2.ActionService>() with singleton { com.remcoil.service.v2.ActionService(instance(), instance()) }
     bind<com.remcoil.service.v2.BatchService>() with singleton { com.remcoil.service.v2.BatchService(instance(), instance())}
     bind<com.remcoil.service.v2.KitService>() with singleton { com.remcoil.service.v2.KitService(instance(), instance())}
-    bind<com.remcoil.service.v2.SpecificationService>() with singleton { com.remcoil.service.v2.SpecificationService(instance())}
+    bind<com.remcoil.service.v2.SpecificationService>() with singleton { com.remcoil.service.v2.SpecificationService(instance(), instance())}
     bind<com.remcoil.service.v2.ProductService>() with singleton { com.remcoil.service.v2.ProductService(instance())}
+    bind<ControlActionService>() with singleton { ControlActionService(instance(), instance()) }
+    bind<OperationTypeService>() with singleton { OperationTypeService(instance()) }
 }
