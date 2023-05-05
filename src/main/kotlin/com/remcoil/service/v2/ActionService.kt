@@ -3,6 +3,7 @@ package com.remcoil.service.v2
 import com.remcoil.dao.v2.ActionDao
 import com.remcoil.data.model.v2.Action
 import com.remcoil.data.model.v2.BatchActionRequest
+import com.remcoil.data.model.v2.ExtendedAction
 import com.remcoil.utils.exceptions.InActiveProductException
 import com.remcoil.utils.logger
 
@@ -16,7 +17,11 @@ class ActionService(
         return actions
     }
 
-    suspend fun getByProductId(id: Long): List<Action> {
+    suspend fun getActionsByKitId(id: Long): List<ExtendedAction> {
+        return actionDao.getByKitId(id)
+    }
+
+    suspend fun getActionsByProductId(id: Long): List<Action> {
         val actions = actionDao.getByProductId(id)
         logger.info("Отдали все операции по изделию - $id")
         return actions

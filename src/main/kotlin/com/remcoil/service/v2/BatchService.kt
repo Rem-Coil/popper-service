@@ -2,6 +2,8 @@ package com.remcoil.service.v2
 
 import com.remcoil.dao.v2.BatchDao
 import com.remcoil.data.model.v2.Batch
+import com.remcoil.data.model.v2.BatchProgress
+import com.remcoil.data.model.v2.ExtendedAction
 import com.remcoil.data.model.v2.Kit
 import com.remcoil.utils.exceptions.EntryDoesNotExistException
 import com.remcoil.utils.logger
@@ -10,6 +12,8 @@ import kotlin.math.min
 class BatchService(
     private val batchDao: BatchDao,
     private val productService: ProductService,
+    private val actionService: ActionService,
+    private val controlActionService: ControlActionService
 ) {
     suspend fun getAllBatches(): List<Batch> {
         val batches = batchDao.getAll()
@@ -83,4 +87,31 @@ class BatchService(
 
         logger.info("Обновили число партий")
     }
+
+    suspend fun getBatchesProgressByKitId(id: Long): List<BatchProgress> {
+        val batches = getBatchesByKitId(id)
+        val actionsByBatch = actionService.getActionsByKitId(id).groupBy { it.batchId }
+        val controlActionsByBatch = controlActionService.getControlActionsByKitId(id).groupBy { it.batchId }
+
+        val batchesProgress = mutableListOf<BatchProgress>()
+        for (batch in batches) {
+            val operationProgress = mutableMapOf<Long, Int>()
+            val controlProgress = mutableMapOf<String, Int>()
+            val repairOperations = mutableListOf<ExtendedAction>()
+            val lockedQuantity = 0
+            val defectedQuantity = productService.getProductsByBatchId(batch.id).filter { !it.active }.size
+
+            for (action in actionsByBatch[batch.id] ?: listOf()) {
+                if (action.repair) {
+                    repairOperations.add(action)
+                } else {
+                    println()
+                }
+            }
+        }
+
+        return listOf()
+    }
+
+
 }

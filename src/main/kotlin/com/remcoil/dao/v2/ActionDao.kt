@@ -1,7 +1,9 @@
 package com.remcoil.dao.v2
 
 import com.remcoil.data.database.v2.Actions
+import com.remcoil.data.database.v2.view.ExtendedActions
 import com.remcoil.data.model.v2.Action
+import com.remcoil.data.model.v2.ExtendedAction
 import com.remcoil.utils.safetySuspendTransactionAsync
 import kotlinx.datetime.toJavaLocalDateTime
 import kotlinx.datetime.toKotlinLocalDateTime
@@ -16,17 +18,23 @@ class ActionDao(private val database: Database) {
             .map(::extractAction)
     }
 
-    suspend fun getById(id: Long) = safetySuspendTransactionAsync(database) {
-        Actions
-            .select { Actions.id eq id }
-            .map(::extractAction)
-            .firstOrNull()
+    suspend fun getByKitId(id: Long): List<ExtendedAction> = safetySuspendTransactionAsync(database){
+        ExtendedActions
+            .select { ExtendedActions.kitId eq id }
+            .map(::extractExtendedAction)
     }
 
     suspend fun getByProductId(id: Long): List<Action> = safetySuspendTransactionAsync(database) {
         Actions
             .select { Actions.productId eq id }
             .map(::extractAction)
+    }
+
+    suspend fun getById(id: Long) = safetySuspendTransactionAsync(database) {
+        Actions
+            .select { Actions.id eq id }
+            .map(::extractAction)
+            .firstOrNull()
     }
 
     suspend fun update(action: Action) = safetySuspendTransactionAsync(database) {
@@ -72,5 +80,16 @@ class ActionDao(private val database: Database) {
         row[Actions.operationType].value,
         row[Actions.employeeId].value.toLong(),
         row[Actions.productId].value
+    )
+
+    private fun extractExtendedAction(row: ResultRow): ExtendedAction = ExtendedAction(
+        row[ExtendedActions.id],
+        row[ExtendedActions.doneTime].toKotlinLocalDateTime(),
+        row[ExtendedActions.repair],
+        row[ExtendedActions.operationType],
+        row[ExtendedActions.employeeId],
+        row[ExtendedActions.productId],
+        row[ExtendedActions.batchId],
+        row[ExtendedActions.kitId]
     )
 }

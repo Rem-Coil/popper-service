@@ -19,7 +19,7 @@ fun Application.controlActionModuleV2() {
     val controlActionService: ControlActionService by closestDI().instance()
 
     routing {
-        route("v2/control_action") {
+        route("/v2/control_action") {
             get {
                 val controlActions = controlActionService.getAllControlActions()
                 call.respond(controlActions)

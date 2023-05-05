@@ -1,7 +1,9 @@
 package com.remcoil.dao.v2
 
 import com.remcoil.data.database.v2.ControlActions
+import com.remcoil.data.database.v2.view.ExtendedControlActions
 import com.remcoil.data.model.v2.ControlAction
+import com.remcoil.data.model.v2.ExtendedControlAction
 import com.remcoil.utils.safetySuspendTransactionAsync
 import kotlinx.datetime.toJavaLocalDateTime
 import kotlinx.datetime.toKotlinLocalDateTime
@@ -13,6 +15,12 @@ class ControlActionDao(private val database: Database) {
         ControlActions
             .selectAll()
             .map(::extractControlAction)
+    }
+
+    suspend fun getByKitId(id: Long): List<ExtendedControlAction> = safetySuspendTransactionAsync(database) {
+        ExtendedControlActions
+            .select { ExtendedControlActions.kitId eq id }
+            .map(::extractExtendedControlAction)
     }
 
     suspend fun create(controlAction: ControlAction): ControlAction = safetySuspendTransactionAsync(database) {
@@ -45,13 +53,26 @@ class ControlActionDao(private val database: Database) {
     }
 
     private fun extractControlAction(row: ResultRow): ControlAction = ControlAction(
-        id = row[ControlActions.id].value,
-        doneTime = row[ControlActions.doneTime].toKotlinLocalDateTime(),
-        successful = row[ControlActions.successful],
-        controlType = row[ControlActions.controlType],
-        comment = row[ControlActions.comment],
-        operationType = row[ControlActions.operationType].value,
-        employeeId = row[ControlActions.employeeId].value.toLong(),
-        productId = row[ControlActions.productId].value
+        row[ControlActions.id].value,
+        row[ControlActions.doneTime].toKotlinLocalDateTime(),
+        row[ControlActions.successful],
+        row[ControlActions.controlType],
+        row[ControlActions.comment],
+        row[ControlActions.operationType].value,
+        row[ControlActions.employeeId].value.toLong(),
+        row[ControlActions.productId].value
+    )
+
+    private fun extractExtendedControlAction(row: ResultRow): ExtendedControlAction = ExtendedControlAction(
+        row[ExtendedControlActions.id],
+        row[ExtendedControlActions.doneTime].toKotlinLocalDateTime(),
+        row[ExtendedControlActions.successful],
+        row[ExtendedControlActions.controlType],
+        row[ExtendedControlActions.comment],
+        row[ExtendedControlActions.operationType],
+        row[ExtendedControlActions.employeeId],
+        row[ExtendedControlActions.productId],
+        row[ExtendedControlActions.batchId],
+        row[ExtendedControlActions.kitId]
     )
 }

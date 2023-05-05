@@ -2,6 +2,7 @@ package com.remcoil.service.v2
 
 import com.remcoil.dao.v2.KitDao
 import com.remcoil.data.model.v2.Kit
+import com.remcoil.data.model.v2.KitProgress
 import com.remcoil.utils.exceptions.EntryDoesNotExistException
 import com.remcoil.utils.logger
 
@@ -9,6 +10,7 @@ import com.remcoil.utils.logger
 class KitService(
     private val kitDao: KitDao,
     private val batchService: BatchService,
+    private val operationTypeService: OperationTypeService
 ) {
 
     suspend fun getAllKits(): List<Kit> {
@@ -43,5 +45,15 @@ class KitService(
         batchService.updateBatchesQuantity(oldKit, kit)
 
         logger.info("Обновили набор с id = ${kit.id}")
+    }
+
+    suspend fun getKitProgressById(id: Long): KitProgress {
+        val kit = getKitById(id)
+
+        return KitProgress(
+            kit,
+            operationTypeService.getOperationTypesBySpecificationId(kit.specificationId),
+            batchService.getBatchesProgressByKitId(kit.id)
+        )
     }
 }

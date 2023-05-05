@@ -30,7 +30,7 @@ fun Application.actionModuleV2() {
             get("/product/{id}") {
                 val actions = call.parameters["id"]?.let { productId ->
                     productId.toLongOrNull()?.let {
-                        actionService.getByProductId(it)
+                        actionService.getActionsByProductId(it)
                     }
                 }
                 call.respondNullable(actions, onNull = HttpStatusCode.BadRequest)

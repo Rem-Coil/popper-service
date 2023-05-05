@@ -90,8 +90,8 @@ fun DI.Builder.v2Components() {
 
 
     bind<com.remcoil.service.v2.ActionService>() with singleton { com.remcoil.service.v2.ActionService(instance(), instance()) }
-    bind<com.remcoil.service.v2.BatchService>() with singleton { com.remcoil.service.v2.BatchService(instance(), instance())}
-    bind<com.remcoil.service.v2.KitService>() with singleton { com.remcoil.service.v2.KitService(instance(), instance())}
+    bind<com.remcoil.service.v2.BatchService>() with singleton { com.remcoil.service.v2.BatchService(instance(), instance(), instance(), instance())}
+    bind<com.remcoil.service.v2.KitService>() with singleton { com.remcoil.service.v2.KitService(instance(), instance(), instance())}
     bind<com.remcoil.service.v2.SpecificationService>() with singleton { com.remcoil.service.v2.SpecificationService(instance(), instance())}
     bind<com.remcoil.service.v2.ProductService>() with singleton { com.remcoil.service.v2.ProductService(instance())}
     bind<ControlActionService>() with singleton { ControlActionService(instance(), instance()) }
