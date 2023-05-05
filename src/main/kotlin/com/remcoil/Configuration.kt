@@ -4,6 +4,8 @@ import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
 import com.remcoil.config.AppConfig
 import com.remcoil.di.*
+import com.typesafe.config.ConfigFactory
+import io.github.config4k.extract
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.application.*
@@ -14,7 +16,9 @@ import io.ktor.server.plugins.cors.routing.*
 import org.flywaydb.core.Flyway
 import org.kodein.di.ktor.di
 
-fun Application.configureApplication(config: AppConfig) {
+fun Application.configureApplication() {
+    val config = ConfigFactory.load().extract<AppConfig>()
+
     Flyway.configure()
         .dataSource(config.database.url, config.database.user, config.database.password)
         .load()

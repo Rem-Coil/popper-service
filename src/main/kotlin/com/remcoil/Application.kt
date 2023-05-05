@@ -11,6 +11,7 @@ import com.remcoil.module.task.taskModule
 import com.remcoil.module.v2.*
 import com.typesafe.config.ConfigFactory
 import io.github.config4k.extract
+import io.ktor.server.application.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 
@@ -18,24 +19,25 @@ import io.ktor.server.netty.*
 fun main() {
     val config = ConfigFactory.load().extract<AppConfig>()
 
-    embeddedServer(Netty, port = config.http.port, host = config.http.host) {
-        configureApplication(config)
+    embeddedServer(Netty, port = config.http.port, host = config.http.host, module = Application::popper).start(wait = true)
+}
 
-        operatorModule()
-        taskModule()
-        actionModule()
-        bobbinModule()
-        batchModule()
-        commentModule()
-        siteModule()
+fun Application.popper() {
+    configureApplication()
 
-        actionModuleV2()
-        productModuleV2()
-        batchModuleV2()
-        kitModuleV2()
-        specificationModuleV2()
-        controlActionModuleV2()
-        operationTypeModuleV2()
+    operatorModule()
+    taskModule()
+    actionModule()
+    bobbinModule()
+    batchModule()
+    commentModule()
+    siteModule()
 
-    }.start(wait = true)
+    actionModuleV2()
+    productModuleV2()
+    batchModuleV2()
+    kitModuleV2()
+    specificationModuleV2()
+    controlActionModuleV2()
+    operationTypeModuleV2()
 }
