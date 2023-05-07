@@ -634,7 +634,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/omment'
+                $ref: '#/components/schemas/Comment'
 
     delete:
       security:
