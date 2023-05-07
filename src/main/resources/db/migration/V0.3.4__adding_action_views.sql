@@ -5,6 +5,7 @@ select actions.id,
        operation_type,
        employee_id,
        product_id,
+       active,
        batch_id,
        kit_id
 from actions
@@ -20,6 +21,7 @@ select control_actions.id,
        operation_type,
        employee_id,
        product_id,
+       active,
        batch_id,
        kit_id
 from control_actions

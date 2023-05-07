@@ -11,6 +11,7 @@ data class ExtendedControlAction(
     val operationType: Long,
     val employeeId: Long,
     val productId: Long,
+    val active: Boolean,
     val batchId: Long,
     val kitId: Long
 )

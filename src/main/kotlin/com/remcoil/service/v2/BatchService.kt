@@ -90,27 +90,57 @@ class BatchService(
 
     suspend fun getBatchesProgressByKitId(id: Long): List<BatchProgress> {
         val batches = getBatchesByKitId(id)
-        val actionsByBatch = actionService.getActionsByKitId(id).groupBy { it.batchId }
-        val controlActionsByBatch = controlActionService.getControlActionsByKitId(id).groupBy { it.batchId }
+        val actionsByBatch = actionService.getActionsByKitId(id).filter { it.active }.groupBy { it.batchId }
+        val controlActionsByBatch = controlActionService.getControlActionsByKitId(id).filter { it.active }.groupBy { it.batchId }
+        val defectedProductsQuantityByBatch = productService.getProductsByBatchesId(batches.map { it.id })
+            .filter { !it.active }
+            .groupingBy { it.batchId }
+            .eachCount()
 
         val batchesProgress = mutableListOf<BatchProgress>()
         for (batch in batches) {
             val operationProgress = mutableMapOf<Long, Int>()
             val controlProgress = mutableMapOf<String, Int>()
             val repairOperations = mutableListOf<ExtendedAction>()
-            val lockedQuantity = 0
-            val defectedQuantity = productService.getProductsByBatchId(batch.id).filter { !it.active }.size
+            var lockedQuantity = 0
+            val defectedQuantity = defectedProductsQuantityByBatch[batch.id] ?: 0
 
             for (action in actionsByBatch[batch.id] ?: listOf()) {
                 if (action.repair) {
                     repairOperations.add(action)
                 } else {
-                    println()
+                    operationProgress.merge(action.operationType, 1) { oldValue, _ -> oldValue + 1 }
                 }
             }
+
+            for (controlAction in controlActionsByBatch[batch.id] ?: listOf()) {
+                if (controlAction.successful) {
+                    controlProgress.merge(controlAction.controlType, 1) { oldValue, _ -> oldValue + 1 }
+                } else {
+                    if (repairOperations.find {
+                            it.productId == controlAction.productId &&
+                                    it.operationType == controlAction.operationType &&
+                                    it.doneTime > controlAction.doneTime
+                        } == null) {
+                        lockedQuantity++
+                        operationProgress.computeIfPresent(controlAction.operationType) { _, v -> v - 1 }
+                    }
+                }
+            }
+
+            batchesProgress.add(
+                BatchProgress(
+                    batch.id,
+                    batch.batchNumber,
+                    operationProgress,
+                    controlProgress,
+                    lockedQuantity,
+                    defectedQuantity
+                )
+            )
         }
 
-        return listOf()
+        return batchesProgress
     }
 
 

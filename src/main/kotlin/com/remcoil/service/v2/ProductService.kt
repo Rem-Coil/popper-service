@@ -23,6 +23,10 @@ class ProductService(
         return products
     }
 
+    suspend fun getProductsByBatchesId(idList: List<Long>): List<Product> {
+        return productDao.getByBatchesId(idList)
+    }
+
     private suspend fun createProduct(product: Product): Product {
         val createdProduct = productDao.create(product)
         logger.info("Добавили изделие с id = ${createdProduct.id}")

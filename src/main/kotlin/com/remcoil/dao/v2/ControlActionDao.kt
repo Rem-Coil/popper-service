@@ -72,6 +72,7 @@ class ControlActionDao(private val database: Database) {
         row[ExtendedControlActions.operationType],
         row[ExtendedControlActions.employeeId],
         row[ExtendedControlActions.productId],
+        row[ExtendedControlActions.active],
         row[ExtendedControlActions.batchId],
         row[ExtendedControlActions.kitId]
     )

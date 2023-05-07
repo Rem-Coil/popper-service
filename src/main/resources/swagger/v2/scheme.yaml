@@ -460,6 +460,26 @@ paths:
         '200':
           description: Информация о наборе обновлена
 
+  /v2/kit/{id}/progress:
+    get:
+      tags:
+        - kit
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: number
+      responses:
+        '204':
+          description: No content
+        '200':
+          description: Информация о наборе
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/KitProgressV2'
+
   /v2/kit/{id}:
     get:
       tags:
@@ -552,7 +572,7 @@ components:
         id:
           type: number
         product_number:
-          type: string
+          type: integer
         active:
           type: boolean
         batch_id:
@@ -566,6 +586,43 @@ components:
           type: string
         kit_id:
           type: number
+
+    BatchProgressV2:
+      properties:
+        id:
+          type: number
+        batch_number:
+          type: number
+        operations_progress:
+          type: object
+          additionalProperties:
+            type: integer
+        control_progress:
+          type: object
+          additionalProperties:
+            type: integer
+        locked_quantity:
+          type: integer
+        defected_quantity:
+          type: integer
+
+    KitProgressV2:
+      properties:
+        id:
+          type: number
+        kit_number:
+          type: string
+        batches_quantity:
+          type: integer
+        operation_types:
+          type: array
+          items:
+            $ref: '#/components/schemas/OperationTypeV2'
+        batches_progress:
+          type: array
+          items:
+            $ref: '#/components/schemas/BatchProgressV2'
+
 
     KitV2:
       properties:

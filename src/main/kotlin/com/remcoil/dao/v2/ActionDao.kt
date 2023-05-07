@@ -89,6 +89,7 @@ class ActionDao(private val database: Database) {
         row[ExtendedActions.operationType],
         row[ExtendedActions.employeeId],
         row[ExtendedActions.productId],
+        row[ExtendedActions.active],
         row[ExtendedActions.batchId],
         row[ExtendedActions.kitId]
     )

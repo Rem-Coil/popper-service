@@ -4,8 +4,8 @@ import com.remcoil.data.model.v2.Kit
 import com.remcoil.service.v2.BatchService
 import com.remcoil.service.v2.KitService
 import com.remcoil.utils.exceptions.EntryDoesNotExistException
-import com.remcoil.utils.safetyReceive
 import com.remcoil.utils.respondNullable
+import com.remcoil.utils.safetyReceive
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.response.*
@@ -39,6 +39,19 @@ fun Application.kitModuleV2() {
                     val kit = call.parameters["id"]?.let { id ->
                         id.toLongOrNull()?.let {
                             kitService.getKitById(it)
+                        }
+                    }
+                    call.respondNullable(kit, onNull = HttpStatusCode.BadRequest)
+                } catch (e: EntryDoesNotExistException) {
+                    call.respond(HttpStatusCode.NotFound, e.message.toString())
+                }
+            }
+
+            get("/{id}/progress") {
+                try {
+                    val kit = call.parameters["id"]?.let { id ->
+                        id.toLongOrNull()?.let {
+                            kitService.getKitProgressById(it)
                         }
                     }
                     call.respondNullable(kit, onNull = HttpStatusCode.BadRequest)

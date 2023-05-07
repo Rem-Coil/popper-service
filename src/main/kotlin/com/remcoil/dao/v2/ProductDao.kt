@@ -14,6 +14,12 @@ class ProductDao(private val database: Database) {
             .map(::extractProduct)
     }
 
+    suspend fun getByBatchesId(idList: List<Long>): List<Product> = safetySuspendTransactionAsync(database) {
+        Products
+            .select { Products.batchId inList (idList) }
+            .map(::extractProduct)
+    }
+
     suspend fun getByBatchId(id: Long): List<Product> = safetySuspendTransactionAsync(database) {
         Products
             .select { Products.batchId eq id }

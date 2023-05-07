@@ -9,8 +9,8 @@ val kodeinVersion: String by project
 val config4kVersion: String by project
 
 plugins {
-    kotlin("jvm") version "1.6.21" // or kotlin("multiplatform") or any other kotlin plugin
-    kotlin("plugin.serialization") version "1.6.21"
+    kotlin("jvm") version "1.8.20" // or kotlin("multiplatform") or any other kotlin plugin
+    kotlin("plugin.serialization") version "1.8.20"
     id("io.ktor.plugin") version "2.2.4"
     application
 }
@@ -48,9 +48,7 @@ dependencies {
     implementation("io.ktor:ktor-server-auth:$ktorVersion")
     implementation("io.ktor:ktor-server-auth-jwt:$ktorVersion")
 
-
     implementation("org.jetbrains.kotlin-wrappers:kotlin-css:1.0.0-pre.301-kotlin-1.6.10")
-
 
     implementation("ch.qos.logback:logback-classic:$logbackVersion")
     implementation("io.ktor:ktor-server-core-jvm:$ktorVersion")
@@ -58,7 +56,7 @@ dependencies {
     implementation("io.ktor:ktor-server-netty-jvm:$ktorVersion")
 
     testImplementation("org.jetbrains.kotlin:kotlin-test:$kotlinVersion")
-
+    testImplementation("io.mockk:mockk:1.13.5")
 
     implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.4.0")
 

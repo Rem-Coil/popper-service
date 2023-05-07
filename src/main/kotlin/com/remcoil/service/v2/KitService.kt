@@ -49,11 +49,13 @@ class KitService(
 
     suspend fun getKitProgressById(id: Long): KitProgress {
         val kit = getKitById(id)
+        val operationTypes = operationTypeService.getOperationTypesBySpecificationId(kit.specificationId)
+        val batchesProgress = batchService.getBatchesProgressByKitId(kit.id)
 
         return KitProgress(
             kit,
-            operationTypeService.getOperationTypesBySpecificationId(kit.specificationId),
-            batchService.getBatchesProgressByKitId(kit.id)
+            operationTypes,
+            batchesProgress
         )
     }
 }
