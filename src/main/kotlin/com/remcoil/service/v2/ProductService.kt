@@ -27,6 +27,10 @@ class ProductService(
         return productDao.getByBatchesId(idList)
     }
 
+    suspend fun getProductById(id:Long): Product {
+        return productDao.getById(id) ?: throw EntryDoesNotExistException("Продукта с id=$id не существует")
+    }
+
     private suspend fun createProduct(product: Product): Product {
         val createdProduct = productDao.create(product)
         logger.info("Добавили изделие с id = ${createdProduct.id}")

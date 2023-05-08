@@ -14,7 +14,6 @@ fun Application.productModuleV2() {
     val productService: ProductService by closestDI().instance()
 
     routing {
-
         get("/v2/batch/{id}/product") {
             val products = call.parameters["id"]?.let { id ->
                 id.toLongOrNull()?.let { productService.getProductsByBatchId(it) }
@@ -26,6 +25,19 @@ fun Application.productModuleV2() {
             get {
                 val products = productService.getAllProducts()
                 call.respond(products)
+            }
+
+            get("/{id}") {
+                try {
+                    val product = call.parameters["id"]?.let {
+                        it.toLongOrNull()?.let { id ->
+                            productService.getProductById(id)
+                        }
+                    }
+                    call.respondNullable(product, onNull = HttpStatusCode.BadRequest)
+                } catch (e: EntryDoesNotExistException) {
+                    call.respond(HttpStatusCode.NotFound, e.message.toString())
+                }
             }
 
             patch("/{id}/deactivate") {

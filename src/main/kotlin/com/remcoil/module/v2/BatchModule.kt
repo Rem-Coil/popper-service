@@ -2,6 +2,8 @@ package com.remcoil.module.v2
 
 import com.remcoil.service.v2.BatchService
 import com.remcoil.service.v2.ProductService
+import com.remcoil.utils.exceptions.EntryDoesNotExistException
+import com.remcoil.utils.respondNullable
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.html.*
@@ -21,6 +23,19 @@ fun Application.batchModuleV2() {
             get {
                 val batches = batchService.getAllBatches()
                 call.respond(batches)
+            }
+
+            get("/{id}") {
+                try {
+                    val batch = call.parameters["id"]?.let {
+                        it.toLongOrNull()?.let { id ->
+                            batchService.getBatchById(id)
+                        }
+                    }
+                    call.respondNullable(batch, onNull = HttpStatusCode.BadRequest)
+                } catch (e: EntryDoesNotExistException) {
+                    call.respond(HttpStatusCode.NotFound, e.message.toString())
+                }
             }
 
             get("/styles.css") {

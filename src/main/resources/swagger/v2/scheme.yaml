@@ -177,6 +177,27 @@ paths:
               schema:
                 $ref: '#/components/schemas/ListOfBatchesV2'
 
+  /v2/batch/{id}:
+    get:
+      tags:
+        - batch
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: number
+      responses:
+        '200':
+          description: Данные об партии
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BatchV2'
+        '404':
+          description: Партия не найдена
+        '400':
+          description: Bad request
 
   /v2/batch/{id}/codes:
     get:
