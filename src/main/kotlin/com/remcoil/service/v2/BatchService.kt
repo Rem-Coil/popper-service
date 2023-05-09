@@ -102,7 +102,7 @@ class BatchService(
             val operationProgress = mutableMapOf<Long, Int>()
             val controlProgress = mutableMapOf<String, Int>()
             val repairOperations = mutableListOf<ExtendedAction>()
-            var lockedQuantity = 0
+            val lockedQuantity = mutableSetOf<Long>()
             val defectedQuantity = defectedProductsQuantityByBatch[batch.id] ?: 0
 
             for (action in actionsByBatch[batch.id] ?: listOf()) {
@@ -122,7 +122,7 @@ class BatchService(
                                     it.operationType == controlAction.operationType &&
                                     it.doneTime > controlAction.doneTime
                         } == null) {
-                        lockedQuantity++
+                        lockedQuantity.add(controlAction.productId)
                         operationProgress.computeIfPresent(controlAction.operationType) { _, v -> v - 1 }
                     }
                 }
@@ -134,7 +134,7 @@ class BatchService(
                     batch.batchNumber,
                     operationProgress,
                     controlProgress,
-                    lockedQuantity,
+                    lockedQuantity.size,
                     defectedQuantity
                 )
             )

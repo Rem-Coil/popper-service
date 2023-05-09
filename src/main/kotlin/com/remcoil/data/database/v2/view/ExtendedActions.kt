@@ -13,4 +13,5 @@ object ExtendedActions : Table("extended_actions") {
     val active = bool("active")
     val batchId = long("batch_id")
     val kitId = long("kit_id")
+    val specificationId = long("specification_id")
 }

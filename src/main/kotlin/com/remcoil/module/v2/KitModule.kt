@@ -49,12 +49,12 @@ fun Application.kitModuleV2() {
 
             get("/{id}/progress") {
                 try {
-                    val kit = call.parameters["id"]?.let { id ->
+                    val progress = call.parameters["id"]?.let { id ->
                         id.toLongOrNull()?.let {
                             kitService.getKitProgressById(it)
                         }
                     }
-                    call.respondNullable(kit, onNull = HttpStatusCode.BadRequest)
+                    call.respondNullable(progress, onNull = HttpStatusCode.BadRequest)
                 } catch (e: EntryDoesNotExistException) {
                     call.respond(HttpStatusCode.NotFound, e.message.toString())
                 }

@@ -14,6 +14,10 @@ class ControlActionService(
         return controlActionDao.getAll()
     }
 
+    suspend fun getControlActionsBySpecificationId(id: Long): List<ExtendedControlAction> {
+        return controlActionDao.getBySpecificationId(id)
+    }
+
     suspend fun getControlActionsByKitId(id: Long): List<ExtendedControlAction> {
         return controlActionDao.getByKitId(id)
     }

@@ -13,5 +13,6 @@ data class ExtendedControlAction(
     val productId: Long,
     val active: Boolean,
     val batchId: Long,
-    val kitId: Long
+    val kitId: Long,
+    val specificationId: Long
 )

@@ -2,6 +2,7 @@ package com.remcoil.service.v2
 
 import com.remcoil.dao.v2.ProductDao
 import com.remcoil.data.model.v2.Batch
+import com.remcoil.data.model.v2.ExtendedProduct
 import com.remcoil.data.model.v2.Kit
 import com.remcoil.data.model.v2.Product
 import com.remcoil.utils.exceptions.EntryDoesNotExistException
@@ -15,6 +16,10 @@ class ProductService(
         val products = productDao.getAll()
         logger.info("Отдали все изделия")
         return products
+    }
+
+    suspend fun getProductsBySpecificationId(id: Long): List<ExtendedProduct> {
+        return productDao.getBySpecificationId(id)
     }
 
     suspend fun getProductsByBatchId(id: Long): List<Product> {

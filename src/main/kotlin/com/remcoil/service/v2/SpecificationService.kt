@@ -2,6 +2,7 @@ package com.remcoil.service.v2
 
 import com.remcoil.dao.v2.SpecificationDao
 import com.remcoil.data.model.v2.SpecificationPostRequest
+import com.remcoil.data.model.v2.SpecificationProgress
 import com.remcoil.data.model.v2.SpecificationPutRequest
 import com.remcoil.data.model.v2.SpecificationResponse
 import com.remcoil.utils.exceptions.EntryDoesNotExistException
@@ -9,6 +10,7 @@ import com.remcoil.utils.logger
 
 class SpecificationService(
     private val specificationDao: SpecificationDao,
+    private val kitService: KitService,
     private val operationTypeService: OperationTypeService
 ) {
 
@@ -54,6 +56,16 @@ class SpecificationService(
         operationTypeService.updateBatchOperationTypes(
             specificationPutRequest.operationTypes,
             oldSpecification.operationTypes
+        )
+    }
+
+    suspend fun getSpecificationProgressById(id: Long): SpecificationProgress {
+        val specification = getSpecificationById(id)
+        val kitsProgress = kitService.getKitProgressBySpecificationId(id)
+
+        return SpecificationProgress(
+            specification,
+            kitsProgress
         )
     }
 }

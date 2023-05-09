@@ -1,6 +1,9 @@
 package com.remcoil.dao.v2
 
+import com.remcoil.data.database.v2.Batches
+import com.remcoil.data.database.v2.Kits
 import com.remcoil.data.database.v2.Products
+import com.remcoil.data.model.v2.ExtendedProduct
 import com.remcoil.data.model.v2.Product
 import com.remcoil.utils.safetySuspendTransactionAsync
 import org.jetbrains.exposed.sql.*
@@ -12,6 +15,13 @@ class ProductDao(private val database: Database) {
         Products
             .selectAll()
             .map(::extractProduct)
+    }
+
+    suspend fun getBySpecificationId(id: Long): List<ExtendedProduct> = safetySuspendTransactionAsync(database) {
+        (Products leftJoin Batches leftJoin Kits)
+            .slice(Products.id, Products.productNumber, Products.active, Products.batchId, Batches.kitId)
+            .select { Kits.specificationId eq id }
+            .map(::extractExtendedProduct)
     }
 
     suspend fun getByBatchesId(idList: List<Long>): List<Product> = safetySuspendTransactionAsync(database) {
@@ -68,5 +78,13 @@ class ProductDao(private val database: Database) {
         row[Products.productNumber],
         row[Products.active],
         row[Products.batchId].value
+    )
+
+    private fun extractExtendedProduct(row: ResultRow): ExtendedProduct = ExtendedProduct(
+        row[Products.id].value,
+        row[Products.productNumber],
+        row[Products.active],
+        row[Products.batchId].value,
+        row[Batches.kitId].value
     )
 }

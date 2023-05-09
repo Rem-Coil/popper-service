@@ -36,6 +36,19 @@ fun Application.specificationModuleV2() {
                 }
             }
 
+            get("/{id}/progress") {
+                try {
+                    val progress = call.parameters["id"]?.let { id ->
+                        id.toLongOrNull()?.let {
+                            specificationService.getSpecificationProgressById(it)
+                        }
+                    }
+                    call.respondNullable(progress, onNull = HttpStatusCode.BadRequest)
+                } catch (e: EntryDoesNotExistException) {
+                    call.respond(HttpStatusCode.NotFound, e.message.toString())
+                }
+            }
+
             post {
                 call.safetyReceive<SpecificationPostRequest> { specificationRequest ->
                     call.respond(specificationService.createSpecification(specificationRequest))

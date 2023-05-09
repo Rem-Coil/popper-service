@@ -17,6 +17,10 @@ class ActionService(
         return actions
     }
 
+    suspend fun getActionsBySpecificationId(id: Long): List<ExtendedAction> {
+        return actionDao.getBySpecificationId(id)
+    }
+
     suspend fun getActionsByKitId(id: Long): List<ExtendedAction> {
         return actionDao.getByKitId(id)
     }

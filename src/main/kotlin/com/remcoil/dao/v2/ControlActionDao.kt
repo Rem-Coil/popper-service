@@ -17,6 +17,12 @@ class ControlActionDao(private val database: Database) {
             .map(::extractControlAction)
     }
 
+    suspend fun getBySpecificationId(id: Long): List<ExtendedControlAction> = safetySuspendTransactionAsync(database) {
+        ExtendedControlActions
+            .select { ExtendedControlActions.specificationId eq id }
+            .map(::extractExtendedControlAction)
+    }
+
     suspend fun getByKitId(id: Long): List<ExtendedControlAction> = safetySuspendTransactionAsync(database) {
         ExtendedControlActions
             .select { ExtendedControlActions.kitId eq id }
@@ -74,6 +80,7 @@ class ControlActionDao(private val database: Database) {
         row[ExtendedControlActions.productId],
         row[ExtendedControlActions.active],
         row[ExtendedControlActions.batchId],
-        row[ExtendedControlActions.kitId]
+        row[ExtendedControlActions.kitId],
+        row[ExtendedControlActions.specificationId]
     )
 }

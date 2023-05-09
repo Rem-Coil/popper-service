@@ -14,6 +14,12 @@ class KitDao(private val database: Database) {
             .firstOrNull()
     }
 
+    suspend fun getBySpecificationId(id: Long): List<Kit> = safetySuspendTransactionAsync(database) {
+        Kits
+            .select { Kits.specificationId eq id }
+            .map(::extractKit)
+    }
+
     suspend fun getAll(): List<Kit> = safetySuspendTransactionAsync(database) {
         Kits
             .selectAll()

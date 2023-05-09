@@ -129,6 +129,26 @@ paths:
               schema:
                 $ref: '#/components/schemas/SpecificationResponseV2'
 
+  /v2/specification/{id}/progress:
+    get:
+      tags:
+        - specification
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: number
+      responses:
+        '204':
+          description: No content
+        '200':
+          description: Информация о наборах
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SpecificationProgressV2'
+
   /v2/specification/{id}:
     get:
       tags:
@@ -499,7 +519,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/KitProgressV2'
+                $ref: '#/components/schemas/KitFullProgressV2'
 
   /v2/kit/{id}:
     get:
@@ -627,7 +647,7 @@ components:
         defected_quantity:
           type: integer
 
-    KitProgressV2:
+    KitFullProgressV2:
       properties:
         id:
           type: number
@@ -644,6 +664,39 @@ components:
           items:
             $ref: '#/components/schemas/BatchProgressV2'
 
+    KitShortProgressV2:
+      properties:
+        id:
+          type: number
+        kit_number:
+          type: string
+        kit_size:
+          type: integer
+        products_in_work:
+          type: integer
+        products_done:
+          type: integer
+        control_progress:
+          type: object
+          additionalProperties:
+            type: integer
+        locked_quantity:
+          type: integer
+        defected_quantity:
+          type: integer
+
+    SpecificationProgressV2:
+      properties:
+        id:
+          type: number
+        specification_title:
+          type: string
+        tested_percentage:
+          type: integer
+        kits_progress:
+          type: array
+          items:
+            $ref: '#/components/schemas/KitShortProgressV2'
 
     KitV2:
       properties:

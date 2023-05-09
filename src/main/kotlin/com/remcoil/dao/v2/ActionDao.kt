@@ -18,7 +18,13 @@ class ActionDao(private val database: Database) {
             .map(::extractAction)
     }
 
-    suspend fun getByKitId(id: Long): List<ExtendedAction> = safetySuspendTransactionAsync(database){
+    suspend fun getBySpecificationId(id: Long): List<ExtendedAction> = safetySuspendTransactionAsync(database) {
+        ExtendedActions
+            .select { ExtendedActions.specificationId eq id }
+            .map(::extractExtendedAction)
+    }
+
+    suspend fun getByKitId(id: Long): List<ExtendedAction> = safetySuspendTransactionAsync(database) {
         ExtendedActions
             .select { ExtendedActions.kitId eq id }
             .map(::extractExtendedAction)
@@ -91,6 +97,7 @@ class ActionDao(private val database: Database) {
         row[ExtendedActions.productId],
         row[ExtendedActions.active],
         row[ExtendedActions.batchId],
-        row[ExtendedActions.kitId]
+        row[ExtendedActions.kitId],
+        row[ExtendedActions.specificationId]
     )
 }

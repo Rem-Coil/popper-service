@@ -1,4 +1,4 @@
-package com.remcoil.service.batch
+package com.remcoil.service
 
 import com.remcoil.dao.v2.BatchDao
 import com.remcoil.data.model.v2.*
@@ -15,37 +15,19 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class BatchesProgressTest {
-    private val batchDao = mockk<BatchDao>()
-    private val productService = mockk<ProductService>()
-    private val actionService = mockk<ActionService>()
-    private val controlActionService = mockk<ControlActionService>()
+    private val batchDao: BatchDao = mockk()
+    private val productService: ProductService = mockk()
+    private val actionService: ActionService = mockk()
+    private val controlActionService: ControlActionService = mockk()
 
     private val now = Clock.System.now()
 
-    private var batchList = mutableListOf(
-        Batch(1, 1, 1)
-    )
-    private var productList = mutableListOf(
-        Product(1, 1, true, 1)
-    )
-    private var extendedActionList = mutableListOf(
-        ExtendedAction(1, now.plus(1, DateTimeUnit.MINUTE).toLocalDateTime(TimeZone.UTC), false, 1, 1, 1, true, 1, 1)
-    )
-    private var extendedControlActionList = mutableListOf(
-        ExtendedControlAction(1, now.plus(5, DateTimeUnit.MINUTE).toLocalDateTime(TimeZone.UTC), true, "OTK", "Good", 1, 1, 1, true, 1, 1)
-    )
+    private var batchList = listOf<Batch>()
+    private var productList = mutableListOf<Product>()
+    private var extendedActionList = mutableListOf<ExtendedAction>()
+    private var extendedControlActionList = mutableListOf<ExtendedControlAction>()
 
-    private fun setup(
-        batchList: List<Batch>,
-        productList: List<Product>,
-        extendedActionList: List<ExtendedAction>,
-        extendedControlActionList: List<ExtendedControlAction>
-    ) {
-        coEvery { batchDao.getByKitId(any()) } returns batchList
-        coEvery { productService.getProductsByBatchesId(any()) } returns productList
-        coEvery { actionService.getActionsByKitId(any()) } returns extendedActionList
-        coEvery { controlActionService.getControlActionsByKitId(any()) } returns extendedControlActionList
-    }
+    private val batchService = BatchService(batchDao, productService, actionService, controlActionService)
 
     @BeforeEach
     fun resetCollections() {
@@ -78,6 +60,7 @@ class BatchesProgressTest {
                 1,
                 true,
                 1,
+                1,
                 1
             ),
             ExtendedAction(
@@ -88,6 +71,7 @@ class BatchesProgressTest {
                 1,
                 2,
                 true,
+                1,
                 1,
                 1
             ),
@@ -100,6 +84,7 @@ class BatchesProgressTest {
                 3,
                 true,
                 1,
+                1,
                 1
             ),
             ExtendedAction(
@@ -110,6 +95,7 @@ class BatchesProgressTest {
                 1,
                 4,
                 true,
+                1,
                 1,
                 1
             ),
@@ -122,6 +108,7 @@ class BatchesProgressTest {
                 5,
                 true,
                 2,
+                1,
                 1
             ),
             ExtendedAction(
@@ -133,6 +120,7 @@ class BatchesProgressTest {
                 6,
                 true,
                 2,
+                1,
                 1
             ),
             ExtendedAction(
@@ -144,6 +132,7 @@ class BatchesProgressTest {
                 7,
                 true,
                 2,
+                1,
                 1
             ),
             ExtendedAction(
@@ -155,6 +144,7 @@ class BatchesProgressTest {
                 8,
                 true,
                 2,
+                1,
                 1
             ),
             ExtendedAction(
@@ -166,6 +156,7 @@ class BatchesProgressTest {
                 9,
                 true,
                 3,
+                1,
                 1
             ),
             ExtendedAction(
@@ -177,6 +168,7 @@ class BatchesProgressTest {
                 10,
                 true,
                 3,
+                1,
                 1
             ),
             ExtendedAction(
@@ -188,6 +180,7 @@ class BatchesProgressTest {
                 11,
                 true,
                 3,
+                1,
                 1
             ),
 
@@ -199,6 +192,7 @@ class BatchesProgressTest {
                 1,
                 1,
                 true,
+                1,
                 1,
                 1
             ),
@@ -215,6 +209,7 @@ class BatchesProgressTest {
                 1,
                 true,
                 1,
+                1,
                 1
             ),
             ExtendedControlAction(
@@ -227,6 +222,7 @@ class BatchesProgressTest {
                 1,
                 2,
                 true,
+                1,
                 1,
                 1
             ),
@@ -241,7 +237,8 @@ class BatchesProgressTest {
                 3,
                 true,
                 1,
-                1
+                1,1
+
             ),
             ExtendedControlAction(
                 4,
@@ -254,7 +251,7 @@ class BatchesProgressTest {
                 4,
                 true,
                 1,
-                1
+                1,1
             ),
             ExtendedControlAction(
                 5,
@@ -267,7 +264,7 @@ class BatchesProgressTest {
                 5,
                 true,
                 2,
-                1
+                1,1
             ),
             ExtendedControlAction(
                 6,
@@ -280,21 +277,24 @@ class BatchesProgressTest {
                 1,
                 true,
                 2,
-                1
+                1,1
             )
         )
+
+        coEvery { batchDao.getByKitId(any()) } returns batchList
+        coEvery { productService.getProductsByBatchesId(any()) } returns productList
+        coEvery { actionService.getActionsByKitId(any()) } returns extendedActionList
+        coEvery { controlActionService.getControlActionsByKitId(any()) } returns extendedControlActionList
     }
 
     @Test
     fun `base case`(): Unit = runBlocking {
-        setup(batchList, productList, extendedActionList, extendedControlActionList)
-        val batchService = BatchService(batchDao, productService, actionService, controlActionService)
-        val targetProgress = listOf<BatchProgress>(
+        val producedProgress = batchService.getBatchesProgressByKitId(1)
+        val targetProgress = listOf(
             BatchProgress(1, 1, mapOf(1L to 4, 2L to 1), mapOf("OTK" to 4), 0, 0),
             BatchProgress(2, 2, mapOf(1L to 4), mapOf("OTK" to 1, "Test" to 1), 0, 0),
             BatchProgress(3, 3, mapOf(1L to 3), mapOf(), 0, 0)
         )
-        val producedProgress = batchService.getBatchesProgressByKitId(1)
 
         assertEquals(targetProgress, producedProgress)
     }
@@ -302,32 +302,27 @@ class BatchesProgressTest {
     @Test
     fun `with defected product`() = runBlocking {
         productList[0] = Product(1, 1, false, 1)
-        extendedActionList[0] = ExtendedAction(1, now.plus(1, DateTimeUnit.MINUTE).toLocalDateTime(TimeZone.UTC), false, 1, 1, 1, false, 1, 1)
-        extendedActionList[11] = ExtendedAction(12, now.plus(12, DateTimeUnit.MINUTE).toLocalDateTime(TimeZone.UTC), false, 2, 1, 1, false, 1, 1)
-        extendedControlActionList[0] = ExtendedControlAction(1, now.plus(5, DateTimeUnit.MINUTE).toLocalDateTime(TimeZone.UTC), true, "OTK", "Good", 1, 1, 1, false, 1, 1)
+        extendedActionList[0] = ExtendedAction(1, now.plus(1, DateTimeUnit.MINUTE).toLocalDateTime(TimeZone.UTC), false, 1, 1, 1, false, 1, 1,1)
+        extendedActionList[11] = ExtendedAction(12, now.plus(12, DateTimeUnit.MINUTE).toLocalDateTime(TimeZone.UTC), false, 2, 1, 1, false, 1, 1,1)
+        extendedControlActionList[0] = ExtendedControlAction(1, now.plus(5, DateTimeUnit.MINUTE).toLocalDateTime(TimeZone.UTC), true, "OTK", "Good", 1, 1, 1, false, 1, 1,1)
 
-        setup(batchList, productList, extendedActionList, extendedControlActionList)
-
-        val batchService = BatchService(batchDao, productService, actionService, controlActionService)
-        val targetProgress = listOf<BatchProgress>(
-            BatchProgress(1, 1, mapOf(1L to 3,), mapOf("OTK" to 3), 0, 1),
+        val producedProgress = batchService.getBatchesProgressByKitId(1)
+        val targetProgress = listOf(
+            BatchProgress(1, 1, mapOf(1L to 3), mapOf("OTK" to 3), 0, 1),
             BatchProgress(2, 2, mapOf(1L to 4), mapOf("OTK" to 1, "Test" to 1), 0, 0),
             BatchProgress(3, 3, mapOf(1L to 3), mapOf(), 0, 0)
         )
-        val producedProgress = batchService.getBatchesProgressByKitId(1)
 
         assertEquals(targetProgress, producedProgress)
     }
 
     @Test
     fun `unsuccessful control with no repair`() = runBlocking {
-        extendedControlActionList[0] = ExtendedControlAction(1, now.plus(5, DateTimeUnit.MINUTE).toLocalDateTime(TimeZone.UTC), false, "OTK", "No Good", 1, 1, 1, true, 1, 1)
+        extendedControlActionList[0] = ExtendedControlAction(1, now.plus(5, DateTimeUnit.MINUTE).toLocalDateTime(TimeZone.UTC), false, "OTK", "No Good", 1, 1, 1, true, 1, 1,1)
+        extendedControlActionList.add(ExtendedControlAction(1000, now.plus(5000, DateTimeUnit.MINUTE).toLocalDateTime(TimeZone.UTC), false, "Test", "No Good", 2, 1, 1, true, 1, 1,1))
 
-        setup(batchList, productList, extendedActionList, extendedControlActionList)
-
-        val batchService = BatchService(batchDao, productService, actionService, controlActionService)
-        val targetProgress = listOf<BatchProgress>(
-            BatchProgress(1, 1, mapOf(1L to 3, 2L to 1), mapOf("OTK" to 3), 1, 0),
+        val targetProgress = listOf(
+            BatchProgress(1, 1, mapOf(1L to 3, 2L to 0), mapOf("OTK" to 3), 1, 0),
             BatchProgress(2, 2, mapOf(1L to 4), mapOf("OTK" to 1, "Test" to 1), 0, 0),
             BatchProgress(3, 3, mapOf(1L to 3), mapOf(), 0, 0)
         )
@@ -338,36 +333,30 @@ class BatchesProgressTest {
 
     @Test
     fun `with correct repair`() = runBlocking {
-        extendedControlActionList[0] = ExtendedControlAction(1, now.plus(5, DateTimeUnit.MINUTE).toLocalDateTime(TimeZone.UTC), false, "OTK", "No Good", 1, 1, 1, true, 1, 1)
-        extendedActionList.add(ExtendedAction(1, now.plus(6, DateTimeUnit.MINUTE).toLocalDateTime(TimeZone.UTC), true, 1, 1, 1, true, 1, 1))
+        extendedControlActionList[0] = ExtendedControlAction(1, now.plus(5, DateTimeUnit.MINUTE).toLocalDateTime(TimeZone.UTC), false, "OTK", "No Good", 1, 1, 1, true, 1, 1,1)
+        extendedActionList.add(ExtendedAction(1, now.plus(6, DateTimeUnit.MINUTE).toLocalDateTime(TimeZone.UTC), true, 1, 1, 1, true, 1, 1,1))
 
-        setup(batchList, productList, extendedActionList, extendedControlActionList)
-
-        val batchService = BatchService(batchDao, productService, actionService, controlActionService)
-        val targetProgress = listOf<BatchProgress>(
+        val producedProgress = batchService.getBatchesProgressByKitId(1)
+        val targetProgress = listOf(
             BatchProgress(1, 1, mapOf(1L to 4, 2L to 1), mapOf("OTK" to 3), 0, 0),
             BatchProgress(2, 2, mapOf(1L to 4), mapOf("OTK" to 1, "Test" to 1), 0, 0),
             BatchProgress(3, 3, mapOf(1L to 3), mapOf(), 0, 0)
         )
-        val producedProgress = batchService.getBatchesProgressByKitId(1)
 
         assertEquals(targetProgress, producedProgress)
     }
 
     @Test
     fun `with repair before control`() = runBlocking {
-        extendedControlActionList[0] = ExtendedControlAction(1, now.plus(5, DateTimeUnit.MINUTE).toLocalDateTime(TimeZone.UTC), false, "OTK", "No Good", 1, 1, 1, true, 1, 1)
-        extendedActionList.add(ExtendedAction(1, now.plus(4, DateTimeUnit.MINUTE).toLocalDateTime(TimeZone.UTC), true, 1, 1, 1, true, 1, 1))
+        extendedControlActionList[0] = ExtendedControlAction(1, now.plus(5, DateTimeUnit.MINUTE).toLocalDateTime(TimeZone.UTC), false, "OTK", "No Good", 1, 1, 1, true, 1, 1,1)
+        extendedActionList.add(ExtendedAction(1, now.plus(4, DateTimeUnit.MINUTE).toLocalDateTime(TimeZone.UTC), true, 1, 1, 1, true, 1, 1,1))
 
-        setup(batchList, productList, extendedActionList, extendedControlActionList)
-
-        val batchService = BatchService(batchDao, productService, actionService, controlActionService)
-        val targetProgress = listOf<BatchProgress>(
+        val producedProgress = batchService.getBatchesProgressByKitId(1)
+        val targetProgress = listOf(
             BatchProgress(1, 1, mapOf(1L to 3, 2L to 1), mapOf("OTK" to 3), 1, 0),
             BatchProgress(2, 2, mapOf(1L to 4), mapOf("OTK" to 1, "Test" to 1), 0, 0),
             BatchProgress(3, 3, mapOf(1L to 3), mapOf(), 0, 0)
         )
-        val producedProgress = batchService.getBatchesProgressByKitId(1)
 
         assertEquals(targetProgress, producedProgress)
     }
