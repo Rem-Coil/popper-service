@@ -67,9 +67,9 @@ class KitService(
     suspend fun getKitProgressBySpecificationId(id: Long): MutableList<KitShortProgress> {
         val kits = kitDao.getBySpecificationId(id)
         val operationTypes = operationTypeService.getOperationTypesBySpecificationId(id).sortedBy { it.sequenceNumber }
-        val actionsByKit = actionService.getActionsBySpecificationId(id).filter { it.active }.groupBy { it.kitId }
-        val controlActionsByKit = controlActionService.getControlActionsBySpecificationId(id).filter { it.active }.groupBy { it.kitId }
-        val defectedProductsCountByKit = productService.getProductsBySpecificationId(id)
+        val actionsByKitId = actionService.getActionsBySpecificationId(id).filter { it.active }.groupBy { it.kitId }
+        val controlActionsByKitId = controlActionService.getControlActionsBySpecificationId(id).filter { it.active }.groupBy { it.kitId }
+        val defectedProductsCountByKitId = productService.getProductsBySpecificationId(id)
             .filter { !it.active }
             .groupingBy { it.kitId }
             .eachCount()
@@ -79,41 +79,33 @@ class KitService(
         for (kit in kits) {
             var productsInWork = 0
             var productsDone = 0
-            val lockedQuantity = mutableSetOf<Long>()
+            val lockedProductsIdSet = mutableSetOf<Long>()
             val repairOperations = mutableListOf<ExtendedAction>()
-            val defectedQuantity = defectedProductsCountByKit[kit.id] ?: 0
+            val defectedProductsQuantity = defectedProductsCountByKitId[kit.id] ?: 0
             val controlProgress = mutableMapOf<String, Int>()
-            val firstOperationProductIdSet = mutableSetOf<Long>()
-            val lastOperationProductIdSet = mutableSetOf<Long>()
 
-            for (action in actionsByKit[kit.id] ?: listOf()) {
-                if (action.operationType == operationTypes.first().id) {
-                    if (!firstOperationProductIdSet.contains(action.productId)) {
-                        productsInWork++
-                        firstOperationProductIdSet.add(action.productId)
-                    }
+            for (action in actionsByKitId[kit.id] ?: listOf()) {
+                if (action.operationType == operationTypes.first().id && !action.repair) {
+                    productsInWork++
                 }
-                if (action.operationType == operationTypes.last().id) {
-                    if (!lastOperationProductIdSet.contains(action.productId)) {
-                        productsDone++
-                        lastOperationProductIdSet.add(action.productId)
-                    }
+                if (action.operationType == operationTypes.last().id && !action.repair) {
+                    productsDone++
                 }
                 if (action.repair) {
                     repairOperations.add(action)
                 }
             }
 
-            for (controlAction in controlActionsByKit[kit.id] ?: listOf()) {
+            for (controlAction in controlActionsByKitId[kit.id] ?: listOf()) {
                 if (controlAction.successful) {
-                    controlProgress.merge(controlAction.controlType, 1) { oldValue, _ -> oldValue + 1 }
+                    controlProgress.merge(controlAction.controlType, 1) { quantity, _ -> quantity + 1 }
                 } else {
                     if (repairOperations.find {
                             it.productId == controlAction.productId &&
                                     it.operationType == controlAction.operationType &&
                                     it.doneTime > controlAction.doneTime
                         } == null) {
-                        lockedQuantity.add(controlAction.productId)
+                        lockedProductsIdSet.add(controlAction.productId)
                         if (controlAction.operationType == operationTypes.last().id) {
                             productsDone--
                         }
@@ -123,14 +115,12 @@ class KitService(
 
             kitsProgress.add(
                 KitShortProgress(
-                    kit.id,
-                    kit.kitNumber,
-                    kit.batchSize * kit.batchesQuantity,
+                    kit,
                     productsInWork,
                     productsDone,
                     controlProgress,
-                    lockedQuantity.size,
-                    defectedQuantity
+                    lockedProductsIdSet.size,
+                    defectedProductsQuantity
                 )
             )
         }

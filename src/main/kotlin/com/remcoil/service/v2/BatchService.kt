@@ -90,40 +90,42 @@ class BatchService(
 
     suspend fun getBatchesProgressByKitId(id: Long): List<BatchProgress> {
         val batches = getBatchesByKitId(id)
-        val actionsByBatch = actionService.getActionsByKitId(id).filter { it.active }.groupBy { it.batchId }
-        val controlActionsByBatch = controlActionService.getControlActionsByKitId(id).filter { it.active }.groupBy { it.batchId }
-        val defectedProductsQuantityByBatch = productService.getProductsByBatchesId(batches.map { it.id })
+        val actionsByBatchId = actionService.getActionsByKitId(id).filter { it.active }.groupBy { it.batchId }
+        val controlActionsByBatchId =
+            controlActionService.getControlActionsByKitId(id).filter { it.active }.groupBy { it.batchId }
+        val defectedProductsQuantityByBatchId = productService.getProductsByBatchesId(batches.map { it.id })
             .filter { !it.active }
             .groupingBy { it.batchId }
             .eachCount()
 
         val batchesProgress = mutableListOf<BatchProgress>()
+
         for (batch in batches) {
             val operationProgress = mutableMapOf<Long, Int>()
             val controlProgress = mutableMapOf<String, Int>()
             val repairOperations = mutableListOf<ExtendedAction>()
-            val lockedQuantity = mutableSetOf<Long>()
-            val defectedQuantity = defectedProductsQuantityByBatch[batch.id] ?: 0
+            val lockedProductsIdSet = mutableSetOf<Long>()
+            val defectedProductsQuantity = defectedProductsQuantityByBatchId[batch.id] ?: 0
 
-            for (action in actionsByBatch[batch.id] ?: listOf()) {
+            for (action in actionsByBatchId[batch.id] ?: listOf()) {
                 if (action.repair) {
                     repairOperations.add(action)
                 } else {
-                    operationProgress.merge(action.operationType, 1) { oldValue, _ -> oldValue + 1 }
+                    operationProgress.merge(action.operationType, 1) { quantity, _ -> quantity + 1 }
                 }
             }
 
-            for (controlAction in controlActionsByBatch[batch.id] ?: listOf()) {
+            for (controlAction in controlActionsByBatchId[batch.id] ?: listOf()) {
                 if (controlAction.successful) {
-                    controlProgress.merge(controlAction.controlType, 1) { oldValue, _ -> oldValue + 1 }
+                    controlProgress.merge(controlAction.controlType, 1) { quantity, _ -> quantity + 1 }
                 } else {
                     if (repairOperations.find {
                             it.productId == controlAction.productId &&
                                     it.operationType == controlAction.operationType &&
                                     it.doneTime > controlAction.doneTime
                         } == null) {
-                        lockedQuantity.add(controlAction.productId)
-                        operationProgress.computeIfPresent(controlAction.operationType) { _, v -> v - 1 }
+                        lockedProductsIdSet.add(controlAction.productId)
+                        operationProgress.computeIfPresent(controlAction.operationType) { _, quantity -> quantity - 1 }
                     }
                 }
             }
@@ -134,8 +136,8 @@ class BatchService(
                     batch.batchNumber,
                     operationProgress,
                     controlProgress,
-                    lockedQuantity.size,
-                    defectedQuantity
+                    lockedProductsIdSet.size,
+                    defectedProductsQuantity
                 )
             )
         }

@@ -22,7 +22,7 @@ class BatchesProgressTest {
 
     private val now = Clock.System.now()
 
-    private var batchList = listOf<Batch>()
+    private var batchList = mutableListOf<Batch>()
     private var productList = mutableListOf<Product>()
     private var extendedActionList = mutableListOf<ExtendedAction>()
     private var extendedControlActionList = mutableListOf<ExtendedControlAction>()
@@ -31,159 +31,31 @@ class BatchesProgressTest {
 
     @BeforeEach
     fun resetCollections() {
-        batchList = mutableListOf(
-            Batch(1, 1, 1),
-            Batch(2, 2, 1),
-            Batch(3, 3, 1)
-        )
-        productList = mutableListOf(
-            Product(1, 1, true, 1),
-            Product(2, 2, true, 1),
-            Product(3, 3, true, 1),
-            Product(4, 4, true, 1),
-            Product(5, 1, true, 2),
-            Product(6, 2, true, 2),
-            Product(7, 3, true, 2),
-            Product(8, 4, true, 2),
-            Product(9, 1, true, 3),
-            Product(10, 2, true, 3),
-            Product(11, 3, true, 3),
-            Product(12, 4, true, 3)
-        )
-        extendedActionList = mutableListOf(
-            ExtendedAction(
-                1,
-                now.plus(1, DateTimeUnit.MINUTE).toLocalDateTime(TimeZone.UTC),
-                false,
-                1,
-                1,
-                1,
-                true,
-                1,
-                1,
-                1
-            ),
-            ExtendedAction(
-                2,
-                now.plus(2, DateTimeUnit.MINUTE).toLocalDateTime(TimeZone.UTC),
-                false,
-                1,
-                1,
-                2,
-                true,
-                1,
-                1,
-                1
-            ),
-            ExtendedAction(
-                3,
-                now.plus(3, DateTimeUnit.MINUTE).toLocalDateTime(TimeZone.UTC),
-                false,
-                1,
-                1,
-                3,
-                true,
-                1,
-                1,
-                1
-            ),
-            ExtendedAction(
-                4,
-                now.plus(4, DateTimeUnit.MINUTE).toLocalDateTime(TimeZone.UTC),
-                false,
-                1,
-                1,
-                4,
-                true,
-                1,
-                1,
-                1
-            ),
-            ExtendedAction(
-                5,
-                now.plus(5, DateTimeUnit.MINUTE).toLocalDateTime(TimeZone.UTC),
-                false,
-                1,
-                1,
-                5,
-                true,
-                2,
-                1,
-                1
-            ),
-            ExtendedAction(
-                6,
-                now.plus(6, DateTimeUnit.MINUTE).toLocalDateTime(TimeZone.UTC),
-                false,
-                1,
-                1,
-                6,
-                true,
-                2,
-                1,
-                1
-            ),
-            ExtendedAction(
-                7,
-                now.plus(7, DateTimeUnit.MINUTE).toLocalDateTime(TimeZone.UTC),
-                false,
-                1,
-                1,
-                7,
-                true,
-                2,
-                1,
-                1
-            ),
-            ExtendedAction(
-                8,
-                now.plus(8, DateTimeUnit.MINUTE).toLocalDateTime(TimeZone.UTC),
-                false,
-                1,
-                1,
-                8,
-                true,
-                2,
-                1,
-                1
-            ),
-            ExtendedAction(
-                9,
-                now.plus(9, DateTimeUnit.MINUTE).toLocalDateTime(TimeZone.UTC),
-                false,
-                1,
-                1,
-                9,
-                true,
-                3,
-                1,
-                1
-            ),
-            ExtendedAction(
-                10,
-                now.plus(10, DateTimeUnit.MINUTE).toLocalDateTime(TimeZone.UTC),
-                false,
-                1,
-                1,
-                10,
-                true,
-                3,
-                1,
-                1
-            ),
-            ExtendedAction(
-                11,
-                now.plus(11, DateTimeUnit.MINUTE).toLocalDateTime(TimeZone.UTC),
-                false,
-                1,
-                1,
-                11,
-                true,
-                3,
-                1,
-                1
-            ),
+        for (i in 1..3L) {
+            batchList.add(Batch(i, i.toInt(), 1))
+            for (j in 1..4) {
+                productList.add(Product((i - 1) * 4 + j, j, true, i))
+            }
+        }
 
+        for (i in 1..11L) {
+            extendedActionList.add(
+                ExtendedAction(
+                    i,
+                    now.plus(i, DateTimeUnit.MINUTE).toLocalDateTime(TimeZone.UTC),
+                    false,
+                    1,
+                    1,
+                    i,
+                    true,
+                    (i + 3) / 4,
+                    1,
+                    1
+                )
+            )
+        }
+
+        extendedActionList.add(
             ExtendedAction(
                 12,
                 now.plus(12, DateTimeUnit.MINUTE).toLocalDateTime(TimeZone.UTC),
@@ -195,77 +67,29 @@ class BatchesProgressTest {
                 1,
                 1,
                 1
-            ),
+            )
         )
-        extendedControlActionList = mutableListOf(
-            ExtendedControlAction(
-                1,
-                now.plus(5, DateTimeUnit.MINUTE).toLocalDateTime(TimeZone.UTC),
-                true,
-                "OTK",
-                "Good",
-                1,
-                1,
-                1,
-                true,
-                1,
-                1,
-                1
-            ),
-            ExtendedControlAction(
-                2,
-                now.plus(6, DateTimeUnit.MINUTE).toLocalDateTime(TimeZone.UTC),
-                true,
-                "OTK",
-                "Good",
-                1,
-                1,
-                2,
-                true,
-                1,
-                1,
-                1
-            ),
-            ExtendedControlAction(
-                3,
-                now.plus(7, DateTimeUnit.MINUTE).toLocalDateTime(TimeZone.UTC),
-                true,
-                "OTK",
-                "Good",
-                1,
-                1,
-                3,
-                true,
-                1,
-                1,1
 
-            ),
-            ExtendedControlAction(
-                4,
-                now.plus(8, DateTimeUnit.MINUTE).toLocalDateTime(TimeZone.UTC),
-                true,
-                "OTK",
-                "Good",
-                1,
-                1,
-                4,
-                true,
-                1,
-                1,1
-            ),
-            ExtendedControlAction(
-                5,
-                now.plus(8, DateTimeUnit.MINUTE).toLocalDateTime(TimeZone.UTC),
-                true,
-                "OTK",
-                "Good",
-                1,
-                1,
-                5,
-                true,
-                2,
-                1,1
-            ),
+        for (i in 1..5L) {
+            extendedControlActionList.add(
+                ExtendedControlAction(
+                    i,
+                    now.plus(i + 4, DateTimeUnit.MINUTE).toLocalDateTime(TimeZone.UTC),
+                    true,
+                    "OTK",
+                    "Good",
+                    1,
+                    1,
+                    i,
+                    true,
+                    (i + 3) / 4,
+                    1,
+                    1
+                )
+            )
+        }
+
+        extendedControlActionList.add(
             ExtendedControlAction(
                 6,
                 now.plus(8, DateTimeUnit.MINUTE).toLocalDateTime(TimeZone.UTC),
@@ -277,7 +101,7 @@ class BatchesProgressTest {
                 1,
                 true,
                 2,
-                1,1
+                1, 1
             )
         )
 

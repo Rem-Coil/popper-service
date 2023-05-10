@@ -20,4 +20,18 @@ data class KitShortProgress(
     val lockedQuantity: Int,
     @SerialName("defected_quantity")
     val defectedQuantity: Int
-)
+) {
+    constructor(
+        kit: Kit,
+        productsInWork: Int,
+        productsDone: Int,
+        controlProgress: Map<String, Int>,
+        lockedQuantity: Int,
+        defectedQuantity: Int
+    ) : this(
+        kit.id,
+        kit.kitNumber,
+        kit.batchesQuantity * kit.batchSize,
+        productsInWork, productsDone, controlProgress, lockedQuantity, defectedQuantity
+    )
+}

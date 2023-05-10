@@ -36,7 +36,15 @@ class KitsProgressTest {
             kitList.add(Kit(i, "1-1", 3, 100, 1))
             operationTypeList.add(OperationType(i, "Test", i.toInt(), 1))
             for (j in 1..300) {
-                extendedProductList.add(ExtendedProduct((j % 301).toLong(), j, true, ((j + 99) / 100).toLong(), i))
+                extendedProductList.add(
+                    ExtendedProduct(
+                        (i - 1) * 300 + j,
+                        j,
+                        true,
+                        (((i - 1) * 300 + j + 99) / 100),
+                        i
+                    )
+                )
             }
         }
 
