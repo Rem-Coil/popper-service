@@ -4,8 +4,15 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class KitShortProgress(
-    val id: Long,
+data class KitBriefProgress(
+    @SerialName("specification_id")
+    val specificationId: Long,
+    @SerialName("specification_title")
+    val specificationTitle: String,
+    @SerialName("tested_percentage")
+    val testedPercentage: Int,
+    @SerialName("kit_id")
+    val kitId: Long,
     @SerialName("kit_number")
     val kitNumber: String,
     @SerialName("kit_size")
@@ -22,13 +29,16 @@ data class KitShortProgress(
     val defectedQuantity: Int
 ) {
     constructor(
-        kit: Kit,
+        kit: ExtendedKit,
         productsInWork: Int,
         productsDone: Int,
         controlProgress: Map<String, Int>,
         lockedQuantity: Int,
         defectedQuantity: Int
     ) : this(
+        kit.specificationId,
+        kit.specificationTitle,
+        kit.testedPercentage,
         kit.id,
         kit.kitNumber,
         kit.batchesQuantity * kit.batchSize,

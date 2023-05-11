@@ -1,10 +1,7 @@
 package com.remcoil.service.v2
 
 import com.remcoil.dao.v2.KitDao
-import com.remcoil.data.model.v2.ExtendedAction
-import com.remcoil.data.model.v2.Kit
-import com.remcoil.data.model.v2.KitFullProgress
-import com.remcoil.data.model.v2.KitShortProgress
+import com.remcoil.data.model.v2.*
 import com.remcoil.utils.exceptions.EntryDoesNotExistException
 import com.remcoil.utils.logger
 
@@ -52,79 +49,101 @@ class KitService(
         logger.info("Обновили набор с id = ${kit.id}")
     }
 
-    suspend fun getKitProgressById(id: Long): KitFullProgress {
+    suspend fun getKitProgressById(id: Long): KitDetailedProgress {
         val kit = getKitById(id)
         val operationTypes = operationTypeService.getOperationTypesBySpecificationId(kit.specificationId)
         val batchesProgress = batchService.getBatchesProgressByKitId(kit.id)
 
-        return KitFullProgress(
+        return KitDetailedProgress(
             kit,
             operationTypes,
             batchesProgress
         )
     }
 
-    suspend fun getKitProgressBySpecificationId(id: Long): MutableList<KitShortProgress> {
-        val kits = kitDao.getBySpecificationId(id)
-        val operationTypes = operationTypeService.getOperationTypesBySpecificationId(id).sortedBy { it.sequenceNumber }
-        val actionsByKitId = actionService.getActionsBySpecificationId(id).filter { it.active }.groupBy { it.kitId }
-        val controlActionsByKitId = controlActionService.getControlActionsBySpecificationId(id).filter { it.active }.groupBy { it.kitId }
-        val defectedProductsCountByKitId = productService.getProductsBySpecificationId(id)
-            .filter { !it.active }
-            .groupingBy { it.kitId }
-            .eachCount()
+    suspend fun getKitsProgress(): MutableList<KitBriefProgress> {
+        val kitsProgress = mutableListOf<KitBriefProgress>()
 
-        val kitsProgress = mutableListOf<KitShortProgress>()
+        val kitsBySpecificationId = kitDao.getAllWithSpecification().groupBy { it.specificationId }
 
-        for (kit in kits) {
-            var productsInWork = 0
-            var productsDone = 0
-            val lockedProductsIdSet = mutableSetOf<Long>()
-            val repairOperations = mutableListOf<ExtendedAction>()
-            val defectedProductsQuantity = defectedProductsCountByKitId[kit.id] ?: 0
-            val controlProgress = mutableMapOf<String, Int>()
+        for (specification in kitsBySpecificationId) {
+            val operationTypes = operationTypeService.getOperationTypesBySpecificationId(specification.key)
+                .sortedBy { it.sequenceNumber }
+            val actionsByKitId =
+                actionService.getActionsBySpecificationId(specification.key).filter { it.active }.groupBy { it.kitId }
+            val controlActionsByKitId =
+                controlActionService.getControlActionsBySpecificationId(specification.key).filter { it.active }
+                    .groupBy { it.kitId }
+            val defectedProductsCountByKitId = productService.getProductsBySpecificationId(specification.key)
+                .filter { !it.active }
+                .groupingBy { it.kitId }
+                .eachCount()
 
-            for (action in actionsByKitId[kit.id] ?: listOf()) {
-                if (action.operationType == operationTypes.first().id && !action.repair) {
-                    productsInWork++
-                }
-                if (action.operationType == operationTypes.last().id && !action.repair) {
-                    productsDone++
-                }
-                if (action.repair) {
-                    repairOperations.add(action)
-                }
-            }
-
-            for (controlAction in controlActionsByKitId[kit.id] ?: listOf()) {
-                if (controlAction.successful) {
-                    controlProgress.merge(controlAction.controlType, 1) { quantity, _ -> quantity + 1 }
-                } else {
-                    if (repairOperations.find {
-                            it.productId == controlAction.productId &&
-                                    it.operationType == controlAction.operationType &&
-                                    it.doneTime > controlAction.doneTime
-                        } == null) {
-                        lockedProductsIdSet.add(controlAction.productId)
-                        if (controlAction.operationType == operationTypes.last().id) {
-                            productsDone--
-                        }
-                    }
-                }
-            }
-
-            kitsProgress.add(
-                KitShortProgress(
+            for (kit in specification.value) {
+                val kitBriefProgress = getKitBriefProgress(
                     kit,
-                    productsInWork,
-                    productsDone,
-                    controlProgress,
-                    lockedProductsIdSet.size,
-                    defectedProductsQuantity
+                    operationTypes,
+                    actionsByKitId,
+                    controlActionsByKitId,
+                    defectedProductsCountByKitId[kit.id] ?: 0
                 )
-            )
+                kitsProgress.add(kitBriefProgress)
+            }
+
         }
 
         return kitsProgress
+    }
+
+    private fun getKitBriefProgress(
+        kit: ExtendedKit,
+        operationTypes: List<OperationType>,
+        actionsByKitId: Map<Long, List<ExtendedAction>>,
+        controlActionsByKitId: Map<Long, List<ExtendedControlAction>>,
+        defectedProductsQuantity: Int
+    ): KitBriefProgress {
+        var productsInWork = 0
+        var productsDone = 0
+        val lockedProductsIdSet = mutableSetOf<Long>()
+        val repairOperations = mutableListOf<ExtendedAction>()
+        val controlProgress = mutableMapOf<String, Int>()
+
+        for (action in actionsByKitId[kit.id] ?: listOf()) {
+            if (action.operationType == operationTypes.first().id && !action.repair) {
+                productsInWork++
+            }
+            if (action.operationType == operationTypes.last().id && !action.repair) {
+                productsDone++
+            }
+            if (action.repair) {
+                repairOperations.add(action)
+            }
+        }
+
+        for (controlAction in controlActionsByKitId[kit.id] ?: listOf()) {
+            if (controlAction.successful) {
+                controlProgress.merge(controlAction.controlType, 1) { quantity, _ -> quantity + 1 }
+            } else {
+                if (repairOperations.find {
+                        it.productId == controlAction.productId &&
+                                it.operationType == controlAction.operationType &&
+                                it.doneTime > controlAction.doneTime
+                    } == null) {
+                    lockedProductsIdSet.add(controlAction.productId)
+                    if (controlAction.operationType == operationTypes.last().id) {
+                        productsDone--
+                    }
+                }
+            }
+        }
+
+        return KitBriefProgress(
+            kit,
+            productsInWork,
+            productsDone,
+            controlProgress,
+            lockedProductsIdSet.size,
+            defectedProductsQuantity
+        )
     }
 }

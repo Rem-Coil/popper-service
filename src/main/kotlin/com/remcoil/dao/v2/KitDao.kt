@@ -1,6 +1,8 @@
 package com.remcoil.dao.v2
 
 import com.remcoil.data.database.v2.Kits
+import com.remcoil.data.database.v2.Specifications
+import com.remcoil.data.model.v2.ExtendedKit
 import com.remcoil.data.model.v2.Kit
 import com.remcoil.utils.safetySuspendTransactionAsync
 import org.jetbrains.exposed.sql.*
@@ -14,16 +16,24 @@ class KitDao(private val database: Database) {
             .firstOrNull()
     }
 
-    suspend fun getBySpecificationId(id: Long): List<Kit> = safetySuspendTransactionAsync(database) {
-        Kits
-            .select { Kits.specificationId eq id }
-            .map(::extractKit)
-    }
-
     suspend fun getAll(): List<Kit> = safetySuspendTransactionAsync(database) {
         Kits
             .selectAll()
             .map(::extractKit)
+    }
+
+    suspend fun getAllWithSpecification(): List<ExtendedKit> = safetySuspendTransactionAsync(database) {
+        Kits.leftJoin(Specifications).slice(
+            Kits.id,
+            Kits.kitNumber,
+            Kits.batchSize,
+            Kits.batchesQuantity,
+            Kits.specificationId,
+            Specifications.specificationTitle,
+            Specifications.testedPercentage
+        )
+            .selectAll()
+            .map(::extractExtendedKit)
     }
 
     suspend fun create(kit: Kit): Kit = safetySuspendTransactionAsync(database) {
@@ -55,5 +65,15 @@ class KitDao(private val database: Database) {
         row[Kits.batchesQuantity],
         row[Kits.batchSize],
         row[Kits.specificationId].value
+    )
+
+    private fun extractExtendedKit(row: ResultRow): ExtendedKit = ExtendedKit(
+        row[Kits.id].value,
+        row[Kits.kitNumber],
+        row[Kits.batchesQuantity],
+        row[Kits.batchSize],
+        row[Kits.specificationId].value,
+        row[Specifications.specificationTitle],
+        row[Specifications.testedPercentage]
     )
 }

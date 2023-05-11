@@ -21,7 +21,7 @@ class KitsProgressTest {
 
     private val now = Clock.System.now()
 
-    private var kitList = mutableListOf<Kit>()
+    private var kitList = mutableListOf<ExtendedKit>()
     private var operationTypeList = mutableListOf<OperationType>()
     private var extendedActionList = mutableListOf<ExtendedAction>()
     private var extendedControlActionList = mutableListOf<ExtendedControlAction>()
@@ -33,7 +33,7 @@ class KitsProgressTest {
     @BeforeEach
     fun resetCollections() {
         for (i in 1..3L) {
-            kitList.add(Kit(i, "1-1", 3, 100, 1))
+            kitList.add(ExtendedKit(i, "1-1", 3, 100, (i + 1) / 2, "TAG-${(i + 1) / 2}", 10))
             operationTypeList.add(OperationType(i, "Test", i.toInt(), 1))
             for (j in 1..300) {
                 extendedProductList.add(
@@ -118,7 +118,7 @@ class KitsProgressTest {
             )
         }
 
-        coEvery { kitDao.getBySpecificationId(any()) } returns kitList
+        coEvery { kitDao.getAllWithSpecification() } returns kitList
         coEvery { operationTypeService.getOperationTypesBySpecificationId(any()) } returns operationTypeList
         coEvery { actionService.getActionsBySpecificationId(any()) } returns extendedActionList
         coEvery { controlActionService.getControlActionsBySpecificationId(any()) } returns extendedControlActionList
@@ -127,11 +127,11 @@ class KitsProgressTest {
 
     @Test
     fun `base case`(): Unit = runBlocking {
-        val producedProgress = kitService.getKitProgressBySpecificationId(1)
+        val producedProgress = kitService.getKitsProgress()
         val targetProgress = listOf(
-            KitShortProgress(1, "1-1", 300, 300, 300, mapOf("Test" to 300, "OTK" to 150), 0, 0),
-            KitShortProgress(2, "1-1", 300, 200, 50, mapOf("Test" to 50), 0, 0),
-            KitShortProgress(3, "1-1", 300, 0, 0, mapOf(), 0, 0)
+            KitBriefProgress(1, "TAG-1", 10, 1, "1-1", 300, 300, 300, mapOf("Test" to 300, "OTK" to 150), 0, 0),
+            KitBriefProgress(1, "TAG-1", 10, 2, "1-1", 300, 200, 50, mapOf("Test" to 50), 0, 0),
+            KitBriefProgress(2, "TAG-2", 10, 3, "1-1", 300, 0, 0, mapOf(), 0, 0)
         )
 
         assertEquals(targetProgress, producedProgress)
@@ -145,11 +145,11 @@ class KitsProgressTest {
         extendedControlActionList[0] = ExtendedControlAction(1, now.plus(1 + 1, DateTimeUnit.MINUTE).toLocalDateTime(TimeZone.UTC), true, "Test", "Good", 1, 1, 1, false, 1, 1, 1)
         extendedControlActionList[350] = ExtendedControlAction(351, now.plus(351 + 1, DateTimeUnit.MINUTE).toLocalDateTime(TimeZone.UTC), true, "OTK", "Good", 3, 1, 1, false, 1, 1, 1)
 
-        val producedProgress = kitService.getKitProgressBySpecificationId(1)
+        val producedProgress = kitService.getKitsProgress()
         val targetProgress = listOf(
-            KitShortProgress(1, "1-1", 300, 299, 299, mapOf("Test" to 299, "OTK" to 149), 0, 1),
-            KitShortProgress(2, "1-1", 300, 200, 50, mapOf("Test" to 50), 0, 0),
-            KitShortProgress(3, "1-1", 300, 0, 0, mapOf(), 0, 0)
+            KitBriefProgress(1, "TAG-1", 10,1, "1-1", 300, 299, 299, mapOf("Test" to 299, "OTK" to 149), 0, 1),
+            KitBriefProgress(1, "TAG-1", 10,2, "1-1", 300, 200, 50, mapOf("Test" to 50), 0, 0),
+            KitBriefProgress(2, "TAG-2", 10,3, "1-1", 300, 0, 0, mapOf(), 0, 0)
         )
 
         assertEquals(targetProgress, producedProgress)
@@ -160,11 +160,11 @@ class KitsProgressTest {
         extendedControlActionList[0] = ExtendedControlAction(1, now.plus(1 + 1, DateTimeUnit.MINUTE).toLocalDateTime(TimeZone.UTC), false, "Test", "No Good", 1, 1, 1, true, 1, 1, 1)
         extendedControlActionList[350] = ExtendedControlAction(351, now.plus(351 + 1, DateTimeUnit.MINUTE).toLocalDateTime(TimeZone.UTC), false, "OTK", "No Good", 3, 1, 1, true, 1, 1, 1)
 
-        val producedProgress = kitService.getKitProgressBySpecificationId(1)
+        val producedProgress = kitService.getKitsProgress()
         val targetProgress = listOf(
-            KitShortProgress(1, "1-1", 300, 300, 299, mapOf("Test" to 299, "OTK" to 149), 1, 0),
-            KitShortProgress(2, "1-1", 300, 200, 50, mapOf("Test" to 50), 0, 0),
-            KitShortProgress(3, "1-1", 300, 0, 0, mapOf(), 0, 0)
+            KitBriefProgress(1, "TAG-1", 10,1, "1-1", 300, 300, 299, mapOf("Test" to 299, "OTK" to 149), 1, 0),
+            KitBriefProgress(1, "TAG-1", 10,2, "1-1", 300, 200, 50, mapOf("Test" to 50), 0, 0),
+            KitBriefProgress(2, "TAG-2", 10,3, "1-1", 300, 0, 0, mapOf(), 0, 0)
         )
 
         assertEquals(targetProgress, producedProgress)
@@ -175,11 +175,11 @@ class KitsProgressTest {
         extendedControlActionList[0] = ExtendedControlAction(1, now.plus(1 + 1, DateTimeUnit.MINUTE).toLocalDateTime(TimeZone.UTC), false, "Test", "No Good", 3, 1, 1, true, 1, 1, 1)
         extendedActionList.add(ExtendedAction(1000, now.plus(1000, DateTimeUnit.MINUTE).toLocalDateTime(TimeZone.UTC), true, 3, 1, 1, true, 1, 1, 1))
 
-        val producedProgress = kitService.getKitProgressBySpecificationId(1)
+        val producedProgress = kitService.getKitsProgress()
         val targetProgress = listOf(
-            KitShortProgress(1, "1-1", 300, 300, 300, mapOf("Test" to 299, "OTK" to 150), 0, 0),
-            KitShortProgress(2, "1-1", 300, 200, 50, mapOf("Test" to 50), 0, 0),
-            KitShortProgress(3, "1-1", 300, 0, 0, mapOf(), 0, 0)
+            KitBriefProgress(1, "TAG-1", 10,1, "1-1", 300, 300, 300, mapOf("Test" to 299, "OTK" to 150), 0, 0),
+            KitBriefProgress(1, "TAG-1", 10,2, "1-1", 300, 200, 50, mapOf("Test" to 50), 0, 0),
+            KitBriefProgress(2, "TAG-2", 10,3, "1-1", 300, 0, 0, mapOf(), 0, 0)
         )
 
         assertEquals(targetProgress, producedProgress)
@@ -191,11 +191,11 @@ class KitsProgressTest {
         extendedActionList.add(ExtendedAction(1000, now.plus(1000, DateTimeUnit.MINUTE).toLocalDateTime(TimeZone.UTC), true, 3, 1, 1, true, 1, 1, 1))
         extendedControlActionList[0] = ExtendedControlAction(1000, now.plus(1000 + 1, DateTimeUnit.MINUTE).toLocalDateTime(TimeZone.UTC), false, "Test", "Still No Good", 3, 1, 1, true, 1, 1, 1)
 
-        val producedProgress = kitService.getKitProgressBySpecificationId(1)
+        val producedProgress = kitService.getKitsProgress()
         val targetProgress = listOf(
-            KitShortProgress(1, "1-1", 300, 300, 299, mapOf("Test" to 299, "OTK" to 150), 1, 0),
-            KitShortProgress(2, "1-1", 300, 200, 50, mapOf("Test" to 50), 0, 0),
-            KitShortProgress(3, "1-1", 300, 0, 0, mapOf(), 0, 0)
+            KitBriefProgress(1, "TAG-1", 10,1, "1-1", 300, 300, 299, mapOf("Test" to 299, "OTK" to 150), 1, 0),
+            KitBriefProgress(1, "TAG-1", 10,2, "1-1", 300, 200, 50, mapOf("Test" to 50), 0, 0),
+            KitBriefProgress(2, "TAG-2", 10,3, "1-1", 300, 0, 0, mapOf(), 0, 0)
         )
 
         assertEquals(targetProgress, producedProgress)

@@ -11,6 +11,7 @@ job("Deploy on server (dev)") {
         gitPush {
             branchFilter {
                 +Regex("release")
+                +Regex("develop")
             }
         }
     }

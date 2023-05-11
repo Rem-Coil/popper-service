@@ -47,6 +47,11 @@ fun Application.kitModuleV2() {
                 }
             }
 
+            get("/progress") {
+                val kits = kitService.getKitsProgress()
+                call.respond(kits)
+            }
+
             get("/{id}/progress") {
                 try {
                     val progress = call.parameters["id"]?.let { id ->

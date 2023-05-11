@@ -129,26 +129,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/SpecificationResponseV2'
 
-  /v2/specification/{id}/progress:
-    get:
-      tags:
-        - specification
-      parameters:
-        - in: path
-          name: id
-          required: true
-          schema:
-            type: number
-      responses:
-        '204':
-          description: No content
-        '200':
-          description: Информация о наборах
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/SpecificationProgressV2'
-
   /v2/specification/{id}:
     get:
       tags:
@@ -509,6 +489,18 @@ paths:
         '200':
           description: Информация о наборе обновлена
 
+  /v2/kit/progress:
+    get:
+      tags:
+        - kit
+      responses:
+        '200':
+          description: Информация о наборах
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListOfKitBriefProgressV2'
+
   /v2/kit/{id}/progress:
     get:
       tags:
@@ -527,7 +519,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/KitFullProgressV2'
+                $ref: '#/components/schemas/KitDetailedProgressV2'
 
   /v2/kit/{id}:
     get:
@@ -655,7 +647,7 @@ components:
         defected_quantity:
           type: integer
 
-    KitFullProgressV2:
+    KitDetailedProgressV2:
       properties:
         id:
           type: number
@@ -672,9 +664,15 @@ components:
           items:
             $ref: '#/components/schemas/BatchProgressV2'
 
-    KitShortProgressV2:
+    KitBriefProgressV2:
       properties:
-        id:
+        specification_id:
+          type: number
+        specification_title:
+          type: string
+        tested_percentage:
+          type: integer
+        kit_id:
           type: number
         kit_number:
           type: string
@@ -692,19 +690,6 @@ components:
           type: integer
         defected_quantity:
           type: integer
-
-    SpecificationProgressV2:
-      properties:
-        id:
-          type: number
-        specification_title:
-          type: string
-        tested_percentage:
-          type: integer
-        kits_progress:
-          type: array
-          items:
-            $ref: '#/components/schemas/KitShortProgressV2'
 
     KitV2:
       properties:
@@ -856,3 +841,8 @@ components:
       type: array
       items:
         $ref: '#/components/schemas/ProductV2'
+
+    ListOfKitBriefProgressV2:
+      type: array
+      items:
+        $ref: '#/components/schemas/KitBriefProgressV2'

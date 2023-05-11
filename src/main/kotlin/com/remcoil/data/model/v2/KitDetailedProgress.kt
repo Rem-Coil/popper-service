@@ -4,7 +4,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class KitFullProgress(
+data class KitDetailedProgress(
     val id: Long,
     @SerialName("kit_number")
     val kitNumber: String,
