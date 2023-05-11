@@ -1,0 +1,2 @@
+create unique index ux_action_product_operation on actions (product_id, operation_type) where (repair is false);
+create unique index ux_control_action_product_operation on control_actions (product_id, operation_type, control_type) where (successful is true);

@@ -257,6 +257,8 @@ paths:
             schema:
               $ref: '#/components/schemas/ActionRequestV2'
       responses:
+        '409':
+          description: Action already exists
         '400':
           description: Bad request
         '200':
@@ -275,6 +277,8 @@ paths:
             schema:
               $ref: '#/components/schemas/ActionV2'
       responses:
+        '409':
+          description: Action already exists
         '200':
           description: Action update
         '400':
@@ -358,6 +362,8 @@ paths:
             schema:
               $ref: '#/components/schemas/ControlActionRequestV2'
       responses:
+        '409':
+          description: Control action already exists
         '400':
           description: Bad request
         '200':
@@ -376,6 +382,8 @@ paths:
             schema:
               $ref: '#/components/schemas/ControlActionV2'
       responses:
+        '409':
+          description: Control action already exists
         '200':
           description: Action update
         '400':
