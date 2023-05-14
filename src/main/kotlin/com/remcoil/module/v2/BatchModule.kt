@@ -27,10 +27,8 @@ fun Application.batchModuleV2() {
 
             get("/{id}") {
                 try {
-                    val batch = call.parameters["id"]?.let {
-                        it.toLongOrNull()?.let { id ->
-                            batchService.getBatchById(id)
-                        }
+                    val batch = call.parameters["id"]?.toLongOrNull()?.let {
+                        batchService.getBatchById(it)
                     }
                     call.respondNullable(batch, onNull = HttpStatusCode.BadRequest)
                 } catch (e: EntryDoesNotExistException) {

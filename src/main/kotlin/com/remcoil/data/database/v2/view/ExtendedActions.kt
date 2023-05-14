@@ -8,7 +8,7 @@ object ExtendedActions : Table("extended_actions") {
     val doneTime = datetime("done_time")
     val repair = bool("repair")
     val operationType = long("operation_type")
-    val employeeId = long("employee_id")
+    val employeeId = long("employee_id").nullable()
     val productId = long("product_id")
     val active = bool("active")
     val batchId = long("batch_id")

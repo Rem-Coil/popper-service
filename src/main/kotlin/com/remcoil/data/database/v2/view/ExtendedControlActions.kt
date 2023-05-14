@@ -10,7 +10,7 @@ object ExtendedControlActions : Table("extended_control_actions") {
     val controlType = varchar("control_type", 64)
     val comment = text("comment")
     val operationType = long("operation_type")
-    val employeeId = long("employee_id")
+    val employeeId = long("employee_id").nullable()
     val productId = long("product_id")
     val active = bool("active")
     val batchId = long("batch_id")

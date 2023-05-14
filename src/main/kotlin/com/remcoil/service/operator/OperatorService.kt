@@ -3,9 +3,9 @@ package com.remcoil.service.operator
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
 import com.remcoil.config.JwtConfig
-import com.remcoil.data.model.operator.OperatorCredentials
 import com.remcoil.dao.operator.OperatorDao
 import com.remcoil.data.model.operator.Operator
+import com.remcoil.data.model.operator.OperatorCredentials
 import com.remcoil.data.model.operator.OperatorRole
 import com.remcoil.utils.exceptions.WrongParamException
 import com.remcoil.utils.logger

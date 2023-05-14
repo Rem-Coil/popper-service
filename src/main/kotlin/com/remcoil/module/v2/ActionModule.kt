@@ -28,10 +28,8 @@ fun Application.actionModuleV2() {
 
 
             get("/product/{id}") {
-                val actions = call.parameters["id"]?.let { productId ->
-                    productId.toLongOrNull()?.let {
-                        actionService.getActionsByProductId(it)
-                    }
+                val actions = call.parameters["id"]?.toLongOrNull()?.let {
+                    actionService.getActionsByProductId(it)
                 }
                 call.respondNullable(actions, onNull = HttpStatusCode.BadRequest)
             }
@@ -48,8 +46,10 @@ fun Application.actionModuleV2() {
             }
 
             delete("/{id}") {
-                actionService.deleteActionById(call.parameters["id"]!!.toLong())
-                call.respond(HttpStatusCode.OK)
+                val result = call.parameters["id"]?.toLongOrNull()?.let {
+                    actionService.deleteActionById(it)
+                }
+                call.respondNullable(result, onNull = HttpStatusCode.BadRequest)
             }
 
             authenticate("jwt-access") {

@@ -40,4 +40,5 @@ fun Application.popper() {
     specificationModuleV2()
     controlActionModuleV2()
     operationTypeModuleV2()
+    employeeModuleV2()
 }

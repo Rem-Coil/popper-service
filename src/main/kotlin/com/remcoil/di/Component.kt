@@ -9,6 +9,7 @@ import com.remcoil.dao.comment.CommentDao
 import com.remcoil.dao.operator.OperatorDao
 import com.remcoil.dao.task.TaskDao
 import com.remcoil.dao.v2.ControlActionDao
+import com.remcoil.dao.v2.EmployeeDao
 import com.remcoil.dao.v2.OperationTypeDao
 import com.remcoil.service.action.ActionService
 import com.remcoil.service.action.FullActionService
@@ -18,6 +19,7 @@ import com.remcoil.service.comment.CommentService
 import com.remcoil.service.operator.OperatorService
 import com.remcoil.service.task.TaskService
 import com.remcoil.service.v2.ControlActionService
+import com.remcoil.service.v2.EmployeeService
 import com.remcoil.service.v2.OperationTypeService
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
@@ -87,7 +89,7 @@ fun DI.Builder.v2Components() {
     bind<com.remcoil.dao.v2.ProductDao>() with singleton { com.remcoil.dao.v2.ProductDao(instance()) }
     bind<ControlActionDao>() with singleton { ControlActionDao(instance()) }
     bind<OperationTypeDao>() with singleton { OperationTypeDao(instance()) }
-
+    bind<EmployeeDao>() with singleton { EmployeeDao(instance()) }
 
     bind<com.remcoil.service.v2.ActionService>() with singleton { com.remcoil.service.v2.ActionService(instance(), instance()) }
     bind<com.remcoil.service.v2.BatchService>() with singleton { com.remcoil.service.v2.BatchService(instance(), instance(), instance(), instance())}
@@ -96,4 +98,5 @@ fun DI.Builder.v2Components() {
     bind<com.remcoil.service.v2.ProductService>() with singleton { com.remcoil.service.v2.ProductService(instance())}
     bind<ControlActionService>() with singleton { ControlActionService(instance(), instance()) }
     bind<OperationTypeService>() with singleton { OperationTypeService(instance()) }
+    bind<EmployeeService>() with singleton { EmployeeService(instance(), instance<AppConfig>().jwt) }
 }

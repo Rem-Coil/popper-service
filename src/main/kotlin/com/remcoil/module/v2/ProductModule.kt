@@ -29,10 +29,8 @@ fun Application.productModuleV2() {
 
             get("/{id}") {
                 try {
-                    val product = call.parameters["id"]?.let {
-                        it.toLongOrNull()?.let { id ->
-                            productService.getProductById(id)
-                        }
+                    val product = call.parameters["id"]?.toLongOrNull()?.let {
+                        productService.getProductById(it)
                     }
                     call.respondNullable(product, onNull = HttpStatusCode.BadRequest)
                 } catch (e: EntryDoesNotExistException) {
@@ -42,10 +40,8 @@ fun Application.productModuleV2() {
 
             patch("/{id}/deactivate") {
                 try {
-                    val result = call.parameters["id"]?.let { id ->
-                        id.toLongOrNull()?.let {
-                            productService.deactivateProductById(it)
-                        }
+                    val result = call.parameters["id"]?.toLongOrNull()?.let {
+                        productService.deactivateProductById(it)
                     }
                     call.respondNullable(result, onNull = HttpStatusCode.BadRequest)
                 } catch (e: EntryDoesNotExistException) {

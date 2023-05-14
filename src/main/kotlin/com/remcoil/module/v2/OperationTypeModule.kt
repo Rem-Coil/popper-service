@@ -17,10 +17,8 @@ fun Application.operationTypeModuleV2() {
     routing {
         route("/v2/operation_type") {
             get("/specification/{id}") {
-                val result = call.parameters["id"]?.let { id ->
-                    id.toLongOrNull()?.let {
-                        operationTypeService.getOperationTypesBySpecificationId(it)
-                    }
+                val result = call.parameters["id"]?.toLongOrNull()?.let {
+                    operationTypeService.getOperationTypesBySpecificationId(it)
                 }
                 call.respondNullable(result, HttpStatusCode.BadRequest)
             }
@@ -33,10 +31,8 @@ fun Application.operationTypeModuleV2() {
             }
 
             delete("/{id}") {
-                val result = call.parameters["id"]?.let { id ->
-                    id.toLongOrNull()?.let {
-                        operationTypeService.deleteOperationTypeById(it)
-                    }
+                val result = call.parameters["id"]?.toLongOrNull()?.let {
+                    operationTypeService.deleteOperationTypeById(it)
                 }
                 call.respondNullable(result, onNull = HttpStatusCode.BadRequest)
             }

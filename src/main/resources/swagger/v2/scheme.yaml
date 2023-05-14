@@ -554,6 +554,116 @@ paths:
         '200':
           description: Информация о наборе удалена
 
+  /v2/employee?active_only=true:
+    get:
+      tags:
+        - employee
+      parameters:
+        - in: query
+          name: active_only
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: List of employees
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListOfEmployeesV2'
+
+  /v2/employee/{id}/state?active:
+    put:
+      tags:
+        - employee
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: number
+        - in: query
+          name: active
+          required: true
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: employee state updated
+        '400':
+          description: Bad Request
+
+
+  /v2/employee/{id}:
+    delete:
+      tags:
+        - employee
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: number
+      responses:
+        '200':
+          description: employee deleted successfully
+
+  /v2/employee/sign_in:
+    post:
+      tags:
+        - employee
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmployeeCredentialsV2'
+      responses:
+        '400':
+          description: Wrong password or phone
+        '200':
+          description: Token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Token'
+
+  /v2/employee/sign_up:
+    post:
+      tags:
+        - employee
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmployeeV2'
+      responses:
+        '200':
+          description: Token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Token'
+        '400':
+          description: Bad request
+
+  /v2/employee:
+    put:
+      tags:
+        - employee
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmployeeV2'
+      responses:
+        '200':
+          description: employee updated
+        '400':
+          description: Bad request
+
+
 components:
   securitySchemes:
     bearerAuth:
@@ -562,6 +672,35 @@ components:
       bearerFormat: JWT
 
   schemas:
+    EmployeeV2:
+      properties:
+        id:
+          type: integer
+        first_name:
+          type: string
+        last_name:
+          type: string
+        phone:
+          type: string
+        password:
+          type: string
+        active:
+          type: boolean
+        role:
+          type: string
+
+    EmployeeCredentialsV2:
+      properties:
+        phone:
+          type: string
+        password:
+          type: string
+
+    Token:
+      properties:
+        token:
+          type: string
+
     ActionV2:
       properties:
         id:
@@ -846,3 +985,8 @@ components:
       type: array
       items:
         $ref: '#/components/schemas/KitBriefProgressV2'
+
+    ListOfEmployeesV2:
+      type: array
+      items:
+        $ref: '#/components/schemas/EmployeeV2'

@@ -25,10 +25,8 @@ fun Application.specificationModuleV2() {
 
             get("/{id}") {
                 try {
-                    val specification = call.parameters["id"]?.let { id ->
-                        id.toLongOrNull()?.let {
-                            specificationService.getSpecificationById(it)
-                        }
+                    val specification = call.parameters["id"]?.toLongOrNull()?.let {
+                        specificationService.getSpecificationById(it)
                     }
                     call.respondNullable(specification, onNull = HttpStatusCode.BadRequest)
                 } catch (e: EntryDoesNotExistException) {
@@ -49,10 +47,8 @@ fun Application.specificationModuleV2() {
             }
 
             delete("/{id}") {
-                val result = call.parameters["id"]?.let { id ->
-                    id.toLongOrNull()?.let {
-                        specificationService.deleteSpecificationById(it)
-                    }
+                val result = call.parameters["id"]?.toLongOrNull()?.let {
+                    specificationService.deleteSpecificationById(it)
                 }
                 call.respondNullable(result, onNull = HttpStatusCode.BadRequest)
             }

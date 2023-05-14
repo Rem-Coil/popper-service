@@ -48,7 +48,7 @@ class ActionDao(private val database: Database) {
             it[doneTime] = action.doneTime.toJavaLocalDateTime()
             it[repair] = action.repair
             it[operationType] = action.operationType
-            it[employeeId] = action.employeeId.toInt()
+            it[employeeId] = action.employeeId
             it[productId] = action.productId
         }
     }
@@ -58,7 +58,7 @@ class ActionDao(private val database: Database) {
             it[doneTime] = action.doneTime.toJavaLocalDateTime()
             it[repair] = action.repair
             it[operationType] = action.operationType
-            it[employeeId] = action.employeeId.toInt()
+            it[employeeId] = action.employeeId
             it[productId] = action.productId
         }
         action.copy(id = id.value)
@@ -69,7 +69,7 @@ class ActionDao(private val database: Database) {
             this[Actions.doneTime] = action.doneTime.toJavaLocalDateTime()
             this[Actions.repair] = action.repair
             this[Actions.operationType] = action.operationType
-            this[Actions.employeeId] = action.employeeId.toInt()
+            this[Actions.employeeId] = action.employeeId
             this[Actions.productId] = action.productId
         }
             .map(::extractAction)
@@ -84,7 +84,7 @@ class ActionDao(private val database: Database) {
         row[Actions.doneTime].toKotlinLocalDateTime(),
         row[Actions.repair],
         row[Actions.operationType].value,
-        row[Actions.employeeId].value.toLong(),
+        row[Actions.employeeId]?.value ?: 0,
         row[Actions.productId].value
     )
 
@@ -93,7 +93,7 @@ class ActionDao(private val database: Database) {
         row[ExtendedActions.doneTime].toKotlinLocalDateTime(),
         row[ExtendedActions.repair],
         row[ExtendedActions.operationType],
-        row[ExtendedActions.employeeId],
+        row[ExtendedActions.employeeId] ?: 0,
         row[ExtendedActions.productId],
         row[ExtendedActions.active],
         row[ExtendedActions.batchId],

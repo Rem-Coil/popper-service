@@ -25,10 +25,8 @@ fun Application.kitModuleV2() {
             }
 
             get("/{id}/batches") {
-                val batches = call.parameters["id"]?.let { kitId ->
-                    kitId.toLongOrNull()?.let {
-                        batchService.getBatchesByKitId(it)
-                    }
+                val batches = call.parameters["id"]?.toLongOrNull()?.let {
+                    batchService.getBatchesByKitId(it)
                 }
                 call.respondNullable(batches, onNull = HttpStatusCode.BadRequest)
             }
@@ -36,10 +34,8 @@ fun Application.kitModuleV2() {
 
             get("/{id}") {
                 try {
-                    val kit = call.parameters["id"]?.let { id ->
-                        id.toLongOrNull()?.let {
-                            kitService.getKitById(it)
-                        }
+                    val kit = call.parameters["id"]?.toLongOrNull()?.let {
+                        kitService.getKitById(it)
                     }
                     call.respondNullable(kit, onNull = HttpStatusCode.BadRequest)
                 } catch (e: EntryDoesNotExistException) {
@@ -54,10 +50,8 @@ fun Application.kitModuleV2() {
 
             get("/{id}/progress") {
                 try {
-                    val progress = call.parameters["id"]?.let { id ->
-                        id.toLongOrNull()?.let {
-                            kitService.getKitProgressById(it)
-                        }
+                    val progress = call.parameters["id"]?.toLongOrNull()?.let {
+                        kitService.getKitProgressById(it)
                     }
                     call.respondNullable(progress, onNull = HttpStatusCode.BadRequest)
                 } catch (e: EntryDoesNotExistException) {
@@ -79,10 +73,8 @@ fun Application.kitModuleV2() {
             }
 
             delete("/{id}") {
-                val result = call.parameters["id"]?.let { id ->
-                    id.toLongOrNull()?.let {
-                        kitService.deleteKitById(it)
-                    }
+                val result = call.parameters["id"]?.toLongOrNull()?.let {
+                    kitService.deleteKitById(it)
                 }
                 call.respondNullable(result, onNull = HttpStatusCode.BadRequest)
             }

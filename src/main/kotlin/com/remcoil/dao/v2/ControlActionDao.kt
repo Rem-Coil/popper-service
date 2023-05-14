@@ -36,7 +36,7 @@ class ControlActionDao(private val database: Database) {
             it[controlType] = controlAction.controlType
             it[comment] = controlAction.comment
             it[operationType] = controlAction.operationType
-            it[employeeId] = controlAction.employeeId.toInt()
+            it[employeeId] = controlAction.employeeId
             it[productId] = controlAction.productId
         }
         controlAction.copy(id = id.value)
@@ -49,7 +49,7 @@ class ControlActionDao(private val database: Database) {
             it[controlType] = controlAction.controlType
             it[comment] = controlAction.comment
             it[operationType] = controlAction.operationType
-            it[employeeId] = controlAction.employeeId.toInt()
+            it[employeeId] = controlAction.employeeId
             it[productId] = controlAction.productId
         }
     }
@@ -65,7 +65,7 @@ class ControlActionDao(private val database: Database) {
         row[ControlActions.controlType],
         row[ControlActions.comment],
         row[ControlActions.operationType].value,
-        row[ControlActions.employeeId].value.toLong(),
+        row[ControlActions.employeeId]?.value ?: 0,
         row[ControlActions.productId].value
     )
 
@@ -76,7 +76,7 @@ class ControlActionDao(private val database: Database) {
         row[ExtendedControlActions.controlType],
         row[ExtendedControlActions.comment],
         row[ExtendedControlActions.operationType],
-        row[ExtendedControlActions.employeeId],
+        row[ExtendedControlActions.employeeId] ?: 0,
         row[ExtendedControlActions.productId],
         row[ExtendedControlActions.active],
         row[ExtendedControlActions.batchId],

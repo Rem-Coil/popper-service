@@ -34,10 +34,8 @@ fun Application.controlActionModuleV2() {
             }
 
             delete("/{id}") {
-                val result = call.parameters["id"]?.let {id ->
-                    id.toLongOrNull()?. let {
-                        controlActionService.deleteControlAction(it)
-                    }
+                val result = call.parameters["id"]?.toLongOrNull()?.let {
+                    controlActionService.deleteControlAction(it)
                 }
                 call.respondNullable(result, onNull = HttpStatusCode.BadRequest)
             }
