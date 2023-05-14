@@ -3,6 +3,7 @@ package com.remcoil.dao.v2
 import com.remcoil.data.database.v2.ControlActions
 import com.remcoil.data.database.v2.view.ExtendedControlActions
 import com.remcoil.data.model.v2.ControlAction
+import com.remcoil.data.model.v2.ControlType
 import com.remcoil.data.model.v2.ExtendedControlAction
 import com.remcoil.utils.safetySuspendTransactionAsync
 import kotlinx.datetime.toJavaLocalDateTime
@@ -33,7 +34,7 @@ class ControlActionDao(private val database: Database) {
         val id = ControlActions.insertAndGetId {
             it[doneTime] = controlAction.doneTime.toJavaLocalDateTime()
             it[successful] = controlAction.successful
-            it[controlType] = controlAction.controlType
+            it[controlType] = controlAction.controlType.name
             it[comment] = controlAction.comment
             it[operationType] = controlAction.operationType
             it[employeeId] = controlAction.employeeId
@@ -46,7 +47,7 @@ class ControlActionDao(private val database: Database) {
         ControlActions.update({ ControlActions.id eq controlAction.id }) {
             it[doneTime] = controlAction.doneTime.toJavaLocalDateTime()
             it[successful] = controlAction.successful
-            it[controlType] = controlAction.controlType
+            it[controlType] = controlAction.controlType.name
             it[comment] = controlAction.comment
             it[operationType] = controlAction.operationType
             it[employeeId] = controlAction.employeeId
@@ -62,7 +63,7 @@ class ControlActionDao(private val database: Database) {
         row[ControlActions.id].value,
         row[ControlActions.doneTime].toKotlinLocalDateTime(),
         row[ControlActions.successful],
-        row[ControlActions.controlType],
+        ControlType.valueOf(row[ControlActions.controlType]),
         row[ControlActions.comment],
         row[ControlActions.operationType].value,
         row[ControlActions.employeeId]?.value ?: 0,
@@ -73,7 +74,7 @@ class ControlActionDao(private val database: Database) {
         row[ExtendedControlActions.id],
         row[ExtendedControlActions.doneTime].toKotlinLocalDateTime(),
         row[ExtendedControlActions.successful],
-        row[ExtendedControlActions.controlType],
+        ControlType.valueOf(row[ExtendedControlActions.controlType]),
         row[ExtendedControlActions.comment],
         row[ExtendedControlActions.operationType],
         row[ExtendedControlActions.employeeId] ?: 0,

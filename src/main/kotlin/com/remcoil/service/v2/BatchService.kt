@@ -1,10 +1,7 @@
 package com.remcoil.service.v2
 
 import com.remcoil.dao.v2.BatchDao
-import com.remcoil.data.model.v2.Batch
-import com.remcoil.data.model.v2.BatchProgress
-import com.remcoil.data.model.v2.ExtendedAction
-import com.remcoil.data.model.v2.Kit
+import com.remcoil.data.model.v2.*
 import com.remcoil.utils.exceptions.EntryDoesNotExistException
 import com.remcoil.utils.logger
 import kotlin.math.min
@@ -102,7 +99,7 @@ class BatchService(
 
         for (batch in batches) {
             val operationProgress = mutableMapOf<Long, Int>()
-            val controlProgress = mutableMapOf<String, Int>()
+            val controlProgress = mutableMapOf(ControlType.OTK to 0, ControlType.TESTING to 0)
             val repairOperations = mutableListOf<ExtendedAction>()
             val lockedProductsIdSet = mutableSetOf<Long>()
             val defectedProductsQuantity = defectedProductsQuantityByBatchId[batch.id] ?: 0
@@ -117,7 +114,7 @@ class BatchService(
 
             for (controlAction in controlActionsByBatchId[batch.id] ?: listOf()) {
                 if (controlAction.successful) {
-                    controlProgress.merge(controlAction.controlType, 1) { quantity, _ -> quantity + 1 }
+                    controlProgress[controlAction.controlType] = controlProgress[controlAction.controlType]!! + 1
                 } else {
                     if (repairOperations.find {
                             it.productId == controlAction.productId &&

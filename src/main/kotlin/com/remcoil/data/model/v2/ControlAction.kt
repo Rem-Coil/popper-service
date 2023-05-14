@@ -13,8 +13,8 @@ data class ControlAction(
     val doneTime: LocalDateTime,
     val successful: Boolean,
     @SerialName("control_type")
-    val controlType: String,
-    val comment: String,
+    val controlType: ControlType,
+    val comment: String?,
     @SerialName("operation_type")
     val operationType: Long,
     @SerialName("employee_id")

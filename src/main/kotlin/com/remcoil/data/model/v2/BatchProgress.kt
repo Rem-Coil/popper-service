@@ -11,7 +11,7 @@ data class BatchProgress(
     @SerialName("operations_progress")
     val operationsProgress: Map<Long, Int>,
     @SerialName("control_progress")
-    val controlProgress: Map<String, Int>,
+    val controlProgress: Map<ControlType, Int>,
     @SerialName("locked_quantity")
     val lockedQuantity: Int,
     @SerialName("defected_quantity")

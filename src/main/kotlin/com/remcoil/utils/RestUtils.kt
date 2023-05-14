@@ -6,6 +6,7 @@ import com.remcoil.utils.exceptions.EntryDoesNotExistException
 import com.remcoil.utils.exceptions.WrongParamException
 import io.ktor.http.*
 import io.ktor.server.application.*
+import io.ktor.server.plugins.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 
@@ -14,11 +15,12 @@ suspend inline fun <reified T : Any> ApplicationCall.safetyReceive(onCorrectResu
         receive<T>().let(onCorrectResult)
     } catch (e: Exception) {
         when (e) {
-            is DatabaseException,
-            is WrongParamException -> respond(HttpStatusCode.BadRequest, e.message.toString())
-
             is EntryDoesNotExistException -> respond(HttpStatusCode.NotFound, e.message.toString())
             is DuplicateValueException -> respond(HttpStatusCode.Conflict, e.message.toString())
+
+            is DatabaseException,
+            is WrongParamException,
+            is BadRequestException -> respond(HttpStatusCode.BadRequest, e.message.toString())
         }
     }
 }

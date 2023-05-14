@@ -8,7 +8,7 @@ object ExtendedControlActions : Table("extended_control_actions") {
     val doneTime = datetime("done_time")
     val successful = bool("successful")
     val controlType = varchar("control_type", 64)
-    val comment = text("comment")
+    val comment = text("comment").nullable()
     val operationType = long("operation_type")
     val employeeId = long("employee_id").nullable()
     val productId = long("product_id")

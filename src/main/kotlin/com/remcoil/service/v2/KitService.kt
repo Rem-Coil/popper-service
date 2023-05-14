@@ -106,7 +106,7 @@ class KitService(
         var productsDone = 0
         val lockedProductsIdSet = mutableSetOf<Long>()
         val repairOperations = mutableListOf<ExtendedAction>()
-        val controlProgress = mutableMapOf<String, Int>()
+        val controlProgress = mutableMapOf(ControlType.OTK to 0, ControlType.TESTING to 0)
 
         for (action in actionsByKitId[kit.id] ?: listOf()) {
             if (action.operationType == operationTypes.first().id && !action.repair) {
@@ -122,7 +122,7 @@ class KitService(
 
         for (controlAction in controlActionsByKitId[kit.id] ?: listOf()) {
             if (controlAction.successful) {
-                controlProgress.merge(controlAction.controlType, 1) { quantity, _ -> quantity + 1 }
+                controlProgress[controlAction.controlType] = controlProgress[controlAction.controlType]!! + 1
             } else {
                 if (repairOperations.find {
                         it.productId == controlAction.productId &&

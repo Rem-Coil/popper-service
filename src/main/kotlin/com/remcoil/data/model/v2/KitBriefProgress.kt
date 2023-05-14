@@ -22,7 +22,7 @@ data class KitBriefProgress(
     @SerialName("products_done")
     val productsDone: Int,
     @SerialName("control_progress")
-    val controlProgress: Map<String, Int>,
+    val controlProgress: Map<ControlType, Int>,
     @SerialName("locked_quantity")
     val lockedQuantity: Int,
     @SerialName("defected_quantity")
@@ -32,7 +32,7 @@ data class KitBriefProgress(
         kit: ExtendedKit,
         productsInWork: Int,
         productsDone: Int,
-        controlProgress: Map<String, Int>,
+        controlProgress: Map<ControlType, Int>,
         lockedQuantity: Int,
         defectedQuantity: Int
     ) : this(
