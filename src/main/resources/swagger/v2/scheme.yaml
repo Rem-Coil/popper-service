@@ -286,13 +286,13 @@ paths:
               schema:
                 $ref: '#/components/schemas/ListOfActionsV2'
 
-  /v2/action/product/{product_id}:
+  /v2/action/product/{id}:
     get:
       tags:
         - action
       parameters:
         - in: path
-          name: product_id
+          name: id
           required: true
           schema:
             type: number
@@ -382,6 +382,25 @@ paths:
       responses:
         '200':
           description: Информация об операции удалена
+
+
+  /v2/control_action/product/{id}:
+    get:
+      tags:
+        - control_action
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: number
+      responses:
+        '200':
+          description: Список операций для одного изделия
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListOfControlActionsV2'
 
   /v2/operation_type:
     post:

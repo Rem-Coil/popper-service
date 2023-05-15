@@ -30,6 +30,12 @@ class ControlActionDao(private val database: Database) {
             .map(::extractExtendedControlAction)
     }
 
+    suspend fun getByProductId(id: Long): List<ControlAction> = safetySuspendTransactionAsync(database) {
+        ControlActions
+            .select { ControlActions.productId eq id }
+            .map(::extractControlAction)
+    }
+
     suspend fun create(controlAction: ControlAction): ControlAction = safetySuspendTransactionAsync(database) {
         val id = ControlActions.insertAndGetId {
             it[doneTime] = controlAction.doneTime.toJavaLocalDateTime()

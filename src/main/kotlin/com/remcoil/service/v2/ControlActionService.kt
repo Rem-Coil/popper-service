@@ -22,6 +22,10 @@ class ControlActionService(
         return controlActionDao.getByKitId(id)
     }
 
+    suspend fun getControlActionsByProductId(id: Long): List<ControlAction> {
+        return controlActionDao.getByProductId(id)
+    }
+
     suspend fun createControlAction(controlAction: ControlAction): ControlAction {
         if (productService.productIsActive(controlAction.productId)) {
             val createdControlAction = controlActionDao.create(controlAction)
