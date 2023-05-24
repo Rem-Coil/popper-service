@@ -41,6 +41,9 @@ tasks.test {
 }
 
 dependencies {
+    implementation("io.ktor:ktor-client-core:$ktorVersion")
+    implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
+
     implementation("io.ktor:ktor-server-cors:$ktorVersion")
     implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
     implementation("io.ktor:ktor-server-content-negotiation-jvm:$ktorVersion")
@@ -54,6 +57,7 @@ dependencies {
     implementation("io.ktor:ktor-server-core-jvm:$ktorVersion")
     implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
     implementation("io.ktor:ktor-server-netty-jvm:$ktorVersion")
+    implementation("io.ktor:ktor-client-auth:2.2.4")
 
     testImplementation("org.jetbrains.kotlin:kotlin-test:$kotlinVersion")
     testImplementation("io.mockk:mockk:1.13.5")
@@ -71,10 +75,11 @@ dependencies {
 
 
     implementation("io.github.config4k:config4k:$config4kVersion")
-
     implementation("org.kodein.di:kodein-di-framework-ktor-server-jvm:$kodeinVersion")
-
     implementation(kotlin("stdlib-jdk8"))
+
+    testImplementation("org.testcontainers:testcontainers:1.18.1")
+    testImplementation("org.testcontainers:postgresql:1.18.1")
     testImplementation("io.ktor:ktor-server-tests-jvm:$ktorVersion")
 }
 

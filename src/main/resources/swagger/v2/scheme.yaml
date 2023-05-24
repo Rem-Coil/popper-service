@@ -9,7 +9,7 @@ servers:
   - url: 'https://api.remcoil.webtm.ru'
 paths:
 
-  /v2/product:
+  /product:
     get:
       tags:
         - product
@@ -21,7 +21,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ListOfProductsV2'
 
-  /v2/product/{id}:
+  /product/{id}:
     get:
       tags:
         - product
@@ -43,7 +43,7 @@ paths:
         '400':
           description: Bad request
 
-  /v2/product/{id}/deactivate:
+  /product/{id}/deactivate:
     patch:
       tags:
         - product
@@ -61,7 +61,7 @@ paths:
         '400':
           description: Bad request
 
-  /v2/batch/{batch_id}/product:
+  /batch/{batch_id}/product:
     get:
       tags:
         - product
@@ -81,7 +81,7 @@ paths:
         '400':
           description: Bad request
 
-  /v2/specification:
+  /specification:
     get:
       tags:
         - specification
@@ -94,6 +94,8 @@ paths:
                 $ref: '#/components/schemas/ListOfSpecificationResponsesV2'
 
     put:
+      security:
+        - bearerAuth: [ ]
       tags:
         - specification
       requestBody:
@@ -113,6 +115,8 @@ paths:
           description: Bad request
 
     post:
+      security:
+        - bearerAuth: [ ]
       tags:
         - specification
       requestBody:
@@ -129,7 +133,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/SpecificationResponseV2'
 
-  /v2/specification/{id}:
+  /specification/{id}:
     get:
       tags:
         - specification
@@ -150,6 +154,8 @@ paths:
           description: Not found
 
     delete:
+      security:
+        - bearerAuth: [ ]
       tags:
         - specification
       parameters:
@@ -165,7 +171,7 @@ paths:
           description: Bad request
 
 
-  /v2/batch:
+  /batch:
     get:
       tags:
         - batch
@@ -177,7 +183,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ListOfBatchesV2'
 
-  /v2/batch/{id}:
+  /batch/{id}:
     get:
       tags:
         - batch
@@ -199,7 +205,7 @@ paths:
         '400':
           description: Bad request
 
-  /v2/batch/{id}/codes:
+  /batch/{id}/codes:
     get:
       tags:
         - batch
@@ -213,7 +219,7 @@ paths:
         '200':
           description: QR коды для изделий одной партии
 
-  /v2/action:
+  /action:
     get:
       tags:
         - action
@@ -248,6 +254,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/ActionV2'
     put:
+      security:
+        - bearerAuth: [ ]
       tags:
         - action
       requestBody:
@@ -264,7 +272,7 @@ paths:
         '400':
           description: Bad request
 
-  /v2/action/batch:
+  /action/batch:
     post:
       security:
         - bearerAuth: [ ]
@@ -286,7 +294,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ListOfActionsV2'
 
-  /v2/action/product/{id}:
+  /action/product/{id}:
     get:
       tags:
         - action
@@ -304,8 +312,10 @@ paths:
               schema:
                 $ref: '#/components/schemas/ListOfActionsV2'
 
-  /v2/action/{id}:
+  /action/{id}:
     delete:
+      security:
+        - bearerAuth: [ ]
       tags:
         - action
       parameters:
@@ -318,7 +328,7 @@ paths:
         '200':
           description: Информация об операции удалена
 
-  /v2/control_action:
+  /control_action:
     get:
       tags:
         - control_action
@@ -353,6 +363,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/ControlActionV2'
     put:
+      security:
+        - bearerAuth: [ ]
       tags:
         - control_action
       requestBody:
@@ -369,8 +381,10 @@ paths:
         '400':
           description: Bad request
 
-  /v2/control_action/{id}:
+  /control_action/{id}:
     delete:
+      security:
+        - bearerAuth: [ ]
       tags:
         - control_action
       parameters:
@@ -384,7 +398,7 @@ paths:
           description: Информация об операции удалена
 
 
-  /v2/control_action/product/{id}:
+  /control_action/product/{id}:
     get:
       tags:
         - control_action
@@ -402,8 +416,10 @@ paths:
               schema:
                 $ref: '#/components/schemas/ListOfControlActionsV2'
 
-  /v2/operation_type:
+  /operation_type:
     post:
+      security:
+        - bearerAuth: [ ]
       tags:
         - operation_type
       requestBody:
@@ -421,6 +437,8 @@ paths:
                 $ref: '#/components/schemas/OperationTypeV2'
 
     put:
+      security:
+        - bearerAuth: [ ]
       tags:
         - operation_type
       requestBody:
@@ -433,7 +451,7 @@ paths:
         '200':
           description: Информация о типе обновлена
 
-  /v2/operation_type/specification/{id}:
+  /operation_type/specification/{id}:
     get:
       tags:
         - operation_type
@@ -451,8 +469,10 @@ paths:
               schema:
                 $ref: '#/components/schemas/ListOfOperationTypesV2'
 
-  /v2/operation_type/{id}:
+  /operation_type/{id}:
     delete:
+      security:
+        - bearerAuth: [ ]
       tags:
         - operation_type
       parameters:
@@ -466,7 +486,7 @@ paths:
           description: Информация о типе удалена
 
 
-  /v2/kit:
+  /kit:
     get:
       tags:
         - kit
@@ -479,6 +499,8 @@ paths:
                 $ref: '#/components/schemas/ListOfKitsV2'
 
     post:
+      security:
+        - bearerAuth: [ ]
       tags:
         - kit
       requestBody:
@@ -496,6 +518,8 @@ paths:
                 $ref: '#/components/schemas/KitV2'
 
     put:
+      security:
+        - bearerAuth: [ ]
       tags:
         - kit
       requestBody:
@@ -508,7 +532,7 @@ paths:
         '200':
           description: Информация о наборе обновлена
 
-  /v2/kit/progress:
+  /kit/progress:
     get:
       tags:
         - kit
@@ -520,7 +544,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ListOfKitBriefProgressV2'
 
-  /v2/kit/{id}/progress:
+  /kit/{id}/progress:
     get:
       tags:
         - kit
@@ -540,7 +564,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/KitDetailedProgressV2'
 
-  /v2/kit/{id}:
+  /kit/{id}:
     get:
       tags:
         - kit
@@ -561,6 +585,8 @@ paths:
                 $ref: '#/components/schemas/KitV2'
 
     delete:
+      security:
+        - bearerAuth: [ ]
       tags:
         - kit
       parameters:
@@ -573,7 +599,7 @@ paths:
         '200':
           description: Информация о наборе удалена
 
-  /v2/employee?active_only=true:
+  /employee?active_only=true:
     get:
       tags:
         - employee
@@ -590,7 +616,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ListOfEmployeesV2'
 
-  /v2/employee/{id}/state?active:
+  /employee/{id}/state?active:
     put:
       tags:
         - employee
@@ -612,7 +638,7 @@ paths:
           description: Bad Request
 
 
-  /v2/employee/{id}:
+  /employee/{id}:
     delete:
       tags:
         - employee
@@ -626,7 +652,7 @@ paths:
         '200':
           description: employee deleted successfully
 
-  /v2/employee/sign_in:
+  /employee/sign_in:
     post:
       tags:
         - employee
@@ -646,7 +672,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Token'
 
-  /v2/employee/sign_up:
+  /employee/sign_up:
     post:
       tags:
         - employee
@@ -666,7 +692,7 @@ paths:
         '400':
           description: Bad request
 
-  /v2/employee:
+  /employee:
     put:
       tags:
         - employee
