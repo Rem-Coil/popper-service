@@ -23,9 +23,7 @@ class OperationTypeDao(private val database: Database) {
         operationType.copy(id = id.value)
     }
 
-
-    suspend fun batchCreate(operationTypes: List<OperationType>): List<OperationType> =
-        safetySuspendTransactionAsync(database) {
+    suspend fun batchCreate(operationTypes: List<OperationType>): List<OperationType> = safetySuspendTransactionAsync(database) {
             OperationTypes.batchInsert(operationTypes) { operationType: OperationType ->
                 this[OperationTypes.type] = operationType.type
                 this[OperationTypes.sequenceNumber] = operationType.sequenceNumber

@@ -5,6 +5,7 @@ import com.remcoil.utils.exceptions.EntryDoesNotExistException
 import com.remcoil.utils.respondNullable
 import io.ktor.http.*
 import io.ktor.server.application.*
+import io.ktor.server.auth.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import org.kodein.di.instance
@@ -30,6 +31,16 @@ fun Application.batchModule() {
                     call.respond(HttpStatusCode.NotFound, e.message.toString())
                 }
             }
+
+            authenticate("admin-access") {
+                delete("/{id}/history") {
+                    val result = call.parameters["id"]?.toLongOrNull()?.let {
+                        batchService.clearActionHistoryById(it)
+                    }
+                    call.respondNullable(result, onNull = HttpStatusCode.BadRequest)
+                }
+            }
+
         }
     }
 }

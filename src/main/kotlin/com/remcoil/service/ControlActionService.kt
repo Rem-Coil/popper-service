@@ -2,7 +2,6 @@ package com.remcoil.service
 
 import com.remcoil.dao.ControlActionDao
 import com.remcoil.utils.exceptions.InActiveProductException
-import com.remcoil.utils.logger
 
 class ControlActionService(
     private val controlActionDao: ControlActionDao,
@@ -26,19 +25,19 @@ class ControlActionService(
 
     suspend fun createControlAction(controlAction: com.remcoil.model.dto.ControlAction): com.remcoil.model.dto.ControlAction {
         if (productService.productIsActive(controlAction.productId)) {
-            val createdControlAction = controlActionDao.create(controlAction)
-            logger.info("Операция контроля с id=${createdControlAction.id} сохранена")
-            return createdControlAction
-        } else throw InActiveProductException("Изделие с id=${controlAction.productId} неактивно")
+            return controlActionDao.create(controlAction)
+        } else throw InActiveProductException("Product with id = ${controlAction.productId} inactive")
     }
 
     suspend fun updateControlAction(controlAction: com.remcoil.model.dto.ControlAction) {
         controlActionDao.update(controlAction)
-        logger.info("Данные об операции контроля с id=${controlAction.id}")
     }
 
     suspend fun deleteControlAction(id: Long) {
         controlActionDao.deleteById(id)
-        logger.info("Данные об операции контроля с id=${id} удалены")
+    }
+
+    suspend fun deleteControlActionsByProducts(productsIdList : List<Long>) {
+        controlActionDao.deleteByProducts(productsIdList)
     }
 }

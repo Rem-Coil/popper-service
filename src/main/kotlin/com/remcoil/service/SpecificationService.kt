@@ -22,7 +22,7 @@ class SpecificationService(
 
     suspend fun getSpecificationById(id: Long): SpecificationResponse {
         val specification =
-            specificationDao.getById(id) ?: throw EntryDoesNotExistException("ТЗ с id = $id не существует")
+            specificationDao.getById(id) ?: throw EntryDoesNotExistException("Specification with id = $id not found")
         specification.operationTypes = operationTypeService.getOperationTypesBySpecificationId(specification.id)
         return specification
     }

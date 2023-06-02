@@ -1,48 +1,45 @@
 package com.remcoil.service
 
 import com.remcoil.dao.ProductDao
+import com.remcoil.model.dto.Batch
+import com.remcoil.model.dto.Kit
+import com.remcoil.model.dto.Product
 import com.remcoil.utils.exceptions.EntryDoesNotExistException
-import com.remcoil.utils.logger
 
 class ProductService(
     private val productDao: ProductDao
 ) {
 
-    suspend fun getAllProducts(): List<com.remcoil.model.dto.Product> {
-        val products = productDao.getAll()
-        logger.info("Отдали все изделия")
-        return products
+    suspend fun getAllProducts(): List<Product> {
+        return productDao.getAll()
     }
 
     suspend fun getProductsBySpecificationId(id: Long): List<com.remcoil.model.dto.ExtendedProduct> {
         return productDao.getBySpecificationId(id)
     }
 
-    suspend fun getProductsByBatchId(id: Long): List<com.remcoil.model.dto.Product> {
-        val products = productDao.getByBatchId(id)
-        logger.info("Отдали изделия партии - $id")
-        return products
+    suspend fun getProductsByBatchId(id: Long): List<Product> {
+        return productDao.getByBatchId(id)
     }
 
-    suspend fun getProductsByBatchesId(idList: List<Long>): List<com.remcoil.model.dto.Product> {
+    suspend fun getProductsByBatchesId(idList: List<Long>): List<Product> {
         return productDao.getByBatchesId(idList)
     }
 
-    suspend fun getProductById(id:Long): com.remcoil.model.dto.Product {
-        return productDao.getById(id) ?: throw EntryDoesNotExistException("Продукта с id=$id не существует")
+    suspend fun getProductById(id:Long): Product {
+        return productDao.getById(id) ?: throw EntryDoesNotExistException("Product with id = $id not found")
     }
 
-    private suspend fun createProduct(product: com.remcoil.model.dto.Product): com.remcoil.model.dto.Product {
+    private suspend fun createProduct(product: Product): Product {
         val createdProduct = productDao.create(product)
-        logger.info("Добавили изделие с id = ${createdProduct.id}")
         return createdProduct
     }
 
-    suspend fun createByKitAndBatches(kit: com.remcoil.model.dto.Kit, batches: List<com.remcoil.model.dto.Batch>) {
-        val products = mutableListOf<com.remcoil.model.dto.Product>()
+    suspend fun createByKitAndBatches(kit: Kit, batches: List<Batch>) {
+        val products = mutableListOf<Product>()
         for (batch in batches) {
             for (i in 1..kit.batchSize) {
-                products.add(com.remcoil.model.dto.Product(batchId = batch.id, productNumber = i))
+                products.add(Product(batchId = batch.id, productNumber = i))
             }
         }
         productDao.batchCreate(products)
@@ -58,11 +55,11 @@ class ProductService(
     }
 
     suspend fun increaseProductsQuantity(batchId: Long, requiredNumber: Int) {
-        val products = mutableListOf<com.remcoil.model.dto.Product>()
+        val products = mutableListOf<Product>()
         val startNumber = getLastNumberByBatchId(batchId)
         for (i in 1..requiredNumber) {
             products.add(
-                com.remcoil.model.dto.Product(
+                Product(
                     productNumber = startNumber + i,
                     batchId = batchId
                 )
@@ -78,9 +75,8 @@ class ProductService(
     }
 
     suspend fun deactivateProductById(id: Long) {
-        val product = productDao.getById(id) ?: throw EntryDoesNotExistException("Изделия с id = $id не существует")
+        val product = productDao.getById(id) ?: throw EntryDoesNotExistException("Product with id = $id not found")
         productDao.update(product.deactivated())
-        logger.info("Забраковали изделие с id = $id")
         createProduct(product)
     }
 

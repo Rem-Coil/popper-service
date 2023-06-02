@@ -8,6 +8,7 @@ import kotlinx.datetime.toJavaLocalDateTime
 import kotlinx.datetime.toKotlinLocalDateTime
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.inList
 
 class ActionDao(private val database: Database){
 
@@ -76,6 +77,10 @@ class ActionDao(private val database: Database){
 
     suspend fun deleteById(id: Long) = safetySuspendTransactionAsync(database) {
         Actions.deleteWhere { Actions.id eq id }
+    }
+
+    suspend fun deleteByProducts(idList: List<Long>) = safetySuspendTransactionAsync(database) {
+        Actions.deleteWhere { productId.inList(idList)}
     }
 
     private fun extractAction(row: ResultRow): Action = Action(

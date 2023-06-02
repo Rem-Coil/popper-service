@@ -3,11 +3,13 @@ package com.remcoil.dao
 import com.remcoil.model.database.ControlActions
 import com.remcoil.model.database.view.ExtendedControlActions
 import com.remcoil.model.dto.ControlAction
+import com.remcoil.model.dto.ExtendedControlAction
 import com.remcoil.utils.safetySuspendTransactionAsync
 import kotlinx.datetime.toJavaLocalDateTime
 import kotlinx.datetime.toKotlinLocalDateTime
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.inList
 
 class ControlActionDao(private val database: Database) {
     suspend fun getAll() = safetySuspendTransactionAsync(database) {
@@ -16,13 +18,13 @@ class ControlActionDao(private val database: Database) {
             .map(::extractControlAction)
     }
 
-    suspend fun getBySpecificationId(id: Long): List<com.remcoil.model.dto.ExtendedControlAction> = safetySuspendTransactionAsync(database) {
+    suspend fun getBySpecificationId(id: Long): List<ExtendedControlAction> = safetySuspendTransactionAsync(database) {
         ExtendedControlActions
             .select { ExtendedControlActions.specificationId eq id }
             .map(::extractExtendedControlAction)
     }
 
-    suspend fun getByKitId(id: Long): List<com.remcoil.model.dto.ExtendedControlAction> = safetySuspendTransactionAsync(database) {
+    suspend fun getByKitId(id: Long): List<ExtendedControlAction> = safetySuspendTransactionAsync(database) {
         ExtendedControlActions
             .select { ExtendedControlActions.kitId eq id }
             .map(::extractExtendedControlAction)
@@ -63,6 +65,10 @@ class ControlActionDao(private val database: Database) {
         ControlActions.deleteWhere { ControlActions.id eq id }
     }
 
+    suspend fun deleteByProducts(idList: List<Long>) = safetySuspendTransactionAsync(database) {
+        ControlActions.deleteWhere { productId.inList(idList) }
+    }
+
     private fun extractControlAction(row: ResultRow): ControlAction =
         ControlAction(
             row[ControlActions.id].value,
@@ -75,8 +81,8 @@ class ControlActionDao(private val database: Database) {
             row[ControlActions.productId].value
         )
 
-    private fun extractExtendedControlAction(row: ResultRow): com.remcoil.model.dto.ExtendedControlAction =
-        com.remcoil.model.dto.ExtendedControlAction(
+    private fun extractExtendedControlAction(row: ResultRow): ExtendedControlAction =
+        ExtendedControlAction(
             row[ExtendedControlActions.id],
             row[ExtendedControlActions.doneTime].toKotlinLocalDateTime(),
             row[ExtendedControlActions.successful],

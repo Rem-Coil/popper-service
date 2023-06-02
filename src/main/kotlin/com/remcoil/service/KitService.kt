@@ -3,8 +3,6 @@ package com.remcoil.service
 import com.remcoil.dao.KitDao
 import com.remcoil.model.dto.*
 import com.remcoil.utils.exceptions.EntryDoesNotExistException
-import com.remcoil.utils.logger
-
 
 class KitService(
     private val kitDao: KitDao,
@@ -16,25 +14,19 @@ class KitService(
 ) {
 
     suspend fun getAllKits(): List<Kit> {
-        val kits = kitDao.getAll()
-        logger.info("Вернули все наборы")
-        return kits
+        return kitDao.getAll()
     }
 
     suspend fun getKitById(id: Long): Kit {
-        val kit = kitDao.getById(id) ?: throw EntryDoesNotExistException("Набор с id = $id не существует")
-        logger.info("Вернули данные от наборе - $id")
-        return kit
+        return kitDao.getById(id) ?: throw EntryDoesNotExistException("Kit with id = $id not found")
     }
 
     suspend fun deleteKitById(id: Long) {
         kitDao.deleteById(id)
-        logger.info("Данные о ТЗ удалены")
     }
 
     suspend fun createKit(kit: Kit): Kit {
         val created = kitDao.create(kit)
-        logger.info("Создан набор - ${created.kitNumber}")
         batchService.createByKit(created, startNumber = 1)
         return created
     }
@@ -45,8 +37,6 @@ class KitService(
 
         batchService.updateBatchSize(oldKit, kit)
         batchService.updateBatchesQuantity(oldKit, kit)
-
-        logger.info("Обновили набор с id = ${kit.id}")
     }
 
     suspend fun getKitProgressById(id: Long): KitDetailedProgress {

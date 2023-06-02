@@ -2,37 +2,28 @@ package com.remcoil.service
 
 import com.remcoil.dao.OperationTypeDao
 import com.remcoil.model.dto.OperationType
-import com.remcoil.utils.logger
 
 class OperationTypeService(
     private val operationTypeDao: OperationTypeDao
 ) {
     suspend fun getOperationTypesBySpecificationId(id: Long): List<OperationType> {
-        val operationTypes = operationTypeDao.getBySpecificationId(id)
-        logger.info("Возвращены типы операции для ТЗ с id=$id")
-        return operationTypes
+        return operationTypeDao.getBySpecificationId(id)
     }
 
     suspend fun createOperationType(operationType: OperationType): OperationType {
-        val createdOperationType = operationTypeDao.create(operationType)
-        logger.info("Создан тип операции с id=${createdOperationType.id}")
-        return createdOperationType
+        return operationTypeDao.create(operationType)
     }
 
     suspend fun createBatchOperationTypes(operationTypes: List<OperationType>): List<OperationType> {
-        val createdOperationTypes = operationTypeDao.batchCreate(operationTypes)
-        logger.info("Создано ${createdOperationTypes.size} типов операций")
-        return createdOperationTypes
+        return operationTypeDao.batchCreate(operationTypes)
     }
 
     suspend fun updateOperationType(operationType: OperationType) {
         operationTypeDao.update(operationType)
-        logger.info("Обновлен тип операций с id=${operationType.id}")
     }
 
     suspend fun deleteOperationTypeById(id: Long) {
         operationTypeDao.deleteById(id)
-        logger.info("Удален тип операции с id=$id")
     }
 
     suspend fun updateBatchOperationTypes(

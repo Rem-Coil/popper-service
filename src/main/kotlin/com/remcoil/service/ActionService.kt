@@ -2,16 +2,13 @@ package com.remcoil.service
 
 import com.remcoil.dao.ActionDao
 import com.remcoil.utils.exceptions.InActiveProductException
-import com.remcoil.utils.logger
 
 class ActionService(
     private val actionDao: ActionDao,
     private val productService: ProductService
 ) {
     suspend fun getAllActions(): List<com.remcoil.model.dto.Action> {
-        val actions = actionDao.getAll()
-        logger.info("Отдали все операции")
-        return actions
+        return actionDao.getAll()
     }
 
     suspend fun getActionsBySpecificationId(id: Long): List<com.remcoil.model.dto.ExtendedAction> {
@@ -23,25 +20,23 @@ class ActionService(
     }
 
     suspend fun getActionsByProductId(id: Long): List<com.remcoil.model.dto.Action> {
-        val actions = actionDao.getByProductId(id)
-        logger.info("Отдали все операции по изделию - $id")
-        return actions
+        return actionDao.getByProductId(id)
     }
 
     suspend fun updateAction(action: com.remcoil.model.dto.Action) {
         actionDao.update(action)
-        logger.info("Данные об операции с id=${action.id}")
     }
 
     suspend fun createAction(action: com.remcoil.model.dto.Action): com.remcoil.model.dto.Action {
         if (productService.productIsActive(action.productId)) {
-            val createdAction = actionDao.create(action)
-            logger.info("Операция с id=${createdAction.id} сохранена")
-            return createdAction
-        } else throw InActiveProductException("Изделие с id=${action.productId} неактивно")
+            return actionDao.create(action)
+        } else throw InActiveProductException("Product with id = ${action.productId} inactive")
     }
 
-    suspend fun createBatchActions(batchActionRequest: com.remcoil.model.dto.BatchActionRequest, employeeId: Long): List<com.remcoil.model.dto.Action> {
+    suspend fun createBatchActions(
+        batchActionRequest: com.remcoil.model.dto.BatchActionRequest,
+        employeeId: Long
+    ): List<com.remcoil.model.dto.Action> {
         val products = productService.getProductsByBatchId(batchActionRequest.batchId)
             .filter { product -> product.active }
 
@@ -55,6 +50,9 @@ class ActionService(
 
     suspend fun deleteActionById(id: Long) {
         actionDao.deleteById(id)
-        logger.info("Удалили данные об операции - $id")
+    }
+
+    suspend fun deleteActionsByProducts(productsIdList: List<Long>) {
+        actionDao.deleteByProducts(productsIdList)
     }
 }

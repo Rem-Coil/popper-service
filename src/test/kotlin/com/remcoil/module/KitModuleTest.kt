@@ -65,12 +65,12 @@ class KitModuleTest : BaseModuleTest() {
             bearerAuth(operatorToken)
         }
 
-        assertEquals(nonAuthPostResponse.status, HttpStatusCode.Unauthorized)
-        assertEquals(authPostResponse.status, HttpStatusCode.Unauthorized)
-        assertEquals(nonAuthPutResponse.status, HttpStatusCode.Unauthorized)
-        assertEquals(authPutResponse.status, HttpStatusCode.Unauthorized)
-        assertEquals(nonAuthDeleteResponse.status, HttpStatusCode.Unauthorized)
-        assertEquals(authDeleteResponse.status, HttpStatusCode.Unauthorized)
+        assertEquals(HttpStatusCode.Unauthorized, nonAuthPostResponse.status)
+        assertEquals(HttpStatusCode.Unauthorized, authPostResponse.status)
+        assertEquals(HttpStatusCode.Unauthorized, nonAuthPutResponse.status)
+        assertEquals(HttpStatusCode.Unauthorized, authPutResponse.status)
+        assertEquals(HttpStatusCode.Unauthorized, nonAuthDeleteResponse.status)
+        assertEquals(HttpStatusCode.Unauthorized, authDeleteResponse.status)
     }
 
     @Test
@@ -107,5 +107,41 @@ class KitModuleTest : BaseModuleTest() {
 
         assertEquals(postResponse.status, HttpStatusCode.OK)
         assertEquals(putResponse.status, HttpStatusCode.OK)
+    }
+
+    @Test
+    fun `should respond bad request`() = testApplication {
+        val client = createClient {
+            install(ContentNegotiation) {
+                json()
+            }
+        }
+
+        application {
+            configurationModule(config)
+            kitModule()
+            executeSqlScript("/sql/test_data.sql")
+        }
+
+        val postRequestBody = Kit(0, "Test", 1,2, 0)
+        val putRequestBody = Kit(2, "Test", 1,2, 0)
+
+        val adminToken =
+            generateToken(Employee(1, "FirstName", "LastName", "123", "pass", true, EmployeeRole.ADMIN))
+
+        val postResponse = client.post(baseRoute) {
+            contentType(ContentType.Application.Json)
+            setBody(postRequestBody)
+            bearerAuth(adminToken)
+        }
+
+        val putResponse = client.post(baseRoute) {
+            contentType(ContentType.Application.Json)
+            setBody(putRequestBody)
+            bearerAuth(adminToken)
+        }
+
+        assertEquals(postResponse.status, HttpStatusCode.BadRequest)
+        assertEquals(putResponse.status, HttpStatusCode.BadRequest)
     }
 }

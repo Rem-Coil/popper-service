@@ -16,7 +16,9 @@ import kotlin.test.BeforeTest
 open class BaseModuleTest {
     lateinit var config: AppConfig
 
-    private val postgres = PostgreSQLContainer(DockerImageName.parse("postgres:11")).apply {
+    private val postgres = PostgreSQLContainer(
+        DockerImageName.parse("postgres:11")
+    ).apply {
         this
             .withDatabaseName("popper")
             .withUsername("root")

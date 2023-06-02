@@ -16,7 +16,7 @@ class BatchService(
     }
 
     suspend fun getBatchById(id: Long): Batch {
-        return batchDao.getById(id) ?: throw EntryDoesNotExistException("Партии с id - $id не существует")
+        return batchDao.getById(id) ?: throw EntryDoesNotExistException("Batch with id = $id not found")
     }
 
     suspend fun getBatchesByKitId(id: Long): List<Batch> {
@@ -130,5 +130,9 @@ class BatchService(
         return batchesProgress
     }
 
-
+    suspend fun clearActionHistoryById(id: Long) {
+        val productsIdList = productService.getProductsByBatchId(id).map { it.id }
+        actionService.deleteActionsByProducts(productsIdList)
+        controlActionService.deleteControlActionsByProducts(productsIdList)
+    }
 }

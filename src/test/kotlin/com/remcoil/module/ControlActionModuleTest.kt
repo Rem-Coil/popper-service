@@ -67,12 +67,12 @@ class ControlActionModuleTest : BaseModuleTest() {
             bearerAuth(operatorToken)
         }
 
-        assertEquals(nonAuthPostResponse.status, HttpStatusCode.Unauthorized)
-        assertEquals(authPostResponse.status, HttpStatusCode.Unauthorized)
-        assertEquals(nonAuthPutResponse.status, HttpStatusCode.Unauthorized)
-        assertEquals(authPutResponse.status, HttpStatusCode.Unauthorized)
-        assertEquals(nonAuthDeleteResponse.status, HttpStatusCode.Unauthorized)
-        assertEquals(authDeleteResponse.status, HttpStatusCode.Unauthorized)
+        assertEquals(HttpStatusCode.Unauthorized, nonAuthPostResponse.status)
+        assertEquals(HttpStatusCode.Unauthorized, authPostResponse.status)
+        assertEquals(HttpStatusCode.Unauthorized, nonAuthPutResponse.status)
+        assertEquals(HttpStatusCode.Unauthorized, authPutResponse.status)
+        assertEquals(HttpStatusCode.Unauthorized, nonAuthDeleteResponse.status)
+        assertEquals(HttpStatusCode.Unauthorized, authDeleteResponse.status)
     }
 
     @Test
@@ -94,23 +94,105 @@ class ControlActionModuleTest : BaseModuleTest() {
 
         val adminToken =
             generateToken(Employee(1, "FirstName", "LastName", "123", "pass", true, EmployeeRole.ADMIN))
-        val operatorToken =
+        val qualityEngineerToken =
             generateToken(Employee(2, "FirstName", "LastName", "123", "pass", true, EmployeeRole.QUALITY_ENGINEER))
 
-        val postResponse = client.post(baseRoute) {
+        val postResponse1 = client.post(baseRoute) {
             contentType(ContentType.Application.Json)
             setBody(requestBody1)
             bearerAuth(adminToken)
         }
 
-        val putResponse = client.post(baseRoute) {
+        val postResponse2 = client.post(baseRoute) {
             contentType(ContentType.Application.Json)
             setBody(requestBody2)
-            bearerAuth(operatorToken)
+            bearerAuth(qualityEngineerToken)
         }
 
-        assertEquals(postResponse.status, HttpStatusCode.OK)
-        assertEquals(putResponse.status, HttpStatusCode.OK)
+        assertEquals(postResponse1.status, HttpStatusCode.OK)
+        assertEquals(postResponse2.status, HttpStatusCode.OK)
 
+    }
+
+    @Test
+    fun `should respond conflict`() = testApplication {
+        val client = createClient {
+            install(ContentNegotiation) {
+                json()
+            }
+        }
+
+        application {
+            configurationModule(config)
+            controlActionModule()
+            executeSqlScript("/sql/test_data.sql")
+        }
+
+        val requestBody1 = ControlActionRequest(Clock.System.now().toLocalDateTime(TimeZone.UTC), true, ControlType.OTK, "Good", 1, 1)
+        val requestBody2 = ControlActionRequest(Clock.System.now().toLocalDateTime(TimeZone.UTC), true, ControlType.OTK, "Good", 1, 1)
+
+         val qualityEngineerToken =
+            generateToken(Employee(2, "FirstName", "LastName", "123", "pass", true, EmployeeRole.QUALITY_ENGINEER))
+
+        val postResponse1 = client.post(baseRoute) {
+            contentType(ContentType.Application.Json)
+            setBody(requestBody1)
+            bearerAuth(qualityEngineerToken)
+        }
+
+        val postResponse2 = client.post(baseRoute) {
+            contentType(ContentType.Application.Json)
+            setBody(requestBody2)
+            bearerAuth(qualityEngineerToken)
+        }
+
+        assertEquals(postResponse1.status, HttpStatusCode.OK)
+        assertEquals(postResponse2.status, HttpStatusCode.Conflict)
+    }
+
+    @Test
+    fun `should respond bad request`() = testApplication {
+        val client = createClient {
+            install(ContentNegotiation) {
+                json()
+            }
+        }
+
+        application {
+            configurationModule(config)
+            controlActionModule()
+            executeSqlScript("/sql/test_data.sql")
+        }
+
+        val requestBody1 = ControlActionRequest(Clock.System.now().toLocalDateTime(TimeZone.UTC), true, ControlType.OTK, "Good", 0, 1)
+        val requestBody2 = ControlActionRequest(Clock.System.now().toLocalDateTime(TimeZone.UTC), true, ControlType.OTK, "Good", 1, 0)
+        val requestBody3 = ControlActionRequest(Clock.System.now().toLocalDateTime(TimeZone.UTC), true, ControlType.OTK, "Good", 1, 2)
+
+        val adminToken =
+            generateToken(Employee(0, "FirstName", "LastName", "123", "pass", true, EmployeeRole.ADMIN))
+        val qualityEngineerToken =
+            generateToken(Employee(2, "FirstName", "LastName", "123", "pass", true, EmployeeRole.QUALITY_ENGINEER))
+
+        val postResponse1 = client.post(baseRoute) {
+            contentType(ContentType.Application.Json)
+            setBody(requestBody1)
+            bearerAuth(qualityEngineerToken)
+        }
+
+        val postResponse2 = client.post(baseRoute) {
+            contentType(ContentType.Application.Json)
+            setBody(requestBody2)
+            bearerAuth(qualityEngineerToken)
+        }
+
+        val postResponse3 = client.post(baseRoute) {
+            contentType(ContentType.Application.Json)
+            setBody(requestBody3)
+            bearerAuth(adminToken)
+        }
+
+        assertEquals(postResponse1.status, HttpStatusCode.BadRequest)
+        assertEquals(postResponse2.status, HttpStatusCode.BadRequest)
+        assertEquals(postResponse3.status, HttpStatusCode.BadRequest)
     }
 }

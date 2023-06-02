@@ -132,6 +132,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SpecificationResponseV2'
+        '409':
+          description: Неккоретный порядковый номер для типа операций
 
   /specification/{id}:
     get:
@@ -205,8 +207,10 @@ paths:
         '400':
           description: Bad request
 
-  /batch/{id}/codes:
-    get:
+  /batch/{id}/history:
+    delete:
+      security:
+        - bearerAuth: [ ]
       tags:
         - batch
       parameters:
@@ -217,7 +221,9 @@ paths:
             type: number
       responses:
         '200':
-          description: QR коды для изделий одной партии
+          description: Информация о всех операциях удалена
+        '400':
+          description: Bad request
 
   /action:
     get:
@@ -271,28 +277,6 @@ paths:
           description: Action update
         '400':
           description: Bad request
-
-  /action/batch:
-    post:
-      security:
-        - bearerAuth: [ ]
-      tags:
-        - batch_action
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/BatchActionRequestV2'
-      responses:
-        '400':
-          description: Bad request
-        '200':
-          description: Операции созданы
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ListOfActionsV2'
 
   /action/product/{id}:
     get:
