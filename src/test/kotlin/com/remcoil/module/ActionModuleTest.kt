@@ -93,7 +93,7 @@ class ActionModuleTest : BaseModuleTest() {
         application {
             configurationModule(config)
             actionModule()
-            executeSqlScript("/sql/test_data.sql")
+            executeSqlScript("/sql/test_data_1.sql")
         }
 
         val requestBody1 = ActionRequest(Clock.System.now().toLocalDateTime(TimeZone.UTC), false, 1, 1)
@@ -132,7 +132,7 @@ class ActionModuleTest : BaseModuleTest() {
         application {
             configurationModule(config)
             actionModule()
-            executeSqlScript("/sql/test_data.sql")
+            executeSqlScript("/sql/test_data_1.sql")
         }
 
         val requestBody1 = ActionRequest(Clock.System.now().toLocalDateTime(TimeZone.UTC), false, 1, 1)
@@ -153,8 +153,8 @@ class ActionModuleTest : BaseModuleTest() {
             bearerAuth(operatorToken)
         }
 
-        assertEquals(postResponse1.status, HttpStatusCode.OK)
-        assertEquals(postResponse2.status, HttpStatusCode.Conflict)
+        assertEquals(HttpStatusCode.OK, postResponse1.status)
+        assertEquals(HttpStatusCode.Conflict, postResponse2.status)
     }
 
     @Test
@@ -168,7 +168,7 @@ class ActionModuleTest : BaseModuleTest() {
         application {
             configurationModule(config)
             actionModule()
-            executeSqlScript("/sql/test_data.sql")
+            executeSqlScript("/sql/test_data_1.sql")
         }
 
         val requestBody1 = ActionRequest(Clock.System.now().toLocalDateTime(TimeZone.UTC), false, 0, 1)

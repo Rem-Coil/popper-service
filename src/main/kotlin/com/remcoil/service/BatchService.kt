@@ -134,5 +134,6 @@ class BatchService(
         val productsIdList = productService.getProductsByBatchId(id).map { it.id }
         actionService.deleteActionsByProducts(productsIdList)
         controlActionService.deleteControlActionsByProducts(productsIdList)
+        productService.deleteInactiveProductBuBatchId(id)
     }
 }

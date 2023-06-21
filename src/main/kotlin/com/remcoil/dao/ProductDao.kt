@@ -7,6 +7,7 @@ import com.remcoil.model.dto.ExtendedProduct
 import com.remcoil.model.dto.Product
 import com.remcoil.utils.safetySuspendTransactionAsync
 import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.inList
 
 class ProductDao(private val database: Database) {
@@ -54,6 +55,10 @@ class ProductDao(private val database: Database) {
 
     suspend fun deleteByIdList(idList: List<Long>) = safetySuspendTransactionAsync(database) {
         Products.deleteWhere { Products.id inList idList }
+    }
+
+    suspend fun deleteInactiveByBatchId(id: Long) = safetySuspendTransactionAsync(database) {
+        Products.deleteWhere { not(active) and (batchId eq id) }
     }
 
     suspend fun update(product: Product) = safetySuspendTransactionAsync(database) {

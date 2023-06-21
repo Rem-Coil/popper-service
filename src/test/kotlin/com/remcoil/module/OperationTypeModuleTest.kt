@@ -85,7 +85,7 @@ class OperationTypeModuleTest : BaseModuleTest() {
         application {
             configurationModule(config)
             operationTypeModule()
-            executeSqlScript("/sql/test_data.sql")
+            executeSqlScript("/sql/test_data_1.sql")
         }
 
         val requestBody1 = OperationType(0, "test", 3, 1)
@@ -121,7 +121,7 @@ class OperationTypeModuleTest : BaseModuleTest() {
         application {
             configurationModule(config)
             operationTypeModule()
-            executeSqlScript("/sql/test_data.sql")
+            executeSqlScript("/sql/test_data_1.sql")
         }
 
         val requestBody1 = OperationType(0, "test", 1, 1)
@@ -157,7 +157,7 @@ class OperationTypeModuleTest : BaseModuleTest() {
         application {
             configurationModule(config)
             operationTypeModule()
-            executeSqlScript("/sql/test_data.sql")
+            executeSqlScript("/sql/test_data_1.sql")
         }
 
         val requestBody = OperationType(0, "test", 1, 0)

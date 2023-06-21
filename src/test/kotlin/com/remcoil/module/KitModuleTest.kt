@@ -84,7 +84,7 @@ class KitModuleTest : BaseModuleTest() {
         application {
             configurationModule(config)
             kitModule()
-            executeSqlScript("/sql/test_data.sql")
+            executeSqlScript("/sql/test_data_1.sql")
         }
 
         val postRequestBody = Kit(0, "Test", 1,2, 1)
@@ -120,7 +120,7 @@ class KitModuleTest : BaseModuleTest() {
         application {
             configurationModule(config)
             kitModule()
-            executeSqlScript("/sql/test_data.sql")
+            executeSqlScript("/sql/test_data_1.sql")
         }
 
         val postRequestBody = Kit(0, "Test", 1,2, 0)

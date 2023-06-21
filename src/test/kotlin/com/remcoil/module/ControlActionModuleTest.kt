@@ -86,7 +86,7 @@ class ControlActionModuleTest : BaseModuleTest() {
         application {
             configurationModule(config)
             controlActionModule()
-            executeSqlScript("/sql/test_data.sql")
+            executeSqlScript("/sql/test_data_1.sql")
         }
 
         val requestBody1 = ControlActionRequest(Clock.System.now().toLocalDateTime(TimeZone.UTC), true, ControlType.OTK, "Good", 1, 1)
@@ -125,7 +125,7 @@ class ControlActionModuleTest : BaseModuleTest() {
         application {
             configurationModule(config)
             controlActionModule()
-            executeSqlScript("/sql/test_data.sql")
+            executeSqlScript("/sql/test_data_1.sql")
         }
 
         val requestBody1 = ControlActionRequest(Clock.System.now().toLocalDateTime(TimeZone.UTC), true, ControlType.OTK, "Good", 1, 1)
@@ -161,7 +161,7 @@ class ControlActionModuleTest : BaseModuleTest() {
         application {
             configurationModule(config)
             controlActionModule()
-            executeSqlScript("/sql/test_data.sql")
+            executeSqlScript("/sql/test_data_1.sql")
         }
 
         val requestBody1 = ControlActionRequest(Clock.System.now().toLocalDateTime(TimeZone.UTC), true, ControlType.OTK, "Good", 0, 1)

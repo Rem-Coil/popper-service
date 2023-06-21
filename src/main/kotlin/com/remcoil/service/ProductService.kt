@@ -80,6 +80,10 @@ class ProductService(
         createProduct(product)
     }
 
+    suspend fun deleteInactiveProductBuBatchId(id: Long) {
+        productDao.deleteInactiveByBatchId(id)
+    }
+
     suspend fun productIsActive(productId: Long): Boolean {
         return productDao.getById(productId)?.active ?: false
     }

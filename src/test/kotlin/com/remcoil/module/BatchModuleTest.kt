@@ -1,10 +1,7 @@
 package com.remcoil.module
 
 import com.remcoil.config.configurationModule
-import com.remcoil.model.dto.Action
-import com.remcoil.model.dto.ControlAction
-import com.remcoil.model.dto.Employee
-import com.remcoil.model.dto.EmployeeRole
+import com.remcoil.model.dto.*
 import io.ktor.client.call.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
@@ -29,8 +26,10 @@ class BatchModuleTest : BaseModuleTest() {
             configurationModule(config)
             batchModule()
             actionModule()
+            productModule()
             controlActionModule()
-            executeSqlScript("/sql/test_data.sql")
+            executeSqlScript("/sql/test_data_1.sql")
+            executeSqlScript("/sql/test_data_2.sql")
         }
 
         val adminToken =
@@ -43,9 +42,11 @@ class BatchModuleTest : BaseModuleTest() {
 
         val actionModuleResponse = client.get("/action")
         val controlActionModuleResponse = client.get("/control_action")
+        val productModuleResponse = client.get("/product")
 
         assertEquals(HttpStatusCode.OK, batchModuleResponse.status)
         assertEquals(emptyList<Action>(), actionModuleResponse.body())
         assertEquals(emptyList<ControlAction>(), controlActionModuleResponse.body())
+        assertEquals(2, productModuleResponse.body<List<Product>>().size)
     }
 }
