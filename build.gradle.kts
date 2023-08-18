@@ -41,23 +41,22 @@ tasks.test {
 }
 
 dependencies {
-    implementation("io.ktor:ktor-client-core:$ktorVersion")
-    implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
 
+    implementation("org.jetbrains.kotlin-wrappers:kotlin-css:1.0.0-pre.301-kotlin-1.6.10")
+
+    implementation("ch.qos.logback:logback-classic:$logbackVersion")
+    implementation("io.ktor:ktor-client-core-jvm:$ktorVersion")
+    implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
     implementation("io.ktor:ktor-server-cors:$ktorVersion")
     implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
     implementation("io.ktor:ktor-server-content-negotiation-jvm:$ktorVersion")
     implementation("io.ktor:ktor-server-html-builder:$ktorVersion")
     implementation("io.ktor:ktor-server-auth:$ktorVersion")
     implementation("io.ktor:ktor-server-auth-jwt:$ktorVersion")
-
-    implementation("org.jetbrains.kotlin-wrappers:kotlin-css:1.0.0-pre.301-kotlin-1.6.10")
-
-    implementation("ch.qos.logback:logback-classic:$logbackVersion")
     implementation("io.ktor:ktor-server-core-jvm:$ktorVersion")
     implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
     implementation("io.ktor:ktor-server-netty-jvm:$ktorVersion")
-    implementation("io.ktor:ktor-client-auth:2.2.4")
+    implementation("io.ktor:ktor-client-auth-jvm:$ktorVersion")
 
     testImplementation("org.jetbrains.kotlin:kotlin-test:$kotlinVersion")
     testImplementation("io.mockk:mockk:1.13.5")

@@ -3,6 +3,7 @@ package com.remcoil.dao
 import com.remcoil.model.database.ControlActions
 import com.remcoil.model.database.view.ExtendedControlActions
 import com.remcoil.model.dto.ControlAction
+import com.remcoil.model.dto.ControlType
 import com.remcoil.model.dto.ExtendedControlAction
 import com.remcoil.utils.safetySuspendTransactionAsync
 import kotlinx.datetime.toJavaLocalDateTime
@@ -40,6 +41,7 @@ class ControlActionDao(private val database: Database) {
         val id = ControlActions.insertAndGetId {
             it[doneTime] = controlAction.doneTime.toJavaLocalDateTime()
             it[successful] = controlAction.successful
+            it[needRepair] = controlAction.needRepair
             it[controlType] = controlAction.controlType.name
             it[comment] = controlAction.comment
             it[operationType] = controlAction.operationType
@@ -53,6 +55,7 @@ class ControlActionDao(private val database: Database) {
         ControlActions.update({ ControlActions.id eq controlAction.id }) {
             it[doneTime] = controlAction.doneTime.toJavaLocalDateTime()
             it[successful] = controlAction.successful
+            it[needRepair] = controlAction.needRepair
             it[controlType] = controlAction.controlType.name
             it[comment] = controlAction.comment
             it[operationType] = controlAction.operationType
@@ -74,7 +77,8 @@ class ControlActionDao(private val database: Database) {
             row[ControlActions.id].value,
             row[ControlActions.doneTime].toKotlinLocalDateTime(),
             row[ControlActions.successful],
-            com.remcoil.model.dto.ControlType.valueOf(row[ControlActions.controlType]),
+            row[ControlActions.needRepair],
+            ControlType.valueOf(row[ControlActions.controlType]),
             row[ControlActions.comment],
             row[ControlActions.operationType].value,
             row[ControlActions.employeeId]?.value ?: 0,
@@ -86,7 +90,8 @@ class ControlActionDao(private val database: Database) {
             row[ExtendedControlActions.id],
             row[ExtendedControlActions.doneTime].toKotlinLocalDateTime(),
             row[ExtendedControlActions.successful],
-            com.remcoil.model.dto.ControlType.valueOf(row[ExtendedControlActions.controlType]),
+            row[ExtendedControlActions.needRepair],
+            ControlType.valueOf(row[ExtendedControlActions.controlType]),
             row[ExtendedControlActions.comment],
             row[ExtendedControlActions.operationType],
             row[ExtendedControlActions.employeeId] ?: 0,

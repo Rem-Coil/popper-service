@@ -20,7 +20,7 @@ class ProductDao(private val database: Database) {
 
     suspend fun getBySpecificationId(id: Long): List<ExtendedProduct> = safetySuspendTransactionAsync(database) {
         (Products leftJoin Batches leftJoin Kits)
-            .slice(Products.id, Products.productNumber, Products.active, Products.batchId, Batches.kitId)
+            .slice(Products.id, Products.productNumber, Products.active, Products.locked, Products.batchId, Batches.kitId)
             .select { Kits.specificationId eq id }
             .map(::extractExtendedProduct)
     }
@@ -49,6 +49,7 @@ class ProductDao(private val database: Database) {
             it[batchId] = product.batchId
             it[productNumber] = product.productNumber
             it[active] = product.active
+            it[active] = product.locked
         }
         product.copy(id = id.value)
     }
@@ -66,6 +67,7 @@ class ProductDao(private val database: Database) {
             it[batchId] = product.batchId
             it[productNumber] = product.productNumber
             it[active] = product.active
+            it[active] = product.locked
         }
     }
 
@@ -74,14 +76,22 @@ class ProductDao(private val database: Database) {
             this[Products.batchId] = product.batchId
             this[Products.productNumber] = product.productNumber
             this[Products.active] = product.active
+            this[Products.locked] = product.locked
         }
             .map(::extractProduct)
+    }
+
+    suspend fun setLockValueById(id: Long, lock: Boolean) = safetySuspendTransactionAsync(database) {
+        Products.update({Products.id eq id}) {
+            it[locked] = lock
+        }
     }
 
     private fun extractProduct(row: ResultRow): Product = Product(
         row[Products.id].value,
         row[Products.productNumber],
         row[Products.active],
+        row[Products.locked],
         row[Products.batchId].value
     )
 
@@ -90,6 +100,7 @@ class ProductDao(private val database: Database) {
             row[Products.id].value,
             row[Products.productNumber],
             row[Products.active],
+            row[Products.locked],
             row[Products.batchId].value,
             row[Batches.kitId].value
         )

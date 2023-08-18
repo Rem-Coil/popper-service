@@ -43,6 +43,27 @@ paths:
         '400':
           description: Bad request
 
+  /product/{id}?lock:
+    patch:
+      tags:
+        - product
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: number
+        - in: query
+          name: lock
+          required: true
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
+
   /product/{id}/deactivate:
     patch:
       tags:
@@ -784,6 +805,8 @@ components:
           type: integer
         active:
           type: boolean
+        locked:
+          type: boolean
         batch_id:
           type: number
 
@@ -945,6 +968,8 @@ components:
           example: "2022-12-25T14:30:01"
         successful:
           type: boolean
+        need_repair:
+          type: boolean
         control_type:
           type: string
         comment:
@@ -963,6 +988,8 @@ components:
           format: YYYY-MM-DDTHH:MM:SS
           example: "2022-12-25T14:30:01"
         successful:
+          type: boolean
+        need_repair:
           type: boolean
         control_type:
           type: string

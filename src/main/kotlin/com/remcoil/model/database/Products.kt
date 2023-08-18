@@ -7,4 +7,5 @@ object Products: LongIdTable("products") {
     val batchId = reference("batch_id", Batches, onDelete = ReferenceOption.CASCADE)
     val productNumber = integer("product_number")
     val active = bool("active")
+    val locked = bool("locked")
 }

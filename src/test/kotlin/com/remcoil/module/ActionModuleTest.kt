@@ -1,9 +1,7 @@
 package com.remcoil.module
 
 import com.remcoil.config.configurationModule
-import com.remcoil.model.dto.ActionRequest
-import com.remcoil.model.dto.Employee
-import com.remcoil.model.dto.EmployeeRole
+import com.remcoil.model.dto.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
 import io.ktor.http.*
@@ -33,15 +31,17 @@ class ActionModuleTest : BaseModuleTest() {
 
         val requestBody = ActionRequest(Clock.System.now().toLocalDateTime(TimeZone.UTC), false, 1, 1)
         val qualityEngineerToken =
-            generateToken(Employee(
-                3,
-                "First",
-                "Last",
-                "123",
-                "pass",
-                true,
-                EmployeeRole.QUALITY_ENGINEER
-            ))
+            generateToken(
+                Employee(
+                    3,
+                    "First",
+                    "Last",
+                    "123",
+                    "pass",
+                    true,
+                    EmployeeRole.QUALITY_ENGINEER
+                )
+            )
 
         val nonAuthPostResponse = client.post(baseRoute) {
             contentType(ContentType.Application.Json)
@@ -93,11 +93,14 @@ class ActionModuleTest : BaseModuleTest() {
         application {
             configurationModule(config)
             actionModule()
+            controlActionModule()
             executeSqlScript("/sql/test_data_1.sql")
         }
 
         val requestBody1 = ActionRequest(Clock.System.now().toLocalDateTime(TimeZone.UTC), false, 1, 1)
         val requestBody2 = ActionRequest(Clock.System.now().toLocalDateTime(TimeZone.UTC), false, 2, 1)
+        val requestBody3 = ControlActionRequest(Clock.System.now().toLocalDateTime(TimeZone.UTC), false, true, ControlType.OTK, "Foo", 1,1)
+        val requestBody4 = ActionRequest(Clock.System.now().toLocalDateTime(TimeZone.UTC), true, 1, 1)
 
         val adminToken =
             generateToken(Employee(1, "FirstName", "LastName", "123", "pass", true, EmployeeRole.ADMIN))
@@ -116,9 +119,23 @@ class ActionModuleTest : BaseModuleTest() {
             bearerAuth(operatorToken)
         }
 
-        assertEquals(postResponse1.status, HttpStatusCode.OK)
-        assertEquals(postResponse2.status, HttpStatusCode.OK)
+        val postResponse3 = client.post("/control_action"){
+            contentType(ContentType.Application.Json)
+            setBody(requestBody3)
+            bearerAuth(adminToken)
+        }
 
+        val postResponse4 = client.post(baseRoute) {
+            contentType(ContentType.Application.Json)
+            setBody(requestBody4)
+            bearerAuth(operatorToken)
+        }
+
+
+        assertEquals(HttpStatusCode.OK, postResponse1.status)
+        assertEquals(HttpStatusCode.OK, postResponse2.status)
+        assertEquals(HttpStatusCode.OK, postResponse3.status)
+        assertEquals(HttpStatusCode.OK, postResponse4.status)
     }
 
     @Test
@@ -158,7 +175,7 @@ class ActionModuleTest : BaseModuleTest() {
     }
 
     @Test
-    fun `should respond bad request`() = testApplication {
+    fun `should respond not found`() = testApplication {
         val client = createClient {
             install(ContentNegotiation) {
                 json()
@@ -171,14 +188,47 @@ class ActionModuleTest : BaseModuleTest() {
             executeSqlScript("/sql/test_data_1.sql")
         }
 
-        val requestBody1 = ActionRequest(Clock.System.now().toLocalDateTime(TimeZone.UTC), false, 0, 1)
         val requestBody2 = ActionRequest(Clock.System.now().toLocalDateTime(TimeZone.UTC), false, 1, 0)
-        val requestBody3 = ActionRequest(Clock.System.now().toLocalDateTime(TimeZone.UTC), false, 1, 1)
 
         val operatorToken =
             generateToken(Employee(2, "FirstName", "LastName", "123", "pass", true, EmployeeRole.OPERATOR))
-        val adminToken =
+
+        val postResponse2 = client.post(baseRoute) {
+            contentType(ContentType.Application.Json)
+            setBody(requestBody2)
+            bearerAuth(operatorToken)
+        }
+
+        assertEquals(HttpStatusCode.NotFound, actual = postResponse2.status)
+    }
+
+    @Test
+    fun `should respond bad request`() = testApplication {
+        val client = createClient {
+            install(ContentNegotiation) {
+                json()
+            }
+        }
+
+        application {
+            configurationModule(config)
+            actionModule()
+            controlActionModule()
+            executeSqlScript("/sql/test_data_1.sql")
+        }
+
+        val requestBody1 = ActionRequest(Clock.System.now().toLocalDateTime(TimeZone.UTC), false, 0, 1)
+        val requestBody2 = ActionRequest(Clock.System.now().toLocalDateTime(TimeZone.UTC), false, 1, 1)
+        val requestBody3 = ControlActionRequest(Clock.System.now().toLocalDateTime(TimeZone.UTC), false, true, ControlType.OTK, "Foo", 1,1)
+        val requestBody4 = ActionRequest(Clock.System.now().toLocalDateTime(TimeZone.UTC), true, 1, 2)
+        val requestBody5 = ActionRequest(Clock.System.now().toLocalDateTime(TimeZone.UTC), true, 2, 1)
+
+        val operatorToken =
+            generateToken(Employee(2, "FirstName", "LastName", "123", "pass", true, EmployeeRole.OPERATOR))
+        val adminToken1 =
             generateToken(Employee(0, "FirstName", "LastName", "123", "pass", true, EmployeeRole.ADMIN))
+        val adminToken2 =
+            generateToken(Employee(1, "FirstName", "LastName", "123", "pass", true, EmployeeRole.ADMIN))
 
         val postResponse1 = client.post(baseRoute) {
             contentType(ContentType.Application.Json)
@@ -189,17 +239,38 @@ class ActionModuleTest : BaseModuleTest() {
         val postResponse2 = client.post(baseRoute) {
             contentType(ContentType.Application.Json)
             setBody(requestBody2)
+            bearerAuth(adminToken1)
+        }
+
+        val postResponse3 = client.post("/control_action"){
+            contentType(ContentType.Application.Json)
+            setBody(requestBody3)
+            bearerAuth(adminToken2)
+        }
+
+        val postResponse4 = client.post(baseRoute) {
+            contentType(ContentType.Application.Json)
+            setBody(requestBody2)
             bearerAuth(operatorToken)
         }
 
-        val postResponse3 = client.post(baseRoute) {
+        val postResponse5 = client.post(baseRoute) {
             contentType(ContentType.Application.Json)
-            setBody(requestBody3)
-            bearerAuth(adminToken)
+            setBody(requestBody4)
+            bearerAuth(operatorToken)
         }
 
-        assertEquals(postResponse1.status, HttpStatusCode.BadRequest)
-        assertEquals(postResponse2.status, HttpStatusCode.BadRequest)
-        assertEquals(postResponse3.status, HttpStatusCode.BadRequest)
+        val postResponse6 = client.post(baseRoute) {
+            contentType(ContentType.Application.Json)
+            setBody(requestBody5)
+            bearerAuth(operatorToken)
+        }
+
+        assertEquals(HttpStatusCode.BadRequest, actual = postResponse1.status)
+        assertEquals(HttpStatusCode.BadRequest, actual = postResponse2.status)
+        assertEquals(HttpStatusCode.OK, actual = postResponse3.status)
+        assertEquals(HttpStatusCode.BadRequest, actual = postResponse4.status)
+        assertEquals(HttpStatusCode.BadRequest, actual = postResponse5.status)
+        assertEquals(HttpStatusCode.BadRequest, actual = postResponse6.status)
     }
 }

@@ -48,6 +48,14 @@ fun Application.productModule() {
                     call.respond(HttpStatusCode.NotFound, e.message.toString())
                 }
             }
+
+            patch("/{id}") {
+                val lock = call.request.queryParameters["lock"]?.toBoolean() ?: false
+                val result = call.parameters["id"]?.toLongOrNull()?.let {
+                    productService.setLockValueByProductId(it, lock)
+                }
+                call.respondNullable(result, onNull = HttpStatusCode.BadRequest)
+            }
         }
     }
 }

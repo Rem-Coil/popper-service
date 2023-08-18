@@ -41,7 +41,7 @@ fun DI.Builder.components() {
     bind<OperationTypeDao>() with singleton { OperationTypeDao(instance()) }
     bind<EmployeeDao>() with singleton { EmployeeDao(instance()) }
 
-    bind<ActionService>() with singleton { ActionService(instance(), instance()) }
+    bind<ActionService>() with singleton { ActionService(instance(), instance(), instance()) }
     bind<BatchService>() with singleton { BatchService(instance(), instance(), instance(), instance()) }
     bind<KitService>() with singleton { KitService(instance(), instance(), instance(), instance(), instance(), instance()) }
     bind<SpecificationService>() with singleton { SpecificationService(instance(), instance()) }

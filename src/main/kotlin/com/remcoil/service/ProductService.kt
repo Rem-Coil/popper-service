@@ -31,8 +31,7 @@ class ProductService(
     }
 
     private suspend fun createProduct(product: Product): Product {
-        val createdProduct = productDao.create(product)
-        return createdProduct
+        return productDao.create(product)
     }
 
     suspend fun createByKitAndBatches(kit: Kit, batches: List<Batch>) {
@@ -77,14 +76,14 @@ class ProductService(
     suspend fun deactivateProductById(id: Long) {
         val product = productDao.getById(id) ?: throw EntryDoesNotExistException("Product with id = $id not found")
         productDao.update(product.deactivated())
-        createProduct(product)
+        createProduct(product.unlocked())
     }
 
     suspend fun deleteInactiveProductBuBatchId(id: Long) {
         productDao.deleteInactiveByBatchId(id)
     }
 
-    suspend fun productIsActive(productId: Long): Boolean {
-        return productDao.getById(productId)?.active ?: false
+    suspend fun setLockValueByProductId(id: Long, lock: Boolean) {
+        productDao.setLockValueById(id, lock)
     }
 }

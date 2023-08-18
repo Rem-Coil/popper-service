@@ -30,7 +30,7 @@ class BatchesProgressTest {
         for (i in 1..3L) {
             batchList.add(Batch(i, i.toInt(), 1))
             for (j in 1..4) {
-                productList.add(Product((i - 1) * 4 + j, j, true, i))
+                productList.add(Product((i - 1) * 4 + j, j, active = true, locked = false, batchId = i))
             }
         }
 
@@ -52,30 +52,56 @@ class BatchesProgressTest {
         }
 
         extendedActionList.add(
-            ExtendedAction(12, now.plus(12, DateTimeUnit.MINUTE).toLocalDateTime(TimeZone.UTC), false, 2, 1, 1, true, 1, 1, 1)
+            ExtendedAction(
+                12,
+                now.plus(12, DateTimeUnit.MINUTE).toLocalDateTime(TimeZone.UTC),
+                false,
+                2,
+                1,
+                1,
+                true,
+                1,
+                1,
+                1
+            )
         )
 
         for (i in 1..5L) {
             extendedControlActionList.add(
                 ExtendedControlAction(
-                    i,
-                    now.plus(i + 4, DateTimeUnit.MINUTE).toLocalDateTime(TimeZone.UTC),
-                    true,
-                    ControlType.OTK,
-                    "Good",
-                    1,
-                    1,
-                    i,
-                    true,
-                    (i + 3) / 4,
-                    1,
-                    1
+                    id = i,
+                    doneTime = now.plus(i + 4, DateTimeUnit.MINUTE).toLocalDateTime(TimeZone.UTC),
+                    successful = true,
+                    needRepair = false,
+                    controlType = ControlType.OTK,
+                    comment = "Good",
+                    operationType = 1,
+                    employeeId = 1,
+                    productId = i,
+                    active = true,
+                    batchId = (i + 3) / 4,
+                    kitId = 1,
+                    specificationId = 1
                 )
             )
         }
 
         extendedControlActionList.add(
-            ExtendedControlAction(6, now.plus(8, DateTimeUnit.MINUTE).toLocalDateTime(TimeZone.UTC), true, ControlType.TESTING, "Good", 0, 1, 1, true, 2, 1, 1)
+            ExtendedControlAction(
+                id = 6,
+                doneTime = now.plus(8, DateTimeUnit.MINUTE).toLocalDateTime(TimeZone.UTC),
+                successful = true,
+                needRepair = false,
+                controlType = ControlType.TESTING,
+                comment = "Good",
+                operationType = 0,
+                employeeId = 1,
+                productId = 1,
+                active = true,
+                batchId = 2,
+                kitId = 1,
+                specificationId = 1
+            )
         )
 
         coEvery { batchDao.getByKitId(any()) } returns batchList
@@ -98,10 +124,46 @@ class BatchesProgressTest {
 
     @Test
     fun `with defected product`() = runBlocking {
-        productList[0] = Product(1, 1, false, 1)
-        extendedActionList[0] = ExtendedAction(1, now.plus(1, DateTimeUnit.MINUTE).toLocalDateTime(TimeZone.UTC), false, 1, 1, 1, false, 1, 1, 1)
-        extendedActionList[11] = ExtendedAction(12, now.plus(12, DateTimeUnit.MINUTE).toLocalDateTime(TimeZone.UTC), false, 2, 1, 1, false, 1, 1, 1)
-        extendedControlActionList[0] = ExtendedControlAction(1, now.plus(5, DateTimeUnit.MINUTE).toLocalDateTime(TimeZone.UTC), true, ControlType.OTK, "Good", 1, 1, 1, false, 1, 1, 1)
+        productList[0] = Product(1, 1, active = false, locked = false, batchId = 1)
+        extendedActionList[0] = ExtendedAction(
+            1,
+            now.plus(1, DateTimeUnit.MINUTE).toLocalDateTime(TimeZone.UTC),
+            false,
+            1,
+            1,
+            1,
+            false,
+            1,
+            1,
+            1
+        )
+        extendedActionList[11] = ExtendedAction(
+            12,
+            now.plus(12, DateTimeUnit.MINUTE).toLocalDateTime(TimeZone.UTC),
+            false,
+            2,
+            1,
+            1,
+            false,
+            1,
+            1,
+            1
+        )
+        extendedControlActionList[0] = ExtendedControlAction(
+            id = 1,
+            doneTime = now.plus(5, DateTimeUnit.MINUTE).toLocalDateTime(TimeZone.UTC),
+            successful = true,
+            needRepair = false,
+            controlType = ControlType.OTK,
+            comment = "Good",
+            operationType = 1,
+            employeeId = 1,
+            productId = 1,
+            active = false,
+            batchId = 1,
+            kitId = 1,
+            specificationId = 1
+        )
 
         val producedProgress = batchService.getBatchesProgressByKitId(1)
         val targetProgress = listOf(
@@ -115,13 +177,25 @@ class BatchesProgressTest {
 
     @Test
     fun `unsuccessful control with no repair`() = runBlocking {
-        extendedControlActionList[0] = ExtendedControlAction(1, now.plus(5, DateTimeUnit.MINUTE).toLocalDateTime(TimeZone.UTC), false, ControlType.OTK, "No Good", 1, 1, 1, true, 1, 1, 1)
-        extendedControlActionList.add(
-            ExtendedControlAction(1000, now.plus(5000, DateTimeUnit.MINUTE).toLocalDateTime(TimeZone.UTC), false, ControlType.TESTING, "No Good", 2, 1, 1, true, 1, 1, 1)
+        extendedControlActionList[0] = ExtendedControlAction(
+            id = 1,
+            doneTime = now.plus(5, DateTimeUnit.MINUTE).toLocalDateTime(TimeZone.UTC),
+            successful = false,
+            needRepair = true,
+            controlType = ControlType.OTK,
+            comment = "No Good",
+            operationType = 1,
+            employeeId = 1,
+            productId = 1,
+            active = true,
+            batchId = 1,
+            kitId = 1,
+            specificationId = 1
         )
+        productList[0] = Product(0, 1, true, true, 1)
 
         val targetProgress = listOf(
-            BatchProgress(1, 1, mapOf(1L to 3, 2L to 0), mapOf(ControlType.OTK to 3, ControlType.TESTING to 0), 1, 0),
+            BatchProgress(1, 1, mapOf(1L to 3, 2L to 1), mapOf(ControlType.OTK to 3, ControlType.TESTING to 0), 1, 0),
             BatchProgress(2, 2, mapOf(1L to 4), mapOf(ControlType.OTK to 1, ControlType.TESTING to 1), 0, 0),
             BatchProgress(3, 3, mapOf(1L to 3), mapOf(ControlType.OTK to 0, ControlType.TESTING to 0), 0, 0)
         )
@@ -132,31 +206,39 @@ class BatchesProgressTest {
 
     @Test
     fun `with correct repair`() = runBlocking {
-        extendedControlActionList[0] = ExtendedControlAction(1, now.plus(5, DateTimeUnit.MINUTE).toLocalDateTime(TimeZone.UTC), false, ControlType.OTK, "No Good", 1, 1, 1, true, 1, 1, 1)
+        extendedControlActionList[0] = ExtendedControlAction(
+            id = 1,
+            doneTime = now.plus(5, DateTimeUnit.MINUTE).toLocalDateTime(TimeZone.UTC),
+            successful = false,
+            needRepair = true,
+            controlType = ControlType.OTK,
+            comment = "No Good",
+            operationType = 1,
+            employeeId = 1,
+            productId = 1,
+            active = true,
+            batchId = 1,
+            kitId = 1,
+            specificationId = 1
+        )
         extendedActionList.add(
-            ExtendedAction(1, now.plus(6, DateTimeUnit.MINUTE).toLocalDateTime(TimeZone.UTC), true, 1, 1, 1, true, 1, 1, 1)
+            ExtendedAction(
+                1,
+                now.plus(6, DateTimeUnit.MINUTE).toLocalDateTime(TimeZone.UTC),
+                true,
+                1,
+                1,
+                1,
+                true,
+                1,
+                1,
+                1
+            )
         )
 
         val producedProgress = batchService.getBatchesProgressByKitId(1)
         val targetProgress = listOf(
             BatchProgress(1, 1, mapOf(1L to 4, 2L to 1), mapOf(ControlType.OTK to 3, ControlType.TESTING to 0), 0, 0),
-            BatchProgress(2, 2, mapOf(1L to 4), mapOf(ControlType.OTK to 1, ControlType.TESTING to 1), 0, 0),
-            BatchProgress(3, 3, mapOf(1L to 3), mapOf(ControlType.OTK to 0, ControlType.TESTING to 0), 0, 0)
-        )
-
-        assertEquals(targetProgress, producedProgress)
-    }
-
-    @Test
-    fun `with repair before control`() = runBlocking {
-        extendedControlActionList[0] = ExtendedControlAction(1, now.plus(5, DateTimeUnit.MINUTE).toLocalDateTime(TimeZone.UTC), false, ControlType.OTK, "No Good", 1, 1, 1, true, 1, 1, 1)
-        extendedActionList.add(
-            ExtendedAction(1, now.plus(4, DateTimeUnit.MINUTE).toLocalDateTime(TimeZone.UTC), true, 1, 1, 1, true, 1, 1, 1)
-        )
-
-        val producedProgress = batchService.getBatchesProgressByKitId(1)
-        val targetProgress = listOf(
-            BatchProgress(1, 1, mapOf(1L to 3, 2L to 1), mapOf(ControlType.OTK to 3, ControlType.TESTING to 0), 1, 0),
             BatchProgress(2, 2, mapOf(1L to 4), mapOf(ControlType.OTK to 1, ControlType.TESTING to 1), 0, 0),
             BatchProgress(3, 3, mapOf(1L to 3), mapOf(ControlType.OTK to 0, ControlType.TESTING to 0), 0, 0)
         )

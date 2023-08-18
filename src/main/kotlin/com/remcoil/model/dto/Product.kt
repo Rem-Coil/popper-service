@@ -9,10 +9,15 @@ data class Product(
     @SerialName("product_number")
     val productNumber: Int,
     val active: Boolean = true,
+    val locked: Boolean = false,
     @SerialName("batch_id")
     val batchId: Long
 ) {
     fun deactivated(): Product {
         return this.copy(active = false)
+    }
+
+    fun unlocked(): Product {
+        return this.copy(locked = false)
     }
 }

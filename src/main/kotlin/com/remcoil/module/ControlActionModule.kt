@@ -1,5 +1,7 @@
 package com.remcoil.module
 
+import com.remcoil.model.dto.ControlAction
+import com.remcoil.model.dto.ControlActionRequest
 import com.remcoil.service.ControlActionService
 import com.remcoil.utils.exceptions.InActiveProductException
 import com.remcoil.utils.respondNullable
@@ -32,7 +34,7 @@ fun Application.controlActionModule() {
 
             authenticate("quality-engineer-access") {
                 post {
-                    call.safetyReceive<com.remcoil.model.dto.ControlActionRequest> { controlActionRequest ->
+                    call.safetyReceive<ControlActionRequest> { controlActionRequest ->
                         val principal = call.principal<JWTPrincipal>()
                         try {
                             call.respond(
@@ -49,7 +51,7 @@ fun Application.controlActionModule() {
                 }
 
                 put {
-                    call.safetyReceive<com.remcoil.model.dto.ControlAction> { controlAction ->
+                    call.safetyReceive<ControlAction> { controlAction ->
                         controlActionService.updateControlAction(controlAction)
                         call.respond(HttpStatusCode.OK)
                     }

@@ -32,7 +32,8 @@ class ControlActionModuleTest : BaseModuleTest() {
             controlActionModule()
         }
 
-        val requestBody = ControlActionRequest(Clock.System.now().toLocalDateTime(TimeZone.UTC), true, ControlType.OTK, "Good", 1, 1)
+        val requestBody =
+            ControlActionRequest(Clock.System.now().toLocalDateTime(TimeZone.UTC), true, false, ControlType.OTK, "Good", 1, 1)
         val operatorToken =
             generateToken(Employee(3, "First", "Last", "123", "pass", true, EmployeeRole.OPERATOR))
 
@@ -89,8 +90,10 @@ class ControlActionModuleTest : BaseModuleTest() {
             executeSqlScript("/sql/test_data_1.sql")
         }
 
-        val requestBody1 = ControlActionRequest(Clock.System.now().toLocalDateTime(TimeZone.UTC), true, ControlType.OTK, "Good", 1, 1)
-        val requestBody2 = ControlActionRequest(Clock.System.now().toLocalDateTime(TimeZone.UTC), true, ControlType.OTK, "Good", 1, 2)
+        val requestBody1 =
+            ControlActionRequest(Clock.System.now().toLocalDateTime(TimeZone.UTC), true, false, ControlType.OTK, "Good", 1, 1)
+        val requestBody2 =
+            ControlActionRequest(Clock.System.now().toLocalDateTime(TimeZone.UTC), true, false, ControlType.OTK, "Good", 1, 2)
 
         val adminToken =
             generateToken(Employee(1, "FirstName", "LastName", "123", "pass", true, EmployeeRole.ADMIN))
@@ -128,10 +131,12 @@ class ControlActionModuleTest : BaseModuleTest() {
             executeSqlScript("/sql/test_data_1.sql")
         }
 
-        val requestBody1 = ControlActionRequest(Clock.System.now().toLocalDateTime(TimeZone.UTC), true, ControlType.OTK, "Good", 1, 1)
-        val requestBody2 = ControlActionRequest(Clock.System.now().toLocalDateTime(TimeZone.UTC), true, ControlType.OTK, "Good", 1, 1)
+        val requestBody1 =
+            ControlActionRequest(Clock.System.now().toLocalDateTime(TimeZone.UTC), true, false, ControlType.OTK, "Good", 1, 1)
+        val requestBody2 =
+            ControlActionRequest(Clock.System.now().toLocalDateTime(TimeZone.UTC), true, false, ControlType.OTK, "Good", 1, 1)
 
-         val qualityEngineerToken =
+        val qualityEngineerToken =
             generateToken(Employee(2, "FirstName", "LastName", "123", "pass", true, EmployeeRole.QUALITY_ENGINEER))
 
         val postResponse1 = client.post(baseRoute) {
@@ -146,8 +151,8 @@ class ControlActionModuleTest : BaseModuleTest() {
             bearerAuth(qualityEngineerToken)
         }
 
-        assertEquals(postResponse1.status, HttpStatusCode.OK)
-        assertEquals(postResponse2.status, HttpStatusCode.Conflict)
+        assertEquals(HttpStatusCode.OK, postResponse1.status)
+        assertEquals(HttpStatusCode.Conflict, postResponse2.status)
     }
 
     @Test
@@ -164,9 +169,10 @@ class ControlActionModuleTest : BaseModuleTest() {
             executeSqlScript("/sql/test_data_1.sql")
         }
 
-        val requestBody1 = ControlActionRequest(Clock.System.now().toLocalDateTime(TimeZone.UTC), true, ControlType.OTK, "Good", 0, 1)
-        val requestBody2 = ControlActionRequest(Clock.System.now().toLocalDateTime(TimeZone.UTC), true, ControlType.OTK, "Good", 1, 0)
-        val requestBody3 = ControlActionRequest(Clock.System.now().toLocalDateTime(TimeZone.UTC), true, ControlType.OTK, "Good", 1, 2)
+        val requestBody1 =
+            ControlActionRequest(Clock.System.now().toLocalDateTime(TimeZone.UTC), true, false, ControlType.OTK, "Good", 0, 1)
+         val requestBody3 =
+            ControlActionRequest(Clock.System.now().toLocalDateTime(TimeZone.UTC), true, false, ControlType.OTK, "Good", 1, 2)
 
         val adminToken =
             generateToken(Employee(0, "FirstName", "LastName", "123", "pass", true, EmployeeRole.ADMIN))
@@ -179,20 +185,42 @@ class ControlActionModuleTest : BaseModuleTest() {
             bearerAuth(qualityEngineerToken)
         }
 
-        val postResponse2 = client.post(baseRoute) {
-            contentType(ContentType.Application.Json)
-            setBody(requestBody2)
-            bearerAuth(qualityEngineerToken)
-        }
-
         val postResponse3 = client.post(baseRoute) {
             contentType(ContentType.Application.Json)
             setBody(requestBody3)
             bearerAuth(adminToken)
         }
 
-        assertEquals(postResponse1.status, HttpStatusCode.BadRequest)
-        assertEquals(postResponse2.status, HttpStatusCode.BadRequest)
-        assertEquals(postResponse3.status, HttpStatusCode.BadRequest)
+        assertEquals(HttpStatusCode.BadRequest, postResponse1.status)
+        assertEquals(HttpStatusCode.BadRequest, postResponse3.status)
+    }
+
+    @Test
+    fun `should respond not found`() = testApplication {
+        val client = createClient {
+            install(ContentNegotiation) {
+                json()
+            }
+        }
+
+        application {
+            configurationModule(config)
+            controlActionModule()
+            executeSqlScript("/sql/test_data_1.sql")
+        }
+
+          val requestBody2 =
+            ControlActionRequest(Clock.System.now().toLocalDateTime(TimeZone.UTC), true, false, ControlType.OTK, "Good", 1, 0)
+
+         val qualityEngineerToken =
+            generateToken(Employee(2, "FirstName", "LastName", "123", "pass", true, EmployeeRole.QUALITY_ENGINEER))
+
+        val postResponse2 = client.post(baseRoute) {
+            contentType(ContentType.Application.Json)
+            setBody(requestBody2)
+            bearerAuth(qualityEngineerToken)
+        }
+
+        assertEquals(HttpStatusCode.NotFound, postResponse2.status)
     }
 }

@@ -6,6 +6,7 @@ data class ExtendedControlAction(
     val id: Long,
     val doneTime: LocalDateTime,
     val successful: Boolean,
+    val needRepair: Boolean,
     val controlType: ControlType,
     val comment: String?,
     val operationType: Long,

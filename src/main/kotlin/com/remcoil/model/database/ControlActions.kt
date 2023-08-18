@@ -12,4 +12,5 @@ object ControlActions : LongIdTable("control_actions") {
     val operationType = reference("operation_type", OperationTypes, onDelete = ReferenceOption.CASCADE)
     val employeeId = reference("employee_id", Employees, onDelete = ReferenceOption.SET_NULL).nullable()
     val productId = reference("product_id", Products, onDelete = ReferenceOption.CASCADE)
+    val needRepair = bool("need_repair")
 }

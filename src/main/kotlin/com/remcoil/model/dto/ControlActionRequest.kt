@@ -11,6 +11,8 @@ data class ControlActionRequest(
     @Serializable(with = LocalDateTimeSerializer::class)
     val doneTime: LocalDateTime,
     val successful: Boolean,
+    @SerialName("need_repair")
+    val needRepair: Boolean,
     @SerialName("control_type")
     val controlType: ControlType,
     val comment: String?,
@@ -23,6 +25,7 @@ data class ControlActionRequest(
         id = 0,
         doneTime,
         successful,
+        needRepair,
         controlType,
         comment,
         operationType,

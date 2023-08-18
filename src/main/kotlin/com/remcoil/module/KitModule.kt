@@ -1,5 +1,6 @@
 package com.remcoil.module
 
+import com.remcoil.model.dto.Kit
 import com.remcoil.service.BatchService
 import com.remcoil.service.KitService
 import com.remcoil.utils.exceptions.EntryDoesNotExistException
@@ -61,13 +62,13 @@ fun Application.kitModule() {
 
             authenticate("admin-access") {
                 post {
-                    call.safetyReceive<com.remcoil.model.dto.Kit> { kit ->
+                    call.safetyReceive<Kit> { kit ->
                         call.respond(kitService.createKit(kit))
                     }
                 }
 
                 put {
-                    call.safetyReceive<com.remcoil.model.dto.Kit> { kit ->
+                    call.safetyReceive<Kit> { kit ->
                         kitService.updateKit(kit)
                         call.respond(HttpStatusCode.OK)
                     }

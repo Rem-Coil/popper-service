@@ -1,9 +1,6 @@
 package com.remcoil.utils
 
-import com.remcoil.utils.exceptions.DatabaseException
-import com.remcoil.utils.exceptions.DuplicateValueException
-import com.remcoil.utils.exceptions.EntryDoesNotExistException
-import com.remcoil.utils.exceptions.WrongParamException
+import com.remcoil.utils.exceptions.*
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.plugins.*
@@ -18,6 +15,9 @@ suspend inline fun <reified T : Any> ApplicationCall.safetyReceive(onCorrectResu
             is EntryDoesNotExistException -> respond(HttpStatusCode.NotFound, e.message.toString())
             is DuplicateValueException -> respond(HttpStatusCode.Conflict, e.message.toString())
 
+            is LockedProductException,
+            is InActiveProductException,
+            is UnLockedProductException,
             is DatabaseException,
             is WrongParamException,
             is BadRequestException -> respond(HttpStatusCode.BadRequest, e.message.toString())

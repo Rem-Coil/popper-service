@@ -12,6 +12,7 @@ object ExtendedControlActions : Table("extended_control_actions") {
     val operationType = long("operation_type")
     val employeeId = long("employee_id").nullable()
     val productId = long("product_id")
+    val needRepair = bool("need_repair")
     val active = bool("active")
     val batchId = long("batch_id")
     val kitId = long("kit_id")

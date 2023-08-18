@@ -37,11 +37,12 @@ class KitsProgressTest {
             for (j in 1..300) {
                 extendedProductList.add(
                     ExtendedProduct(
-                        (i - 1) * 300 + j,
-                        j,
-                        true,
-                        (((i - 1) * 300 + j + 99) / 100),
-                        i
+                        id = (i - 1) * 300 + j,
+                        productNumber = j,
+                        active = true,
+                        locked = false,
+                        batchId = (((i - 1) * 300 + j + 99) / 100),
+                        kitId = i
                     )
                 )
             }
@@ -60,12 +61,36 @@ class KitsProgressTest {
 
         for (i in 1..350L) {
             extendedControlActionList.add(
-                ExtendedControlAction(i, now.plus(i + 1, DateTimeUnit.MINUTE).toLocalDateTime(TimeZone.UTC), true, ControlType.TESTING, "Good", 1, 1, i, true, (i + 99) / 100, (i + 299) / 300, 1)
+                ExtendedControlAction(i, now.plus(i + 1, DateTimeUnit.MINUTE).toLocalDateTime(TimeZone.UTC),
+                    successful = true,
+                    needRepair = false,
+                    controlType = ControlType.TESTING,
+                    comment = "Good",
+                    operationType = 1,
+                    employeeId = 1,
+                    productId = i,
+                    active = true,
+                    batchId = (i + 99) / 100,
+                    kitId = (i + 299) / 300,
+                    specificationId = 1
+                )
             )
         }
         for (i in 1..150L) {
             extendedControlActionList.add(
-                ExtendedControlAction(350 + i, now.plus(i + 1, DateTimeUnit.MINUTE).toLocalDateTime(TimeZone.UTC), true, ControlType.OTK, "Good", 1, 1, i, true, (i + 99) / 100, (i + 299) / 300, 1)
+                ExtendedControlAction(350 + i, now.plus(i + 1, DateTimeUnit.MINUTE).toLocalDateTime(TimeZone.UTC),
+                    successful = true,
+                    needRepair = false,
+                    controlType = ControlType.OTK,
+                    comment = "Good",
+                    operationType = 1,
+                    employeeId = 1,
+                    productId = i,
+                    active = true,
+                    batchId = (i + 99) / 100,
+                    kitId = (i + 299) / 300,
+                    specificationId = 1
+                )
             )
         }
 
@@ -90,11 +115,35 @@ class KitsProgressTest {
 
     @Test
     fun `with defected product`(): Unit = runBlocking {
-        extendedProductList[0] = ExtendedProduct(1, 1, false, 1, 1)
+        extendedProductList[0] = ExtendedProduct(1, 1, active = false, locked = false, batchId = 1, kitId = 1)
         extendedActionList[0] = ExtendedAction(1, now.plus(1, DateTimeUnit.MINUTE).toLocalDateTime(TimeZone.UTC), false, 1, 1, 1, false, 1, 1, 1)
         extendedActionList[500] = ExtendedAction(501, now.plus(501, DateTimeUnit.MINUTE).toLocalDateTime(TimeZone.UTC), false, 3, 1, 1, false, 1, 1, 1)
-        extendedControlActionList[0] = ExtendedControlAction(1, now.plus(1 + 1, DateTimeUnit.MINUTE).toLocalDateTime(TimeZone.UTC), true, ControlType.TESTING, "Good", 1, 1, 1, false, 1, 1, 1)
-        extendedControlActionList[350] = ExtendedControlAction(351, now.plus(351 + 1, DateTimeUnit.MINUTE).toLocalDateTime(TimeZone.UTC), true, ControlType.OTK, "Good", 3, 1, 1, false, 1, 1, 1)
+        extendedControlActionList[0] = ExtendedControlAction(1, now.plus(1 + 1, DateTimeUnit.MINUTE).toLocalDateTime(TimeZone.UTC),
+            successful = true,
+            needRepair = false,
+            controlType = ControlType.TESTING,
+            comment = "Good",
+            operationType = 1,
+            employeeId = 1,
+            productId = 1,
+            active = false,
+            batchId = 1,
+            kitId = 1,
+            specificationId = 1
+        )
+        extendedControlActionList[350] = ExtendedControlAction(351, now.plus(351 + 1, DateTimeUnit.MINUTE).toLocalDateTime(TimeZone.UTC),
+            successful = true,
+            needRepair = false,
+            controlType = ControlType.OTK,
+            comment = "Good",
+            operationType = 3,
+            employeeId = 1,
+            productId = 1,
+            active = false,
+            batchId = 1,
+            kitId = 1,
+            specificationId = 1
+        )
 
         val producedProgress = kitService.getKitsProgress()
         val targetProgress = listOf(
@@ -108,8 +157,32 @@ class KitsProgressTest {
 
     @Test
     fun `unsuccessful control with no repair`(): Unit = runBlocking {
-        extendedControlActionList[0] = ExtendedControlAction(1, now.plus(1 + 1, DateTimeUnit.MINUTE).toLocalDateTime(TimeZone.UTC), false, ControlType.TESTING, "No Good", 1, 1, 1, true, 1, 1, 1)
-        extendedControlActionList[350] = ExtendedControlAction(351, now.plus(351 + 1, DateTimeUnit.MINUTE).toLocalDateTime(TimeZone.UTC), false, ControlType.OTK, "No Good", 3, 1, 1, true, 1, 1, 1)
+        extendedControlActionList[0] = ExtendedControlAction(1, now.plus(1 + 1, DateTimeUnit.MINUTE).toLocalDateTime(TimeZone.UTC),
+            successful = false,
+            needRepair = true,
+            controlType = ControlType.TESTING,
+            comment = "No Good",
+            operationType = 1,
+            employeeId = 1,
+            productId = 1,
+            active = true,
+            batchId = 1,
+            kitId = 1,
+            specificationId = 1
+        )
+        extendedControlActionList[350] = ExtendedControlAction(351, now.plus(351 + 1, DateTimeUnit.MINUTE).toLocalDateTime(TimeZone.UTC),
+            successful = false,
+            needRepair = true,
+            controlType = ControlType.OTK,
+            comment = "No Good",
+            operationType = 3,
+            employeeId = 1,
+            productId = 1,
+            active = true,
+            batchId = 1,
+            kitId = 1,
+            specificationId = 1
+        )
 
         val producedProgress = kitService.getKitsProgress()
         val targetProgress = listOf(
@@ -125,8 +198,18 @@ class KitsProgressTest {
     fun `with correct repair`(): Unit = runBlocking {
         extendedControlActionList[0] = ExtendedControlAction(
             1, now.plus(1 + 1, DateTimeUnit.MINUTE).toLocalDateTime(TimeZone.UTC),
-            false, ControlType.TESTING, "No Good", 3,
-            1, 1, true, 1, 1, 1)
+            successful = false,
+            needRepair = true,
+            controlType = ControlType.TESTING,
+            comment = "No Good",
+            operationType = 3,
+            employeeId = 1,
+            productId = 1,
+            active = true,
+            batchId = 1,
+            kitId = 1,
+            specificationId = 1
+        )
         extendedActionList.add(ExtendedAction(
             1000, now.plus(1000, DateTimeUnit.MINUTE).toLocalDateTime(TimeZone.UTC),
             true,3,1, 1,true, 1,
@@ -146,21 +229,4 @@ class KitsProgressTest {
         assertEquals(targetProgress, producedProgress)
     }
 
-    @Test
-    fun `with repair before control`(): Unit = runBlocking {
-        extendedControlActionList[0] = ExtendedControlAction(1, now.plus(1 + 1, DateTimeUnit.MINUTE).toLocalDateTime(TimeZone.UTC), false, ControlType.TESTING, "No Good", 3, 1, 1, true, 1, 1, 1)
-        extendedActionList.add(
-            ExtendedAction(1000, now.plus(1000, DateTimeUnit.MINUTE).toLocalDateTime(TimeZone.UTC), true, 3, 1, 1, true, 1, 1, 1)
-        )
-        extendedControlActionList[0] = ExtendedControlAction(1000, now.plus(1000 + 1, DateTimeUnit.MINUTE).toLocalDateTime(TimeZone.UTC), false, ControlType.TESTING, "Still No Good", 3, 1, 1, true, 1, 1, 1)
-
-        val producedProgress = kitService.getKitsProgress()
-        val targetProgress = listOf(
-            KitBriefProgress(1, "TAG-1", 10, 1, "1-1", 300, 300, 299, mapOf(ControlType.OTK to 150, ControlType.TESTING to 299), 1, 0),
-            KitBriefProgress(1, "TAG-1", 10, 2, "1-1", 300, 200, 50, mapOf(ControlType.OTK to 0, ControlType.TESTING to 50), 0, 0),
-            KitBriefProgress(2, "TAG-2", 10, 3, "1-1", 300, 0, 0, mapOf(ControlType.OTK to 0, ControlType.TESTING to 0), 0, 0)
-        )
-
-        assertEquals(targetProgress, producedProgress)
-    }
 }

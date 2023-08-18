@@ -114,7 +114,7 @@ class KitService(
             if (controlAction.successful) {
                 controlProgress[controlAction.controlType] = controlProgress[controlAction.controlType]!! + 1
             } else {
-                if (repairOperations.find {
+                if (controlAction.needRepair && repairOperations.find {
                         it.productId == controlAction.productId &&
                                 it.operationType == controlAction.operationType &&
                                 it.doneTime > controlAction.doneTime

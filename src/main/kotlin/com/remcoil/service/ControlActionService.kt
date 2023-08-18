@@ -1,35 +1,46 @@
 package com.remcoil.service
 
 import com.remcoil.dao.ControlActionDao
+import com.remcoil.model.dto.ControlAction
+import com.remcoil.model.dto.ExtendedControlAction
 import com.remcoil.utils.exceptions.InActiveProductException
+import com.remcoil.utils.exceptions.LockedProductException
 
 class ControlActionService(
     private val controlActionDao: ControlActionDao,
     private val productService: ProductService,
 ) {
-    suspend fun getAllControlActions(): List<com.remcoil.model.dto.ControlAction> {
+    suspend fun getAllControlActions(): List<ControlAction> {
         return controlActionDao.getAll()
     }
 
-    suspend fun getControlActionsBySpecificationId(id: Long): List<com.remcoil.model.dto.ExtendedControlAction> {
+    suspend fun getControlActionsBySpecificationId(id: Long): List<ExtendedControlAction> {
         return controlActionDao.getBySpecificationId(id)
     }
 
-    suspend fun getControlActionsByKitId(id: Long): List<com.remcoil.model.dto.ExtendedControlAction> {
+    suspend fun getControlActionsByKitId(id: Long): List<ExtendedControlAction> {
         return controlActionDao.getByKitId(id)
     }
 
-    suspend fun getControlActionsByProductId(id: Long): List<com.remcoil.model.dto.ControlAction> {
+    suspend fun getControlActionsByProductId(id: Long): List<ControlAction> {
         return controlActionDao.getByProductId(id)
     }
 
-    suspend fun createControlAction(controlAction: com.remcoil.model.dto.ControlAction): com.remcoil.model.dto.ControlAction {
-        if (productService.productIsActive(controlAction.productId)) {
-            return controlActionDao.create(controlAction)
-        } else throw InActiveProductException("Product with id = ${controlAction.productId} inactive")
+    suspend fun createControlAction(controlAction: ControlAction): ControlAction {
+        val product = productService.getProductById(controlAction.productId)
+        if (!product.active) {
+            throw InActiveProductException("Product with id = ${product.id} inactive")
+        }
+        if (product.locked) {
+            throw LockedProductException("Product with id = ${product.id} is locked")
+        }
+        if (controlAction.needRepair) {
+            productService.setLockValueByProductId(product.id, true)
+        }
+        return controlActionDao.create(controlAction)
     }
 
-    suspend fun updateControlAction(controlAction: com.remcoil.model.dto.ControlAction) {
+    suspend fun updateControlAction(controlAction: ControlAction) {
         controlActionDao.update(controlAction)
     }
 
@@ -37,7 +48,7 @@ class ControlActionService(
         controlActionDao.deleteById(id)
     }
 
-    suspend fun deleteControlActionsByProducts(productsIdList : List<Long>) {
+    suspend fun deleteControlActionsByProducts(productsIdList: List<Long>) {
         controlActionDao.deleteByProducts(productsIdList)
     }
 }

@@ -1,7 +1,9 @@
 package com.remcoil.module
 
+import com.remcoil.model.dto.Action
+import com.remcoil.model.dto.ActionRequest
+import com.remcoil.model.dto.BatchActionRequest
 import com.remcoil.service.ActionService
-import com.remcoil.utils.exceptions.InActiveProductException
 import com.remcoil.utils.respondNullable
 import com.remcoil.utils.safetyReceive
 import io.ktor.http.*
@@ -33,13 +35,9 @@ fun Application.actionModule() {
 
             authenticate("employee-access") {
                 put {
-                    call.safetyReceive<com.remcoil.model.dto.Action> { action ->
-                        try {
-                            actionService.updateAction(action)
-                            call.respond(HttpStatusCode.OK)
-                        } catch (e: InActiveProductException) {
-                            call.respond(HttpStatusCode.BadRequest)
-                        }
+                    call.safetyReceive<Action> { action ->
+                        actionService.updateAction(action)
+                        call.respond(HttpStatusCode.OK)
                     }
                 }
 
@@ -52,7 +50,7 @@ fun Application.actionModule() {
 
                 route("/batch") {
                     post {
-                        call.safetyReceive<com.remcoil.model.dto.BatchActionRequest> { batchActionRequest ->
+                        call.safetyReceive<BatchActionRequest> { batchActionRequest ->
                             val principal = call.principal<JWTPrincipal>()
                             call.respond(
                                 actionService.createBatchActions(
@@ -65,19 +63,15 @@ fun Application.actionModule() {
                 }
 
                 post {
-                    call.safetyReceive<com.remcoil.model.dto.ActionRequest> { actionRequest ->
+                    call.safetyReceive<ActionRequest> { actionRequest ->
                         val principal = call.principal<JWTPrincipal>()
-                        try {
-                            call.respond(
-                                actionService.createAction(
-                                    actionRequest.toAction(
-                                        principal!!.payload.getClaim("id").asLong()
-                                    )
+                        call.respond(
+                            actionService.createAction(
+                                actionRequest.toAction(
+                                    principal!!.payload.getClaim("id").asLong()
                                 )
                             )
-                        } catch (e: InActiveProductException) {
-                            call.respond(HttpStatusCode.BadRequest)
-                        }
+                        )
                     }
                 }
             }
