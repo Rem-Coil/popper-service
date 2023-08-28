@@ -19,7 +19,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ListOfProductsV2'
+                $ref: '#/components/schemas/ListOfProducts'
 
   /product/{id}:
     get:
@@ -37,7 +37,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ProductV2'
+                $ref: '#/components/schemas/Product'
         '404':
           description: Изделие не найдено
         '400':
@@ -98,7 +98,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ListOfProductsV2'
+                $ref: '#/components/schemas/ListOfProducts'
         '400':
           description: Bad request
 
@@ -112,7 +112,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ListOfSpecificationResponsesV2'
+                $ref: '#/components/schemas/ListOfSpecificationResponses'
 
     put:
       security:
@@ -124,14 +124,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SpecificationPutRequestV2'
+              $ref: '#/components/schemas/SpecificationPutRequest'
       responses:
         '200':
           description: ТЗ обновлено
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SpecificationResponseV2'
+                $ref: '#/components/schemas/SpecificationResponse'
         '400':
           description: Bad request
 
@@ -145,14 +145,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SpecificationPostRequestV2'
+              $ref: '#/components/schemas/SpecificationPostRequest'
       responses:
         '200':
           description: ТЗ создано
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SpecificationResponseV2'
+                $ref: '#/components/schemas/SpecificationResponse'
         '409':
           description: Неккоретный порядковый номер для типа операций
 
@@ -172,7 +172,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SpecificationResponseV2'
+                $ref: '#/components/schemas/SpecificationResponse'
         '404':
           description: Not found
 
@@ -204,7 +204,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ListOfBatchesV2'
+                $ref: '#/components/schemas/ListOfBatches'
 
   /batch/{id}:
     get:
@@ -222,7 +222,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/BatchV2'
+                $ref: '#/components/schemas/Batch'
         '404':
           description: Партия не найдена
         '400':
@@ -246,6 +246,30 @@ paths:
         '400':
           description: Bad request
 
+  /action/batch:
+    post:
+      security:
+        - bearerAuth: [ ]
+      tags:
+        - action
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BatchActionRequest'
+      responses:
+        '409':
+          description: Action already exists
+        '400':
+          description: Bad request
+        '200':
+          description: Операция создана
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListOfActions'
+
   /action:
     get:
       tags:
@@ -256,7 +280,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ListOfActionsV2'
+                $ref: '#/components/schemas/ListOfActions'
 
     post:
       security:
@@ -268,7 +292,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ActionRequestV2'
+              $ref: '#/components/schemas/ActionRequest'
       responses:
         '409':
           description: Action already exists
@@ -279,7 +303,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ActionV2'
+                $ref: '#/components/schemas/Action'
     put:
       security:
         - bearerAuth: [ ]
@@ -290,7 +314,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ActionV2'
+              $ref: '#/components/schemas/Action'
       responses:
         '409':
           description: Action already exists
@@ -315,7 +339,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ListOfActionsV2'
+                $ref: '#/components/schemas/ListOfActions'
 
   /action/{id}:
     delete:
@@ -343,7 +367,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ListOfControlActionsV2'
+                $ref: '#/components/schemas/ListOfControlActions'
 
     post:
       security:
@@ -355,7 +379,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ControlActionRequestV2'
+              $ref: '#/components/schemas/ControlActionRequest'
       responses:
         '409':
           description: Control action already exists
@@ -366,7 +390,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ControlActionV2'
+                $ref: '#/components/schemas/ControlAction'
     put:
       security:
         - bearerAuth: [ ]
@@ -377,7 +401,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ControlActionV2'
+              $ref: '#/components/schemas/ControlAction'
       responses:
         '409':
           description: Control action already exists
@@ -419,7 +443,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ListOfControlActionsV2'
+                $ref: '#/components/schemas/ListOfControlActions'
 
   /operation_type:
     post:
@@ -432,14 +456,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/OperationTypeV2'
+              $ref: '#/components/schemas/OperationType'
       responses:
         '200':
           description: Тип сохранен
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/OperationTypeV2'
+                $ref: '#/components/schemas/OperationType'
 
     put:
       security:
@@ -451,7 +475,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/OperationTypeV2'
+              $ref: '#/components/schemas/OperationType'
       responses:
         '200':
           description: Информация о типе обновлена
@@ -472,7 +496,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ListOfOperationTypesV2'
+                $ref: '#/components/schemas/ListOfOperationTypes'
 
   /operation_type/{id}:
     delete:
@@ -501,7 +525,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ListOfKitsV2'
+                $ref: '#/components/schemas/ListOfKits'
 
     post:
       security:
@@ -513,14 +537,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/KitV2'
+              $ref: '#/components/schemas/Kit'
       responses:
         '200':
           description: Набор сохранен
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/KitV2'
+                $ref: '#/components/schemas/Kit'
 
     put:
       security:
@@ -532,7 +556,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/KitV2'
+              $ref: '#/components/schemas/Kit'
       responses:
         '200':
           description: Информация о наборе обновлена
@@ -547,7 +571,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ListOfKitBriefProgressV2'
+                $ref: '#/components/schemas/ListOfKitBriefProgress'
 
   /kit/{id}/progress:
     get:
@@ -567,7 +591,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/KitDetailedProgressV2'
+                $ref: '#/components/schemas/KitDetailedProgress'
 
   /kit/{id}:
     get:
@@ -587,7 +611,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/KitV2'
+                $ref: '#/components/schemas/Kit'
 
     delete:
       security:
@@ -619,7 +643,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ListOfEmployeesV2'
+                $ref: '#/components/schemas/ListOfEmployees'
 
   /employee/{id}/state?active:
     put:
@@ -666,7 +690,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/EmployeeCredentialsV2'
+              $ref: '#/components/schemas/EmployeeCredentials'
       responses:
         '400':
           description: Wrong password or phone
@@ -686,7 +710,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/EmployeeV2'
+              $ref: '#/components/schemas/Employee'
       responses:
         '200':
           description: Token
@@ -706,7 +730,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/EmployeeV2'
+              $ref: '#/components/schemas/Employee'
       responses:
         '200':
           description: employee updated
@@ -722,7 +746,7 @@ components:
       bearerFormat: JWT
 
   schemas:
-    EmployeeV2:
+    Employee:
       properties:
         id:
           type: integer
@@ -739,7 +763,7 @@ components:
         role:
           type: string
 
-    EmployeeCredentialsV2:
+    EmployeeCredentials:
       properties:
         phone:
           type: string
@@ -751,7 +775,7 @@ components:
         token:
           type: string
 
-    ActionV2:
+    Action:
       properties:
         id:
           type: number
@@ -769,7 +793,7 @@ components:
         product_id:
           type: number
 
-    BatchActionRequestV2:
+    BatchActionRequest:
       properties:
         done_time:
           type: string
@@ -780,10 +804,13 @@ components:
           default: false
         operation_type:
           type: number
-        batch_id:
-          type: number
+        products_id:
+          type: array
+          items:
+            type: number
 
-    ActionRequestV2:
+
+    ActionRequest:
       properties:
         done_time:
           type: string
@@ -797,7 +824,7 @@ components:
         product_id:
           type: number
 
-    ProductV2:
+    Product:
       properties:
         id:
           type: number
@@ -810,7 +837,7 @@ components:
         batch_id:
           type: number
 
-    BatchV2:
+    Batch:
       properties:
         id:
           type: number
@@ -819,7 +846,7 @@ components:
         kit_id:
           type: number
 
-    BatchProgressV2:
+    BatchProgress:
       properties:
         id:
           type: number
@@ -838,7 +865,7 @@ components:
         defected_quantity:
           type: integer
 
-    KitDetailedProgressV2:
+    KitDetailedProgress:
       properties:
         id:
           type: number
@@ -849,13 +876,13 @@ components:
         operation_types:
           type: array
           items:
-            $ref: '#/components/schemas/OperationTypeV2'
+            $ref: '#/components/schemas/OperationType'
         batches_progress:
           type: array
           items:
-            $ref: '#/components/schemas/BatchProgressV2'
+            $ref: '#/components/schemas/BatchProgress'
 
-    KitBriefProgressV2:
+    KitBriefProgress:
       properties:
         specification_id:
           type: number
@@ -882,7 +909,7 @@ components:
         defected_quantity:
           type: integer
 
-    KitV2:
+    Kit:
       properties:
         id:
           type: number
@@ -895,7 +922,7 @@ components:
         specification_id:
           type: number
 
-    SpecificationPostRequestV2:
+    SpecificationPostRequest:
       properties:
         id:
           type: number
@@ -908,9 +935,9 @@ components:
         operation_types:
           type: array
           items:
-            $ref: '#/components/schemas/OperationTypeRequestV2'
+            $ref: '#/components/schemas/OperationTypeRequest'
 
-    SpecificationPutRequestV2:
+    SpecificationPutRequest:
       properties:
         id:
           type: number
@@ -923,9 +950,9 @@ components:
         operation_types:
           type: array
           items:
-            $ref: '#/components/schemas/OperationTypeV2'
+            $ref: '#/components/schemas/OperationType'
 
-    SpecificationResponseV2:
+    SpecificationResponse:
       properties:
         id:
           type: number
@@ -940,9 +967,9 @@ components:
         operation_types:
           type: array
           items:
-            $ref: '#/components/schemas/OperationTypeV2'
+            $ref: '#/components/schemas/OperationType'
 
-    OperationTypeV2:
+    OperationType:
       properties:
         id:
           type: number
@@ -953,14 +980,14 @@ components:
         specification_id:
           type: number
 
-    OperationTypeRequestV2:
+    OperationTypeRequest:
       properties:
         type:
           type: string
         sequence_number:
           type: integer
 
-    ControlActionRequestV2:
+    ControlActionRequest:
       properties:
         done_time:
           type: string
@@ -979,7 +1006,7 @@ components:
         product_id:
           type: number
 
-    ControlActionV2:
+    ControlAction:
       properties:
         id:
           type: number
@@ -1002,47 +1029,47 @@ components:
         product_id:
           type: number
 
-    ListOfActionsV2:
+    ListOfActions:
       type: array
       items:
-        $ref: '#/components/schemas/ActionV2'
+        $ref: '#/components/schemas/Action'
 
-    ListOfControlActionsV2:
+    ListOfControlActions:
       type: array
       items:
-        $ref: '#/components/schemas/ControlActionV2'
+        $ref: '#/components/schemas/ControlAction'
 
-    ListOfOperationTypesV2:
+    ListOfOperationTypes:
       type: array
       items:
-        $ref: '#/components/schemas/OperationTypeV2'
+        $ref: '#/components/schemas/OperationType'
 
-    ListOfSpecificationResponsesV2:
+    ListOfSpecificationResponses:
       type: array
       items:
-        $ref: '#/components/schemas/SpecificationResponseV2'
+        $ref: '#/components/schemas/SpecificationResponse'
 
-    ListOfBatchesV2:
+    ListOfBatches:
       type: array
       items:
-        $ref: '#/components/schemas/BatchV2'
+        $ref: '#/components/schemas/Batch'
 
-    ListOfKitsV2:
+    ListOfKits:
       type: array
       items:
-        $ref: '#/components/schemas/KitV2'
+        $ref: '#/components/schemas/Kit'
 
-    ListOfProductsV2:
+    ListOfProducts:
       type: array
       items:
-        $ref: '#/components/schemas/ProductV2'
+        $ref: '#/components/schemas/Product'
 
-    ListOfKitBriefProgressV2:
+    ListOfKitBriefProgress:
       type: array
       items:
-        $ref: '#/components/schemas/KitBriefProgressV2'
+        $ref: '#/components/schemas/KitBriefProgress'
 
-    ListOfEmployeesV2:
+    ListOfEmployees:
       type: array
       items:
-        $ref: '#/components/schemas/EmployeeV2'
+        $ref: '#/components/schemas/Employee'

@@ -15,6 +15,7 @@ suspend inline fun <reified T : Any> ApplicationCall.safetyReceive(onCorrectResu
             is EntryDoesNotExistException -> respond(HttpStatusCode.NotFound, e.message.toString())
             is DuplicateValueException -> respond(HttpStatusCode.Conflict, e.message.toString())
 
+            is UnsupportedOperationTypeException,
             is LockedProductException,
             is InActiveProductException,
             is UnLockedProductException,

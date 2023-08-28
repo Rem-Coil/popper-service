@@ -30,6 +30,10 @@ class ProductService(
         return productDao.getById(id) ?: throw EntryDoesNotExistException("Product with id = $id not found")
     }
 
+    suspend fun getProductsByIdList(idList: List<Long>): List<Product> {
+        return productDao.getByIdList(idList)
+    }
+
     private suspend fun createProduct(product: Product): Product {
         return productDao.create(product)
     }

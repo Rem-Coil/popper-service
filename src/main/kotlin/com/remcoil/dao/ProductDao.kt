@@ -37,6 +37,12 @@ class ProductDao(private val database: Database) {
             .map(::extractProduct)
     }
 
+    suspend fun getByIdList(idList: List<Long>): List<Product> = safetySuspendTransactionAsync(database) {
+        Products
+            .select { Products.id inList (idList) }
+            .map(::extractProduct)
+    }
+
     suspend fun getById(id: Long): Product? = safetySuspendTransactionAsync(database) {
         Products
             .select { Products.id eq id }

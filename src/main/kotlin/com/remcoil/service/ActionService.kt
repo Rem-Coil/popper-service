@@ -2,10 +2,12 @@ package com.remcoil.service
 
 import com.remcoil.dao.ActionDao
 import com.remcoil.model.dto.Action
+import com.remcoil.model.dto.BatchActionRequest
 import com.remcoil.model.dto.ExtendedAction
 import com.remcoil.utils.exceptions.InActiveProductException
 import com.remcoil.utils.exceptions.LockedProductException
 import com.remcoil.utils.exceptions.UnLockedProductException
+import com.remcoil.utils.exceptions.UnsupportedOperationTypeException
 
 class ActionService(
     private val actionDao: ActionDao,
@@ -44,7 +46,9 @@ class ActionService(
             if (!product.locked) {
                 throw UnLockedProductException("Product with id = ${product.id} is unlocked")
             } else {
-                val lastControlAction = controlActionService.getControlActionsByProductId(action.productId).filter { it.needRepair }.maxBy { it.doneTime }
+                val lastControlAction =
+                    controlActionService.getControlActionsByProductId(action.productId).filter { it.needRepair }
+                        .maxBy { it.doneTime }
                 if (lastControlAction.operationType == action.operationType) {
                     val createdAction = actionDao.create(action)
                     productService.setLockValueByProductId(product.id, false)
@@ -58,19 +62,15 @@ class ActionService(
         }
     }
 
-    suspend fun createBatchActions(
-        batchActionRequest: com.remcoil.model.dto.BatchActionRequest,
-        employeeId: Long
-    ): List<Action> {
-        val products = productService.getProductsByBatchId(batchActionRequest.batchId)
-            .filter { product -> product.active }
-
-        val actions = ArrayList<Action>()
-        for (product in products) {
-            actions.add(batchActionRequest.toAction(employeeId, product.id))
+    suspend fun createBatchActions(batchActionRequest: BatchActionRequest, employeeId: Long): List<Action> {
+        if (batchActionRequest.repair) {
+            throw UnsupportedOperationTypeException("Repair operations are not supported for batch actions")
         }
+        val validProductsId = productService.getProductsByIdList(batchActionRequest.productsId)
+            .filter { it.active && !it.locked }
+            .map { it.id }
 
-        return actionDao.batchCreate(actions)
+        return actionDao.batchCreate(batchActionRequest.toActions(employeeId, validProductsId))
     }
 
     suspend fun deleteActionById(id: Long) {

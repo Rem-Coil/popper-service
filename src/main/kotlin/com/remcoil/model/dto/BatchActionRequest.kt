@@ -13,15 +13,14 @@ data class BatchActionRequest(
     val repair: Boolean,
     @SerialName("operation_type")
     val operationType: Long,
-    @SerialName("batch_id")
-    val batchId: Long
+    @SerialName("products_id")
+    val productsId: List<Long>
 ) {
-    fun toAction(employeeId: Long, productId: Long) = Action(
-        id = 0,
-        doneTime,
-        repair,
-        operationType,
-        employeeId,
-        productId
-    )
+    fun toActions(employeeId: Long, validProductsId: List<Long>): List<Action> {
+        val actions = ArrayList<Action>()
+        for (productId in validProductsId) {
+            actions.add(Action(0, doneTime, repair, operationType, employeeId, productId))
+        }
+        return actions
+    }
 }
