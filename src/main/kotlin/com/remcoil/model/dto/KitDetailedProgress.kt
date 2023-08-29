@@ -8,6 +8,8 @@ data class KitDetailedProgress(
     val id: Long,
     @SerialName("kit_number")
     val kitNumber: String,
+    @SerialName("acceptance_percentage")
+    val acceptancePercentage: Int,
     @SerialName("batch_size")
     val batchSize: Int,
     @SerialName("operation_types")
@@ -18,6 +20,7 @@ data class KitDetailedProgress(
     constructor(kit: Kit, operationTypes: List<OperationType>, batchesProgress: List<BatchProgress>) : this(
         kit.id,
         kit.kitNumber,
+        kit.acceptancePercentage,
         kit.batchSize,
         operationTypes,
         batchesProgress

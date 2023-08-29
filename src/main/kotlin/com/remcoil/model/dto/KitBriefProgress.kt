@@ -17,6 +17,12 @@ data class KitBriefProgress(
     val kitNumber: String,
     @SerialName("kit_size")
     val kitSize: Int,
+    @SerialName("acceptance_percentage")
+    val acceptancePercentage: Int,
+    @SerialName("batches_quantity")
+    val batchesQuantity: Int,
+    @SerialName("batches_accepted")
+    val batchesAccepted: Int,
     @SerialName("products_in_work")
     val productsInWork: Int,
     @SerialName("products_done")
@@ -30,6 +36,7 @@ data class KitBriefProgress(
 ) {
     constructor(
         kit: ExtendedKit,
+        batchesAccepted: Int,
         productsInWork: Int,
         productsDone: Int,
         controlProgress: Map<ControlType, Int>,
@@ -42,6 +49,8 @@ data class KitBriefProgress(
         kit.id,
         kit.kitNumber,
         kit.batchesQuantity * kit.batchSize,
-        productsInWork, productsDone, controlProgress, lockedQuantity, defectedQuantity
+        kit.acceptancePercentage,
+        kit.batchesQuantity,
+        batchesAccepted, productsInWork, productsDone, controlProgress, lockedQuantity, defectedQuantity
     )
 }

@@ -9,7 +9,8 @@ class BatchService(
     private val batchDao: BatchDao,
     private val productService: ProductService,
     private val actionService: ActionService,
-    private val controlActionService: ControlActionService
+    private val controlActionService: ControlActionService,
+    private val acceptanceActionService: AcceptanceActionService
 ) {
     suspend fun getAllBatches(): List<Batch> {
         return batchDao.getAll()
@@ -73,11 +74,16 @@ class BatchService(
         }
     }
 
-    suspend fun getBatchesProgressByKitId(id: Long): List<BatchProgress> {
-        val batches = getBatchesByKitId(id)
-        val actionsByBatchId = actionService.getActionsByKitId(id).filter { it.active }.groupBy { it.batchId }
-        val controlActionsByBatchId =
-            controlActionService.getControlActionsByKitId(id).filter { it.active }.groupBy { it.batchId }
+    suspend fun getBatchesProgressByKitId(kit: Kit): List<BatchProgress> {
+        val batches = getBatchesByKitId(kit.id)
+        val actionsByBatchId = actionService.getActionsByKitId(kit.id).filter { it.active }.groupBy { it.batchId }
+        val acceptanceActionsByBatchId = acceptanceActionService.getByKitId(kit.id)
+            .filter { it.active }
+            .groupingBy { it.batchId }
+            .eachCount()
+        val controlActionsByBatchId = controlActionService.getControlActionsByKitId(kit.id)
+            .filter { it.active }
+            .groupBy { it.batchId }
         val defectedProductsQuantityByBatchId = productService.getProductsByBatchesId(batches.map { it.id })
             .filter { !it.active }
             .groupingBy { it.batchId }
@@ -115,14 +121,18 @@ class BatchService(
                 }
             }
 
+            val isAccepted = (100 * (acceptanceActionsByBatchId[batch.id] ?: -1) / kit.batchSize) >= kit.acceptancePercentage
+
             batchesProgress.add(
                 BatchProgress(
                     batch.id,
                     batch.batchNumber,
+                    isAccepted,
                     operationProgress,
                     controlProgress,
                     lockedProductsIdSet.size,
-                    defectedProductsQuantity
+                    defectedProductsQuantity,
+                    acceptanceActionsByBatchId[batch.id] ?: 0
                 )
             )
         }

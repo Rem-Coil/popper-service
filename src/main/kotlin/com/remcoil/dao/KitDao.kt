@@ -25,6 +25,7 @@ class KitDao(private val database: Database) {
         Kits.leftJoin(Specifications).slice(
             Kits.id,
             Kits.kitNumber,
+            Kits.acceptancePercentage,
             Kits.batchSize,
             Kits.batchesQuantity,
             Kits.specificationId,
@@ -38,6 +39,7 @@ class KitDao(private val database: Database) {
     suspend fun create(kit: Kit): Kit = safetySuspendTransactionAsync(database) {
         val id = Kits.insertAndGetId {
             it[kitNumber] = kit.kitNumber
+            it[acceptancePercentage] = kit.acceptancePercentage
             it[batchesQuantity] = kit.batchesQuantity
             it[batchSize] = kit.batchSize
             it[specificationId] = kit.specificationId
@@ -48,6 +50,7 @@ class KitDao(private val database: Database) {
     suspend fun update(kit: Kit) = safetySuspendTransactionAsync(database) {
         Kits.update({ Kits.id eq kit.id }) {
             it[kitNumber] = kit.kitNumber
+            it[acceptancePercentage] = kit.acceptancePercentage
             it[batchesQuantity] = kit.batchesQuantity
             it[batchSize] = kit.batchSize
             it[specificationId] = kit.specificationId
@@ -61,6 +64,7 @@ class KitDao(private val database: Database) {
     private fun extractKit(row: ResultRow): Kit = Kit(
         row[Kits.id].value,
         row[Kits.kitNumber],
+        row[Kits.acceptancePercentage],
         row[Kits.batchesQuantity],
         row[Kits.batchSize],
         row[Kits.specificationId].value
@@ -70,6 +74,7 @@ class KitDao(private val database: Database) {
         com.remcoil.model.dto.ExtendedKit(
             row[Kits.id].value,
             row[Kits.kitNumber],
+            row[Kits.acceptancePercentage],
             row[Kits.batchesQuantity],
             row[Kits.batchSize],
             row[Kits.specificationId].value,

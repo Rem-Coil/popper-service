@@ -31,6 +31,7 @@ fun Application.popper() {
     kitModule()
     specificationModule()
     controlActionModule()
+    acceptanceActionModule()
     operationTypeModule()
     employeeModule()
 }

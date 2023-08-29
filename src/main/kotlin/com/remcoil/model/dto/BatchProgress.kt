@@ -8,6 +8,8 @@ data class BatchProgress(
     val id: Long = 0,
     @SerialName("batch_number")
     val batchNumber: Int,
+    @SerialName("is_accepted")
+    val isAccepted: Boolean,
     @SerialName("operations_progress")
     val operationsProgress: Map<Long, Int>,
     @SerialName("control_progress")
@@ -15,5 +17,7 @@ data class BatchProgress(
     @SerialName("locked_quantity")
     val lockedQuantity: Int,
     @SerialName("defected_quantity")
-    val defectedQuantity: Int
+    val defectedQuantity: Int,
+    @SerialName("accepted_quantity")
+    val acceptedQuantity: Int
 )

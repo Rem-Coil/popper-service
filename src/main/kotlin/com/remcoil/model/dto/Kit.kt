@@ -8,6 +8,8 @@ data class Kit(
     val id: Long,
     @SerialName("kit_number")
     val kitNumber: String,
+    @SerialName("acceptance_percentage")
+    val acceptancePercentage: Int,
     @SerialName("batches_quantity")
     val batchesQuantity: Int,
     @SerialName("batch_size")

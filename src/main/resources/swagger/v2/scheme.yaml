@@ -357,6 +357,97 @@ paths:
         '200':
           description: Информация об операции удалена
 
+  /acceptance_action:
+    get:
+      tags:
+        - acceptance_action
+      responses:
+        '200':
+          description: Список операций
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListOfAcceptanceActions'
+
+    post:
+      security:
+        - bearerAuth: [ ]
+      tags:
+        - acceptance_action
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AcceptanceActionRequest'
+      responses:
+        '409':
+          description: Action already exists
+        '400':
+          description: Bad request
+        '200':
+          description: Операция создана
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListOfAcceptanceActions'
+    put:
+      security:
+        - bearerAuth: [ ]
+      tags:
+        - acceptance_action
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AcceptanceAction'
+      responses:
+        '409':
+          description: Action already exists
+        '200':
+          description: Action update
+        '400':
+          description: Bad request
+
+  /acceptance_action/product/{id}:
+    get:
+      tags:
+        - acceptance_action
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: number
+      responses:
+        '200':
+          description: Операция приемки для одного изделия
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AcceptanceAction'
+        '400':
+          description: Bad request
+        '404':
+          description: Not found
+
+  /acceptance_action/{id}:
+    delete:
+      security:
+        - bearerAuth: [ ]
+      tags:
+        - acceptance_action
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: number
+      responses:
+        '200':
+          description: Информация об операции удалена
+
   /control_action:
     get:
       tags:
@@ -915,6 +1006,8 @@ components:
           type: number
         kit_number:
           type: string
+        acceptance_percentage:
+          type: integer
         batches_quantity:
           type: integer
         batch_size:
@@ -1028,6 +1121,35 @@ components:
           type: number
         product_id:
           type: number
+
+    AcceptanceAction:
+      properties:
+        id:
+          type: number
+        done_time:
+          type: string
+          format: YYYY-MM-DDTHH:MM:SS
+          example: "2022-12-25T14:30:01"
+        product_id:
+          type: number
+        employee_id:
+          type: number
+
+    AcceptanceActionRequest:
+      properties:
+        done_time:
+          type: string
+          format: YYYY-MM-DDTHH:MM:SS
+          example: "2022-12-25T14:30:01"
+        products_id:
+          type: array
+          items:
+            type: number
+
+    ListOfAcceptanceActions:
+      type: array
+      items:
+        $ref: '#/components/schemas/AcceptanceAction'
 
     ListOfActions:
       type: array
