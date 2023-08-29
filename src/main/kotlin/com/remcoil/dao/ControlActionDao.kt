@@ -37,6 +37,20 @@ class ControlActionDao(private val database: Database) {
             .map(::extractControlAction)
     }
 
+    suspend fun batchCreate(controlActions: List<ControlAction>) = safetySuspendTransactionAsync(database) {
+        ControlActions.batchInsert(controlActions) { controlAction ->
+            this[ControlActions.doneTime] = controlAction.doneTime.toJavaLocalDateTime()
+            this[ControlActions.successful] = controlAction.successful
+            this[ControlActions.needRepair] = controlAction.needRepair
+            this[ControlActions.controlType] = controlAction.controlType.name
+            this[ControlActions.comment] = controlAction.comment
+            this[ControlActions.operationType] = controlAction.operationType
+            this[ControlActions.employeeId] = controlAction.employeeId
+            this[ControlActions.productId] = controlAction.productId
+        }
+            .map(::extractControlAction)
+    }
+
     suspend fun create(controlAction: ControlAction): ControlAction = safetySuspendTransactionAsync(database) {
         val id = ControlActions.insertAndGetId {
             it[doneTime] = controlAction.doneTime.toJavaLocalDateTime()

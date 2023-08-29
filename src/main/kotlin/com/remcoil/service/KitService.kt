@@ -63,7 +63,7 @@ class KitService(
             val actionsByKitId = actionService.getActionsBySpecificationId(specification.key)
                 .filter { it.active }
                 .groupBy { it.kitId }
-            val controlActionsByKitId = controlActionService.getControlActionsBySpecificationId(specification.key)
+            val controlActionsByKitId = controlActionService.getBySpecificationId(specification.key)
                 .filter { it.active }
                 .groupBy { it.kitId }
             val acceptanceActionsByKitId = acceptanceActionService.getBySpecificationId(specification.key)

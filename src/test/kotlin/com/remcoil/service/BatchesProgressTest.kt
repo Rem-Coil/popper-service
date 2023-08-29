@@ -15,6 +15,7 @@ class BatchesProgressTest {
     private val productService: ProductService = mockk()
     private val actionService: ActionService = mockk()
     private val controlActionService: ControlActionService = mockk()
+    private val acceptanceActionService: AcceptanceActionService = mockk()
 
     private val now = Clock.System.now()
 
@@ -22,8 +23,9 @@ class BatchesProgressTest {
     private var productList = mutableListOf<Product>()
     private var extendedActionList = mutableListOf<ExtendedAction>()
     private var extendedControlActionList = mutableListOf<ExtendedControlAction>()
+    private val kit = Kit(1, "01-01", 50, 3, 4, 1)
 
-    private val batchService = BatchService(batchDao, productService, actionService, controlActionService)
+    private val batchService = BatchService(batchDao, productService, actionService, controlActionService, acceptanceActionService)
 
     @BeforeEach
     fun resetCollections() {
@@ -107,16 +109,17 @@ class BatchesProgressTest {
         coEvery { batchDao.getByKitId(any()) } returns batchList
         coEvery { productService.getProductsByBatchesId(any()) } returns productList
         coEvery { actionService.getActionsByKitId(any()) } returns extendedActionList
-        coEvery { controlActionService.getControlActionsByKitId(any()) } returns extendedControlActionList
+        coEvery { controlActionService.getByKitId(any()) } returns extendedControlActionList
+        coEvery { acceptanceActionService.getByKitId(any()) } returns listOf()
     }
 
     @Test
     fun `base case`(): Unit = runBlocking {
-        val producedProgress = batchService.getBatchesProgressByKitId(1)
+        val producedProgress = batchService.getBatchesProgressByKitId(kit)
         val targetProgress = listOf(
-            BatchProgress(1, 1, mapOf(1L to 4, 2L to 1), mapOf(ControlType.OTK to 4, ControlType.TESTING to 0), 0, 0),
-            BatchProgress(2, 2, mapOf(1L to 4), mapOf(ControlType.OTK to 1, ControlType.TESTING to 1), 0, 0),
-            BatchProgress(3, 3, mapOf(1L to 3), mapOf(ControlType.OTK to 0, ControlType.TESTING to 0), 0, 0)
+            BatchProgress(1, 1, false, mapOf(1L to 4, 2L to 1), mapOf(ControlType.OTK to 4, ControlType.TESTING to 0), 0, 0, 0),
+            BatchProgress(2, 2, false, mapOf(1L to 4), mapOf(ControlType.OTK to 1, ControlType.TESTING to 1), 0, 0, 0),
+            BatchProgress(3, 3, false, mapOf(1L to 3), mapOf(ControlType.OTK to 0, ControlType.TESTING to 0), 0, 0, 0)
         )
 
         assertEquals(targetProgress, producedProgress)
@@ -165,11 +168,11 @@ class BatchesProgressTest {
             specificationId = 1
         )
 
-        val producedProgress = batchService.getBatchesProgressByKitId(1)
+        val producedProgress = batchService.getBatchesProgressByKitId(kit)
         val targetProgress = listOf(
-            BatchProgress(1, 1, mapOf(1L to 3), mapOf(ControlType.OTK to 3, ControlType.TESTING to 0), 0, 1),
-            BatchProgress(2, 2, mapOf(1L to 4), mapOf(ControlType.OTK to 1, ControlType.TESTING to 1), 0, 0),
-            BatchProgress(3, 3, mapOf(1L to 3), mapOf(ControlType.OTK to 0, ControlType.TESTING to 0), 0, 0)
+            BatchProgress(1, 1, false, mapOf(1L to 3), mapOf(ControlType.OTK to 3, ControlType.TESTING to 0), 0, 1, 0),
+            BatchProgress(2, 2, false, mapOf(1L to 4), mapOf(ControlType.OTK to 1, ControlType.TESTING to 1), 0, 0, 0),
+            BatchProgress(3, 3, false, mapOf(1L to 3), mapOf(ControlType.OTK to 0, ControlType.TESTING to 0), 0, 0, 0)
         )
 
         assertEquals(targetProgress, producedProgress)
@@ -192,14 +195,14 @@ class BatchesProgressTest {
             kitId = 1,
             specificationId = 1
         )
-        productList[0] = Product(0, 1, true, true, 1)
+        productList[0] = Product(0, 1, active = true, locked = true, batchId = 1)
 
+        val producedProgress = batchService.getBatchesProgressByKitId(kit)
         val targetProgress = listOf(
-            BatchProgress(1, 1, mapOf(1L to 3, 2L to 1), mapOf(ControlType.OTK to 3, ControlType.TESTING to 0), 1, 0),
-            BatchProgress(2, 2, mapOf(1L to 4), mapOf(ControlType.OTK to 1, ControlType.TESTING to 1), 0, 0),
-            BatchProgress(3, 3, mapOf(1L to 3), mapOf(ControlType.OTK to 0, ControlType.TESTING to 0), 0, 0)
+            BatchProgress(1, 1, false, mapOf(1L to 3, 2L to 1), mapOf(ControlType.OTK to 3, ControlType.TESTING to 0), 1, 0, 0),
+            BatchProgress(2, 2, false, mapOf(1L to 4), mapOf(ControlType.OTK to 1, ControlType.TESTING to 1), 0, 0, 0),
+            BatchProgress(3, 3, false, mapOf(1L to 3), mapOf(ControlType.OTK to 0, ControlType.TESTING to 0), 0, 0, 0)
         )
-        val producedProgress = batchService.getBatchesProgressByKitId(1)
 
         assertEquals(targetProgress, producedProgress)
     }
@@ -236,11 +239,11 @@ class BatchesProgressTest {
             )
         )
 
-        val producedProgress = batchService.getBatchesProgressByKitId(1)
+        val producedProgress = batchService.getBatchesProgressByKitId(kit)
         val targetProgress = listOf(
-            BatchProgress(1, 1, mapOf(1L to 4, 2L to 1), mapOf(ControlType.OTK to 3, ControlType.TESTING to 0), 0, 0),
-            BatchProgress(2, 2, mapOf(1L to 4), mapOf(ControlType.OTK to 1, ControlType.TESTING to 1), 0, 0),
-            BatchProgress(3, 3, mapOf(1L to 3), mapOf(ControlType.OTK to 0, ControlType.TESTING to 0), 0, 0)
+            BatchProgress(1, 1, false, mapOf(1L to 4, 2L to 1), mapOf(ControlType.OTK to 3, ControlType.TESTING to 0), 0, 0, 0),
+            BatchProgress(2, 2, false, mapOf(1L to 4), mapOf(ControlType.OTK to 1, ControlType.TESTING to 1), 0, 0, 0),
+            BatchProgress(3, 3, false, mapOf(1L to 3), mapOf(ControlType.OTK to 0, ControlType.TESTING to 0), 0, 0, 0)
         )
 
         assertEquals(targetProgress, producedProgress)

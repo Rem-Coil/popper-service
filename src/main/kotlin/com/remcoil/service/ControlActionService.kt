@@ -10,23 +10,33 @@ class ControlActionService(
     private val controlActionDao: ControlActionDao,
     private val productService: ProductService,
 ) {
-    suspend fun getAllControlActions(): List<ControlAction> {
+    suspend fun getAll(): List<ControlAction> {
         return controlActionDao.getAll()
     }
 
-    suspend fun getControlActionsBySpecificationId(id: Long): List<ExtendedControlAction> {
+    suspend fun getBySpecificationId(id: Long): List<ExtendedControlAction> {
         return controlActionDao.getBySpecificationId(id)
     }
 
-    suspend fun getControlActionsByKitId(id: Long): List<ExtendedControlAction> {
+    suspend fun getByKitId(id: Long): List<ExtendedControlAction> {
         return controlActionDao.getByKitId(id)
     }
 
-    suspend fun getControlActionsByProductId(id: Long): List<ControlAction> {
+    suspend fun getByProductId(id: Long): List<ControlAction> {
         return controlActionDao.getByProductId(id)
     }
 
-    suspend fun createControlAction(controlAction: ControlAction): ControlAction {
+    suspend fun batchCreate(controlActions: List<ControlAction>): List<ControlAction> {
+        val validProductsId = productService.getProductsByIdList(controlActions.map { it.productId })
+            .filter { it.active && !it.locked }
+            .map { it.id }
+        if (controlActions.first().needRepair) {
+            productService.setLockValueByIdList(validProductsId, true)
+        }
+        return controlActionDao.batchCreate(controlActions.filter { it.productId in validProductsId })
+    }
+
+    suspend fun create(controlAction: ControlAction): ControlAction {
         val product = productService.getProductById(controlAction.productId)
         if (!product.active) {
             throw InActiveProductException("Product with id = ${product.id} inactive")

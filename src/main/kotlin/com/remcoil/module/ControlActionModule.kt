@@ -1,9 +1,9 @@
 package com.remcoil.module
 
+import com.remcoil.model.dto.BatchControlActionRequest
 import com.remcoil.model.dto.ControlAction
 import com.remcoil.model.dto.ControlActionRequest
 import com.remcoil.service.ControlActionService
-import com.remcoil.utils.exceptions.InActiveProductException
 import com.remcoil.utils.respondNullable
 import com.remcoil.utils.safetyReceive
 import io.ktor.http.*
@@ -22,31 +22,40 @@ fun Application.controlActionModule() {
         route("/control_action") {
             get("/product/{id}") {
                 val controlActions = call.parameters["id"]?.toLongOrNull()?.let {
-                    controlActionService.getControlActionsByProductId(it)
+                    controlActionService.getByProductId(it)
                 }
                 call.respondNullable(controlActions, onNull = HttpStatusCode.BadRequest)
             }
 
             get {
-                val controlActions = controlActionService.getAllControlActions()
+                val controlActions = controlActionService.getAll()
                 call.respond(controlActions)
             }
 
             authenticate("quality-engineer-access") {
+                post("/batch") {
+                    call.safetyReceive<BatchControlActionRequest> { batchControlActionRequest ->
+                        val principal = call.principal<JWTPrincipal>()
+                        call.respond(
+                            controlActionService.batchCreate(
+                                batchControlActionRequest.toControlActions(
+                                    principal!!.payload.getClaim("id").asLong()
+                                )
+                            )
+                        )
+                    }
+                }
+
                 post {
                     call.safetyReceive<ControlActionRequest> { controlActionRequest ->
                         val principal = call.principal<JWTPrincipal>()
-                        try {
-                            call.respond(
-                                controlActionService.createControlAction(
-                                    controlActionRequest.toControlAction(
-                                        principal!!.payload.getClaim("id").asLong()
-                                    )
+                        call.respond(
+                            controlActionService.create(
+                                controlActionRequest.toControlAction(
+                                    principal!!.payload.getClaim("id").asLong()
                                 )
                             )
-                        } catch (e: InActiveProductException) {
-                            call.respond(HttpStatusCode.BadRequest)
-                        }
+                        )
                     }
                 }
 

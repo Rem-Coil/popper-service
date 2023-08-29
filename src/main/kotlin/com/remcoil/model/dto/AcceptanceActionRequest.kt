@@ -13,7 +13,7 @@ data class AcceptanceActionRequest(
     @SerialName("products_id")
     val productsId: List<Long>,
 ) {
-    fun toAcceptanceActions(employeeId: Long): ArrayList<AcceptanceAction> {
+    fun toAcceptanceActions(employeeId: Long): List<AcceptanceAction> {
         val acceptanceActions = ArrayList<AcceptanceAction>()
         for (productId in productsId) {
             acceptanceActions.add(

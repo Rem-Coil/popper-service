@@ -448,6 +448,30 @@ paths:
         '200':
           description: Информация об операции удалена
 
+  /control_action/batch:
+    post:
+      security:
+        - bearerAuth: [ ]
+      tags:
+        - control_action
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BatchControlActionRequest'
+      responses:
+        '409':
+          description: Control action already exists
+        '400':
+          description: Bad request
+        '200':
+          description: Операция создана
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListOfControlActions'
+
   /control_action:
     get:
       tags:
@@ -1098,6 +1122,27 @@ components:
           type: number
         product_id:
           type: number
+
+    BatchControlActionRequest:
+      properties:
+        done_time:
+          type: string
+          format: YYYY-MM-DDTHH:MM:SS
+          example: "2022-12-25T14:30:01"
+        successful:
+          type: boolean
+        need_repair:
+          type: boolean
+        control_type:
+          type: string
+        comment:
+          type: string
+        operation_type:
+          type: number
+        products_id:
+          type: array
+          items:
+            type: number
 
     ControlAction:
       properties:

@@ -93,6 +93,12 @@ class ProductDao(private val database: Database) {
         }
     }
 
+    suspend fun setLockValueByIdList(idList: List<Long>, lock: Boolean) = safetySuspendTransactionAsync(database) {
+        Products.update({Products.id inList idList}) {
+            it[locked] = lock
+        }
+    }
+
     private fun extractProduct(row: ResultRow): Product = Product(
         row[Products.id].value,
         row[Products.productNumber],

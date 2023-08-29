@@ -81,7 +81,7 @@ class BatchService(
             .filter { it.active }
             .groupingBy { it.batchId }
             .eachCount()
-        val controlActionsByBatchId = controlActionService.getControlActionsByKitId(kit.id)
+        val controlActionsByBatchId = controlActionService.getByKitId(kit.id)
             .filter { it.active }
             .groupBy { it.batchId }
         val defectedProductsQuantityByBatchId = productService.getProductsByBatchesId(batches.map { it.id })

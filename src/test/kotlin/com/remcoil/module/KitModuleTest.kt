@@ -28,7 +28,7 @@ class KitModuleTest : BaseModuleTest() {
             kitModule()
         }
 
-        val requestBody = Kit(1, "Test", 1, 2, 1)
+        val requestBody = Kit(1, "Test", 50, 1, 2, 1)
         val qualityEngineerToken =
             generateToken(Employee(3, "First", "Last", "123", "pass", true, EmployeeRole.QUALITY_ENGINEER))
         val operatorToken =
@@ -87,8 +87,8 @@ class KitModuleTest : BaseModuleTest() {
             executeSqlScript("/sql/test_data_1.sql")
         }
 
-        val postRequestBody = Kit(0, "Test", 1, 2, 1)
-        val putRequestBody = Kit(2, "Test", 1, 2, 1)
+        val postRequestBody = Kit(0, "Test", 50, 1, 2, 1)
+        val putRequestBody = Kit(2, "Test", 50, 1, 2, 1)
 
         val adminToken =
             generateToken(Employee(1, "FirstName", "LastName", "123", "pass", true, EmployeeRole.ADMIN))
@@ -123,8 +123,8 @@ class KitModuleTest : BaseModuleTest() {
             executeSqlScript("/sql/test_data_1.sql")
         }
 
-        val postRequestBody = Kit(0, "Test", 1, 2, 0)
-        val putRequestBody = Kit(2, "Test", 1, 2, 0)
+        val postRequestBody = Kit(0, "Test", 50, 1, 2, 0)
+        val putRequestBody = Kit(2, "Test", 50, 1, 2, 0)
 
         val adminToken =
             generateToken(Employee(1, "FirstName", "LastName", "123", "pass", true, EmployeeRole.ADMIN))

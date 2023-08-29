@@ -90,4 +90,8 @@ class ProductService(
     suspend fun setLockValueByProductId(id: Long, lock: Boolean) {
         productDao.setLockValueById(id, lock)
     }
+
+    suspend fun setLockValueByIdList(idList: List<Long>, lock: Boolean) {
+        productDao.setLockValueByIdList(idList, lock)
+    }
 }

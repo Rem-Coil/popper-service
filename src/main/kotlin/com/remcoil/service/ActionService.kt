@@ -47,7 +47,7 @@ class ActionService(
                 throw UnLockedProductException("Product with id = ${product.id} is unlocked")
             } else {
                 val lastControlAction =
-                    controlActionService.getControlActionsByProductId(action.productId).filter { it.needRepair }
+                    controlActionService.getByProductId(action.productId).filter { it.needRepair }
                         .maxBy { it.doneTime }
                 if (lastControlAction.operationType == action.operationType) {
                     val createdAction = actionDao.create(action)
