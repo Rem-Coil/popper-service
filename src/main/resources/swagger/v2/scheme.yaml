@@ -2,11 +2,12 @@ openapi: 3.0.3
 info:
   title: Popper
   description: Backend spec for popper app
-  version: 0.3.0
+  version: 0.3.1
 
 servers:
   - url: 'http://0.0.0.0:8008'
   - url: 'https://api.remcoil.webtm.ru'
+  - url: 'https://test.remcoil.webtm.ru'
 paths:
 
   /product:

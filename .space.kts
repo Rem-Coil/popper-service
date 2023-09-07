@@ -9,9 +9,9 @@ job("Deploy on server (dev)") {
 
     startOn {
         gitPush {
-            branchFilter {
-                +Regex("release")
-                +Regex("develop")
+            anyBranchMatching {
+                +"release"
+                +"develop"
             }
         }
     }
@@ -81,15 +81,7 @@ job("Deploy on server (dev)") {
 
 job("Build server (prod)") {
     parameters {
-        text("major-version", value = "{{ project:popper-major-version }}")
-    }
-
-    startOn {
-        gitPush {
-            branchFilter {
-                +Regex("main")
-            }
-        }
+        text("version", value = "{{ project:system-version }}")
     }
 
     host(displayName = "Build and push docker image") {
@@ -116,7 +108,7 @@ job("Build server (prod)") {
             api.sendNotification(
                 """
                     :zap: :zap: Новая релизная версия бека собрана !!!
-                    Текущая версия: **${api.currentVersion}**
+                    Текущая версия: **${api.releaseVersion}**
                 """.trimIndent()
             )
         }
@@ -125,6 +117,9 @@ job("Build server (prod)") {
 
 val ScriptApi.currentVersion: String
     get() = "${parameters["version"]}-dev-${executionNumber()}"
+
+val ScriptApi.releaseVersion: String
+    get() = "${parameters["version"]}"
 
 suspend fun ScriptApi.startDeployment() {
     space().projects.automation.deployments.start(
