@@ -81,7 +81,15 @@ job("Deploy on server (dev)") {
 
 job("Build server (prod)") {
     parameters {
-        text("version", value = "{{ project:system-version }}")
+      	text("version", value = "{{ project:system-version }}")
+    }
+
+    startOn {
+        gitPush {
+            branchFilter {
+                +Regex("main")
+            }
+        }
     }
 
     host(displayName = "Build and push docker image") {
