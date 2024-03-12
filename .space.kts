@@ -9,8 +9,9 @@ job("Deploy on server (dev)") {
 
     startOn {
         gitPush {
-            branchFilter {
-                +Regex("release")
+            anyBranchMatching {
+                +"release"
+                +"develop"
             }
         }
     }
@@ -115,7 +116,7 @@ job("Build server (prod)") {
             api.sendNotification(
                 """
                     :zap: :zap: Новая релизная версия бека собрана !!!
-                    Текущая версия: **${api.currentVersion}**
+                    Текущая версия: **${api.releaseVersion}**
                 """.trimIndent()
             )
         }
@@ -124,6 +125,9 @@ job("Build server (prod)") {
 
 val ScriptApi.currentVersion: String
     get() = "${parameters["version"]}-dev-${executionNumber()}"
+
+val ScriptApi.releaseVersion: String
+    get() = "${parameters["version"]}"
 
 suspend fun ScriptApi.startDeployment() {
     space().projects.automation.deployments.start(

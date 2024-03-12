@@ -1,0 +1,1243 @@
+openapi: 3.0.3
+info:
+  title: Popper
+  description: Backend spec for popper app
+  version: 0.3.1
+
+servers:
+  - url: 'http://0.0.0.0:8008'
+  - url: 'https://api.remcoil.webtm.ru'
+  - url: 'https://test.remcoil.webtm.ru'
+paths:
+
+  /product:
+    get:
+      tags:
+        - product
+      responses:
+        '200':
+          description: Список всех изделий
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListOfProducts'
+
+  /product/{id}:
+    get:
+      tags:
+        - product
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: number
+      responses:
+        '200':
+          description: Данные об изделии
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '404':
+          description: Изделие не найдено
+        '400':
+          description: Bad request
+
+  /product/{id}?lock:
+    patch:
+      tags:
+        - product
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: number
+        - in: query
+          name: lock
+          required: true
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
+
+  /product/{id}/deactivate:
+    patch:
+      tags:
+        - product
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: number
+      responses:
+        '200':
+          description: Изделие отмечено как бракованное
+        '404':
+          description: Изделие не найдено
+        '400':
+          description: Bad request
+
+  /batch/{batch_id}/product:
+    get:
+      tags:
+        - product
+      parameters:
+        - in: path
+          name: batch_id
+          required: true
+          schema:
+            type: number
+      responses:
+        '200':
+          description: Список изделий одной партии
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListOfProducts'
+        '400':
+          description: Bad request
+
+  /specification:
+    get:
+      tags:
+        - specification
+      responses:
+        '200':
+          description: Список ТЗ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListOfSpecificationResponses'
+
+    put:
+      security:
+        - bearerAuth: [ ]
+      tags:
+        - specification
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SpecificationPutRequest'
+      responses:
+        '200':
+          description: ТЗ обновлено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SpecificationResponse'
+        '400':
+          description: Bad request
+
+    post:
+      security:
+        - bearerAuth: [ ]
+      tags:
+        - specification
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SpecificationPostRequest'
+      responses:
+        '200':
+          description: ТЗ создано
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SpecificationResponse'
+        '409':
+          description: Неккоретный порядковый номер для типа операций
+
+  /specification/{id}:
+    get:
+      tags:
+        - specification
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: number
+      responses:
+        '200':
+          description: Информация о ТЗ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SpecificationResponse'
+        '404':
+          description: Not found
+
+    delete:
+      security:
+        - bearerAuth: [ ]
+      tags:
+        - specification
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: number
+      responses:
+        '200':
+          description: Информация о ТЗ удалена
+        '400':
+          description: Bad request
+
+
+  /batch:
+    get:
+      tags:
+        - batch
+      responses:
+        '200':
+          description: Список партий
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListOfBatches'
+
+  /batch/{id}:
+    get:
+      tags:
+        - batch
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: number
+      responses:
+        '200':
+          description: Данные об партии
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Batch'
+        '404':
+          description: Партия не найдена
+        '400':
+          description: Bad request
+
+  /batch/{id}/history:
+    delete:
+      security:
+        - bearerAuth: [ ]
+      tags:
+        - batch
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: number
+      responses:
+        '200':
+          description: Информация о всех операциях удалена
+        '400':
+          description: Bad request
+
+  /action/batch:
+    post:
+      security:
+        - bearerAuth: [ ]
+      tags:
+        - action
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BatchActionRequest'
+      responses:
+        '409':
+          description: Action already exists
+        '400':
+          description: Bad request
+        '200':
+          description: Операция создана
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListOfActions'
+
+  /action:
+    get:
+      tags:
+        - action
+      responses:
+        '200':
+          description: Список операций
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListOfActions'
+
+    post:
+      security:
+        - bearerAuth: [ ]
+      tags:
+        - action
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ActionRequest'
+      responses:
+        '409':
+          description: Action already exists
+        '400':
+          description: Bad request
+        '200':
+          description: Операция создана
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Action'
+    put:
+      security:
+        - bearerAuth: [ ]
+      tags:
+        - action
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Action'
+      responses:
+        '409':
+          description: Action already exists
+        '200':
+          description: Action update
+        '400':
+          description: Bad request
+
+  /action/product/{id}:
+    get:
+      tags:
+        - action
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: number
+      responses:
+        '200':
+          description: Список операций для одного изделия
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListOfActions'
+
+  /action/{id}:
+    delete:
+      security:
+        - bearerAuth: [ ]
+      tags:
+        - action
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: number
+      responses:
+        '200':
+          description: Информация об операции удалена
+
+  /acceptance_action:
+    get:
+      tags:
+        - acceptance_action
+      responses:
+        '200':
+          description: Список операций
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListOfAcceptanceActions'
+
+    post:
+      security:
+        - bearerAuth: [ ]
+      tags:
+        - acceptance_action
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AcceptanceActionRequest'
+      responses:
+        '409':
+          description: Action already exists
+        '400':
+          description: Bad request
+        '200':
+          description: Операция создана
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListOfAcceptanceActions'
+    put:
+      security:
+        - bearerAuth: [ ]
+      tags:
+        - acceptance_action
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AcceptanceAction'
+      responses:
+        '409':
+          description: Action already exists
+        '200':
+          description: Action update
+        '400':
+          description: Bad request
+
+  /acceptance_action/product/{id}:
+    get:
+      tags:
+        - acceptance_action
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: number
+      responses:
+        '200':
+          description: Операция приемки для одного изделия
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AcceptanceAction'
+        '400':
+          description: Bad request
+        '404':
+          description: Not found
+
+  /acceptance_action/{id}:
+    delete:
+      security:
+        - bearerAuth: [ ]
+      tags:
+        - acceptance_action
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: number
+      responses:
+        '200':
+          description: Информация об операции удалена
+
+  /control_action/batch:
+    post:
+      security:
+        - bearerAuth: [ ]
+      tags:
+        - control_action
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BatchControlActionRequest'
+      responses:
+        '409':
+          description: Control action already exists
+        '400':
+          description: Bad request
+        '200':
+          description: Операция создана
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListOfControlActions'
+
+  /control_action:
+    get:
+      tags:
+        - control_action
+      responses:
+        '200':
+          description: Список операций контроля
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListOfControlActions'
+
+    post:
+      security:
+        - bearerAuth: [ ]
+      tags:
+        - control_action
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ControlActionRequest'
+      responses:
+        '409':
+          description: Control action already exists
+        '400':
+          description: Bad request
+        '200':
+          description: Операция создана
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlAction'
+    put:
+      security:
+        - bearerAuth: [ ]
+      tags:
+        - control_action
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ControlAction'
+      responses:
+        '409':
+          description: Control action already exists
+        '200':
+          description: Action update
+        '400':
+          description: Bad request
+
+  /control_action/{id}:
+    delete:
+      security:
+        - bearerAuth: [ ]
+      tags:
+        - control_action
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: number
+      responses:
+        '200':
+          description: Информация об операции удалена
+
+
+  /control_action/product/{id}:
+    get:
+      tags:
+        - control_action
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: number
+      responses:
+        '200':
+          description: Список операций для одного изделия
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListOfControlActions'
+
+  /operation_type:
+    post:
+      security:
+        - bearerAuth: [ ]
+      tags:
+        - operation_type
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OperationType'
+      responses:
+        '200':
+          description: Тип сохранен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OperationType'
+
+    put:
+      security:
+        - bearerAuth: [ ]
+      tags:
+        - operation_type
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OperationType'
+      responses:
+        '200':
+          description: Информация о типе обновлена
+
+  /operation_type/specification/{id}:
+    get:
+      tags:
+        - operation_type
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: number
+      responses:
+        '200':
+          description: Информация о типах операций ТЗ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListOfOperationTypes'
+
+  /operation_type/{id}:
+    delete:
+      security:
+        - bearerAuth: [ ]
+      tags:
+        - operation_type
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: number
+      responses:
+        '200':
+          description: Информация о типе удалена
+
+
+  /kit:
+    get:
+      tags:
+        - kit
+      responses:
+        '200':
+          description: Список всех наборов
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListOfKits'
+
+    post:
+      security:
+        - bearerAuth: [ ]
+      tags:
+        - kit
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Kit'
+      responses:
+        '200':
+          description: Набор сохранен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Kit'
+
+    put:
+      security:
+        - bearerAuth: [ ]
+      tags:
+        - kit
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Kit'
+      responses:
+        '200':
+          description: Информация о наборе обновлена
+
+  /kit/progress:
+    get:
+      tags:
+        - kit
+      responses:
+        '200':
+          description: Информация о наборах
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListOfKitBriefProgress'
+
+  /kit/{id}/progress:
+    get:
+      tags:
+        - kit
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: number
+      responses:
+        '204':
+          description: No content
+        '200':
+          description: Информация о наборе
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/KitDetailedProgress'
+
+  /kit/{id}:
+    get:
+      tags:
+        - kit
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: number
+      responses:
+        '204':
+          description: No content
+        '200':
+          description: Информация о наборе
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Kit'
+
+    delete:
+      security:
+        - bearerAuth: [ ]
+      tags:
+        - kit
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: number
+      responses:
+        '200':
+          description: Информация о наборе удалена
+
+  /employee?active_only=true:
+    get:
+      tags:
+        - employee
+      parameters:
+        - in: query
+          name: active_only
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: List of employees
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListOfEmployees'
+
+  /employee/{id}/state?active:
+    put:
+      tags:
+        - employee
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: number
+        - in: query
+          name: active
+          required: true
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: employee state updated
+        '400':
+          description: Bad Request
+
+
+  /employee/{id}:
+    delete:
+      tags:
+        - employee
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: number
+      responses:
+        '200':
+          description: employee deleted successfully
+
+  /employee/sign_in:
+    post:
+      tags:
+        - employee
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmployeeCredentials'
+      responses:
+        '400':
+          description: Wrong password or phone
+        '200':
+          description: Token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Token'
+
+  /employee/sign_up:
+    post:
+      tags:
+        - employee
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Employee'
+      responses:
+        '200':
+          description: Token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Token'
+        '400':
+          description: Bad request
+
+  /employee:
+    put:
+      tags:
+        - employee
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Employee'
+      responses:
+        '200':
+          description: employee updated
+        '400':
+          description: Bad request
+
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    Employee:
+      properties:
+        id:
+          type: integer
+        first_name:
+          type: string
+        last_name:
+          type: string
+        phone:
+          type: string
+        password:
+          type: string
+        active:
+          type: boolean
+        role:
+          type: string
+
+    EmployeeCredentials:
+      properties:
+        phone:
+          type: string
+        password:
+          type: string
+
+    Token:
+      properties:
+        token:
+          type: string
+
+    Action:
+      properties:
+        id:
+          type: number
+        done_time:
+          type: string
+          format: YYYY-MM-DDTHH:MM:SS
+          example: "2022-12-25T14:30:01"
+        repair:
+          type: boolean
+          default: false
+        operation_type:
+          type: number
+        employee_id:
+          type: number
+        product_id:
+          type: number
+
+    BatchActionRequest:
+      properties:
+        done_time:
+          type: string
+          format: YYYY-MM-DDTHH:MM:SS
+          example: "2022-12-25T14:30:01"
+        repair:
+          type: boolean
+          default: false
+        operation_type:
+          type: number
+        products_id:
+          type: array
+          items:
+            type: number
+
+
+    ActionRequest:
+      properties:
+        done_time:
+          type: string
+          format: YYYY-MM-DDTHH:MM:SS
+          example: "2022-12-25T14:30:01"
+        repair:
+          type: boolean
+          default: false
+        operation_type:
+          type: number
+        product_id:
+          type: number
+
+    Product:
+      properties:
+        id:
+          type: number
+        product_number:
+          type: integer
+        active:
+          type: boolean
+        locked:
+          type: boolean
+        batch_id:
+          type: number
+
+    Batch:
+      properties:
+        id:
+          type: number
+        batch_number:
+          type: string
+        kit_id:
+          type: number
+
+    BatchProgress:
+      properties:
+        id:
+          type: number
+        batch_number:
+          type: number
+        operations_progress:
+          type: object
+          additionalProperties:
+            type: integer
+        control_progress:
+          type: object
+          additionalProperties:
+            type: integer
+        locked_quantity:
+          type: integer
+        defected_quantity:
+          type: integer
+
+    KitDetailedProgress:
+      properties:
+        id:
+          type: number
+        kit_number:
+          type: string
+        batches_quantity:
+          type: integer
+        operation_types:
+          type: array
+          items:
+            $ref: '#/components/schemas/OperationType'
+        batches_progress:
+          type: array
+          items:
+            $ref: '#/components/schemas/BatchProgress'
+
+    KitBriefProgress:
+      properties:
+        specification_id:
+          type: number
+        specification_title:
+          type: string
+        tested_percentage:
+          type: integer
+        kit_id:
+          type: number
+        kit_number:
+          type: string
+        kit_size:
+          type: integer
+        products_in_work:
+          type: integer
+        products_done:
+          type: integer
+        control_progress:
+          type: object
+          additionalProperties:
+            type: integer
+        locked_quantity:
+          type: integer
+        defected_quantity:
+          type: integer
+
+    Kit:
+      properties:
+        id:
+          type: number
+        kit_number:
+          type: string
+        acceptance_percentage:
+          type: integer
+        batches_quantity:
+          type: integer
+        batch_size:
+          type: integer
+        specification_id:
+          type: number
+
+    SpecificationPostRequest:
+      properties:
+        id:
+          type: number
+        specification_title:
+          type: string
+        product_type:
+          type: string
+        tested_percentage:
+          type: integer
+        operation_types:
+          type: array
+          items:
+            $ref: '#/components/schemas/OperationTypeRequest'
+
+    SpecificationPutRequest:
+      properties:
+        id:
+          type: number
+        specification_title:
+          type: string
+        product_type:
+          type: string
+        tested_percentage:
+          type: integer
+        operation_types:
+          type: array
+          items:
+            $ref: '#/components/schemas/OperationType'
+
+    SpecificationResponse:
+      properties:
+        id:
+          type: number
+        specification_title:
+          type: string
+        product_type:
+          type: string
+        tested_percentage:
+          type: integer
+        kit_quantity:
+          type: integer
+        operation_types:
+          type: array
+          items:
+            $ref: '#/components/schemas/OperationType'
+
+    OperationType:
+      properties:
+        id:
+          type: number
+        type:
+          type: string
+        sequence_number:
+          type: integer
+        specification_id:
+          type: number
+
+    OperationTypeRequest:
+      properties:
+        type:
+          type: string
+        sequence_number:
+          type: integer
+
+    ControlActionRequest:
+      properties:
+        done_time:
+          type: string
+          format: YYYY-MM-DDTHH:MM:SS
+          example: "2022-12-25T14:30:01"
+        successful:
+          type: boolean
+        need_repair:
+          type: boolean
+        control_type:
+          type: string
+        comment:
+          type: string
+        operation_type:
+          type: number
+        product_id:
+          type: number
+
+    BatchControlActionRequest:
+      properties:
+        done_time:
+          type: string
+          format: YYYY-MM-DDTHH:MM:SS
+          example: "2022-12-25T14:30:01"
+        successful:
+          type: boolean
+        need_repair:
+          type: boolean
+        control_type:
+          type: string
+        comment:
+          type: string
+        operation_type:
+          type: number
+        products_id:
+          type: array
+          items:
+            type: number
+
+    ControlAction:
+      properties:
+        id:
+          type: number
+        done_time:
+          type: string
+          format: YYYY-MM-DDTHH:MM:SS
+          example: "2022-12-25T14:30:01"
+        successful:
+          type: boolean
+        need_repair:
+          type: boolean
+        control_type:
+          type: string
+        comment:
+          type: string
+        operation_type:
+          type: number
+        employee_id:
+          type: number
+        product_id:
+          type: number
+
+    AcceptanceAction:
+      properties:
+        id:
+          type: number
+        done_time:
+          type: string
+          format: YYYY-MM-DDTHH:MM:SS
+          example: "2022-12-25T14:30:01"
+        product_id:
+          type: number
+        employee_id:
+          type: number
+
+    AcceptanceActionRequest:
+      properties:
+        done_time:
+          type: string
+          format: YYYY-MM-DDTHH:MM:SS
+          example: "2022-12-25T14:30:01"
+        products_id:
+          type: array
+          items:
+            type: number
+
+    ListOfAcceptanceActions:
+      type: array
+      items:
+        $ref: '#/components/schemas/AcceptanceAction'
+
+    ListOfActions:
+      type: array
+      items:
+        $ref: '#/components/schemas/Action'
+
+    ListOfControlActions:
+      type: array
+      items:
+        $ref: '#/components/schemas/ControlAction'
+
+    ListOfOperationTypes:
+      type: array
+      items:
+        $ref: '#/components/schemas/OperationType'
+
+    ListOfSpecificationResponses:
+      type: array
+      items:
+        $ref: '#/components/schemas/SpecificationResponse'
+
+    ListOfBatches:
+      type: array
+      items:
+        $ref: '#/components/schemas/Batch'
+
+    ListOfKits:
+      type: array
+      items:
+        $ref: '#/components/schemas/Kit'
+
+    ListOfProducts:
+      type: array
+      items:
+        $ref: '#/components/schemas/Product'
+
+    ListOfKitBriefProgress:
+      type: array
+      items:
+        $ref: '#/components/schemas/KitBriefProgress'
+
+    ListOfEmployees:
+      type: array
+      items:
+        $ref: '#/components/schemas/Employee'

@@ -9,8 +9,8 @@ val kodeinVersion: String by project
 val config4kVersion: String by project
 
 plugins {
-    kotlin("jvm") version "1.6.21" // or kotlin("multiplatform") or any other kotlin plugin
-    kotlin("plugin.serialization") version "1.6.21"
+    kotlin("jvm") version "1.8.20" // or kotlin("multiplatform") or any other kotlin plugin
+    kotlin("plugin.serialization") version "1.8.20"
     id("io.ktor.plugin") version "2.2.4"
     application
 }
@@ -41,24 +41,25 @@ tasks.test {
 }
 
 dependencies {
+
+    implementation("org.jetbrains.kotlin-wrappers:kotlin-css:1.0.0-pre.301-kotlin-1.6.10")
+
+    implementation("ch.qos.logback:logback-classic:$logbackVersion")
+    implementation("io.ktor:ktor-client-core-jvm:$ktorVersion")
+    implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
     implementation("io.ktor:ktor-server-cors:$ktorVersion")
     implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
     implementation("io.ktor:ktor-server-content-negotiation-jvm:$ktorVersion")
     implementation("io.ktor:ktor-server-html-builder:$ktorVersion")
     implementation("io.ktor:ktor-server-auth:$ktorVersion")
     implementation("io.ktor:ktor-server-auth-jwt:$ktorVersion")
-
-
-    implementation("org.jetbrains.kotlin-wrappers:kotlin-css:1.0.0-pre.301-kotlin-1.6.10")
-
-
-    implementation("ch.qos.logback:logback-classic:$logbackVersion")
     implementation("io.ktor:ktor-server-core-jvm:$ktorVersion")
     implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
     implementation("io.ktor:ktor-server-netty-jvm:$ktorVersion")
+    implementation("io.ktor:ktor-client-auth-jvm:$ktorVersion")
 
     testImplementation("org.jetbrains.kotlin:kotlin-test:$kotlinVersion")
-
+    testImplementation("io.mockk:mockk:1.13.5")
 
     implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.4.0")
 
@@ -73,10 +74,11 @@ dependencies {
 
 
     implementation("io.github.config4k:config4k:$config4kVersion")
-
     implementation("org.kodein.di:kodein-di-framework-ktor-server-jvm:$kodeinVersion")
-
     implementation(kotlin("stdlib-jdk8"))
+
+    testImplementation("org.testcontainers:testcontainers:1.18.1")
+    testImplementation("org.testcontainers:postgresql:1.18.1")
     testImplementation("io.ktor:ktor-server-tests-jvm:$ktorVersion")
 }
 

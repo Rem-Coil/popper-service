@@ -1,4 +1,3 @@
 package com.remcoil.utils.exceptions
 
-class WrongParamException(message: String) : RuntimeException(message) {
-}
+class WrongParamException(message: String) : RuntimeException(message)

@@ -3,13 +3,15 @@ version: "3.6"
 services:
   popper:
     container_name: popper_main_service
-    image: pampero.registry.jetbrains.space/p/popper/popper/popper_server:latest
+    image: pampero.registry.jetbrains.space/p/popper/popper/popper_server:0.3.0-dev-15
     environment:
       PORT: ${POPPER_INNER_PORT}
+      HOST: ${HOST}
       JDBC_DATABASE_PASSWORD: ${POSTGRES_PASSWORD}
       JDBC_DATABASE_USERNAME: ${POSTGRES_USER}
       JDBC_DATABASE_URL: ${POSTGRES_URL}
-      SECRET: ${SECRET}
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_TIME: ${JWT_TIME}
     depends_on:
       - database
     ports:
